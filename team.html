@@ -191,6 +191,9 @@ async function start(){
   const { data: adm } = await sb.rpc('is_admin');
   IS_ADMIN = !!adm;
   if(adm) document.getElementById('adminLink').style.display = 'inline';
+  // Leave Approvers (semi-admin): get the Leave Requests card here, but no Dashboard link
+  const { data: appr } = await sb.rpc('is_leave_approver');
+  IS_APPROVER = !!appr;
   await loadMine();
 }
 
@@ -210,6 +213,7 @@ function tile(dateStr, cls, title, sub){
 /* ---- LEAVE REQUESTS ---- */
 let MY_ID = null;
 let IS_ADMIN = false;
+let IS_APPROVER = false;
 let HOLIDAY_SET = new Set();
 
 function workingDays(from, to){
@@ -295,14 +299,15 @@ async function loadRequests(){
       : '<div class="empty">No requests yet.</div>';
   }
 
-  if(!IS_ADMIN) return;
+  if(!IS_ADMIN && !IS_APPROVER) return;
 
-  // everyone's requests, pending first
-  const all = await sb.from('leave_requests').select('*').order('created_at', { ascending:false });
+  // requests this person may action, pending first. Admins see everyone; approvers see all staff
+  // except admins and other approvers (scope is enforced in Supabase by leave_requests_for_approval).
+  const all = await sb.rpc('leave_requests_for_approval');
+  if(all.error){ document.getElementById('approvalsCard').style.display = 'none'; return; }
   var list = all.data || [];
   var names = {};
-  const emps = await sb.from('employees_201').select('id,name');
-  (emps.data || []).forEach(function(e){ names[e.id] = e.name; });
+  list.forEach(function(r){ names[r.employee_id] = r.employee_name; });
   var pending = list.filter(function(r){ return r.status === 'Pending'; });
   var rest = list.filter(function(r){ return r.status !== 'Pending'; }).slice(0, 12);
   var ordered = pending.concat(rest);
