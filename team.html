@@ -309,10 +309,11 @@ async function loadRequests(){
   var names = {};
   list.forEach(function(r){ names[r.employee_id] = r.employee_name; });
   var pending = list.filter(function(r){ return r.status === 'Pending'; });
-  // Decided requests stay only until their leave is over (end date today or later), soonest first.
-  // Taken leave drops off here; it remains in My Leave History and the dashboard's Leave records.
+  // Besides Pending, show only Approved leave that isn't over yet (end date today or later), soonest first.
+  // Declined / Cancelled / Withdrawn never show here (staff still see their own under My Requests);
+  // taken leave remains in My Leave History and the dashboard's Leave records.
   var today = todayISO();
-  var rest = list.filter(function(r){ return r.status !== 'Pending' && r.end_date >= today; })
+  var rest = list.filter(function(r){ return r.status === 'Approved' && r.end_date >= today; })
     .sort(function(a, b){ return a.start_date.localeCompare(b.start_date); });
   var ordered = pending.concat(rest);
 
