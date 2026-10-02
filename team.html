@@ -309,7 +309,11 @@ async function loadRequests(){
   var names = {};
   list.forEach(function(r){ names[r.employee_id] = r.employee_name; });
   var pending = list.filter(function(r){ return r.status === 'Pending'; });
-  var rest = list.filter(function(r){ return r.status !== 'Pending'; }).slice(0, 12);
+  // Decided requests stay only until their leave is over (end date today or later), soonest first.
+  // Taken leave drops off here; it remains in My Leave History and the dashboard's Leave records.
+  var today = todayISO();
+  var rest = list.filter(function(r){ return r.status !== 'Pending' && r.end_date >= today; })
+    .sort(function(a, b){ return a.start_date.localeCompare(b.start_date); });
   var ordered = pending.concat(rest);
 
   document.getElementById('approvalsCard').style.display = 'block';
@@ -330,7 +334,7 @@ async function loadRequests(){
           + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' \u00b7 ' + r.reason : '') + '</div></div>'
           + '<span class="st ' + cls + '">' + r.status + '</span>' + acts + '</div>';
       }).join('')
-    : '<div class="empty">No requests.</div>';
+    : '<div class="empty">No pending or upcoming requests.</div>';
 }
 
 function todayISO(){
