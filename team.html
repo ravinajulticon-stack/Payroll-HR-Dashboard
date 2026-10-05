@@ -427,24 +427,25 @@ async function loadMine(){
       : '<div class="empty">No leave taken.</div>';
   }
 
-  // Who else is away — planned Annual Leave only, next three months.
+  // Who's away — all recorded leave types (name + type), next three months.
   var end = new Date(today.getTime());
   end.setMonth(end.getMonth() + 3);
   var endStr = end.getFullYear() + '-' + String(end.getMonth()+1).padStart(2,'0') + '-' + String(end.getDate()).padStart(2,'0');
-  document.getElementById('awayRange').textContent = 'Next 3 months \u00b7 planned leave';
-  const awayRes = await sb.rpc('team_annual_leave', { from_date: todayStr, to_date: endStr });
+  document.getElementById('awayRange').textContent = 'Next 3 months \u00b7 all leave';
+  const awayRes = await sb.rpc('team_leave', { from_date: todayStr, to_date: endStr });
   var away = awayRes.data || [];
   var byDate = {};
   away.forEach(function(a){
     if(!byDate[a.leave_date]) byDate[a.leave_date] = [];
-    byDate[a.leave_date].push(a.person.split(' ')[0]);
+    var lt = String(a.leave_type || '').replace(/ Leave$/, '');
+    byDate[a.leave_date].push(a.person.split(' ')[0] + (lt ? ' \u00b7 ' + lt : ''));
   });
   var dates = Object.keys(byDate).sort();
   document.getElementById('awayList').innerHTML = dates.length
     ? '<div class="vic-tile-grid">' + dates.map(function(d){
         return tile(d, 'lv-away', byDate[d].join('<br>'), '');
       }).join('') + '</div>'
-    : '<div class="empty">Nobody has planned leave in the next three months.</div>';
+    : '<div class="empty">Nobody has leave in the next three months.</div>';
   const allHol = await sb.from('vic_holidays').select('date,name').order('date');
   HOLIDAY_SET = new Set((allHol.data || []).map(function(x){ return x.date; }));
   var h = (allHol.data || []).filter(function(x){ return x.date >= todayStr; }).slice(0, 12);
