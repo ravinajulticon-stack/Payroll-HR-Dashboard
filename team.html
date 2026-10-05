@@ -194,6 +194,8 @@ async function start(){
   IS_ADMIN = !!adm;
   if(adm) document.getElementById('adminLink').style.display = 'inline';
   // Leave Approvers (semi-admin): get the Leave Requests card here, but no Dashboard link
+  // record this visit so the admin dashboard (Employee 206) can show who has opened My Leave
+  sb.rpc('touch_my_leave').then(function(){}, function(){});
   const { data: appr } = await sb.rpc('is_leave_approver');
   IS_APPROVER = !!appr;
   await loadMine();
