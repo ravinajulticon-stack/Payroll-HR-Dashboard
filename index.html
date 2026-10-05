@@ -566,6 +566,10 @@ body {
 .ts-grid-table td.ts-holiday input{ border-color:rgba(47,159,212,0.45); background:#f4fbff; }
 .ts-hol-tag{ display:block; margin-top:1px; font-size:7.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:#1f86b8; }
 .rec-table tr.emp-row-inactive td{ background:rgba(142,142,147,0.10); color:var(--text-2); }
+/* My Leave sign-in dot (Employee 201 name column) */
+.signin-dot{ flex:0 0 auto; width:8px; height:8px; border-radius:50%; display:inline-block; }
+.signin-dot.on{ background:#34c759; box-shadow:0 0 0 3px rgba(52,199,89,0.18); }
+.signin-dot.never{ background:transparent; border:1.5px solid #aeaeb2; width:8px; height:8px; box-sizing:border-box; }
 .rec-table tr.emp-row-inactive td:first-child{ box-shadow:inset 3px 0 0 #8e8e93; color:var(--text-2); font-weight:600; }
 .rec-table tr.emp-row-inactive input, .rec-table tr.emp-row-inactive select{ color:var(--text-2); }
 .rec-table tr.emp-row-inactive:hover td{ background:rgba(142,142,147,0.17); }
@@ -1210,6 +1214,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const SEED = JSON.parse(document.getElementById('seed-data').textContent);
 let EMP201 = [];
+let SIGNINS = {}; // employee id -> { has_account, last_sign_in_at } for the My Leave sign-in dot
 let HISTORY500 = [];
 let searchTerm = '';
 let historySearchTerm = '';
@@ -1449,6 +1454,24 @@ async function loadEmployees(){
   populateFilterOptions();
   render();
   renderKpis();
+  loadSignIns();
+}
+
+// My Leave sign-in status (admin-only Supabase function). Green = has signed in, grey ring = account but never signed in.
+async function loadSignIns(){
+  const { data, error } = await sb.rpc('staff_sign_ins');
+  if(error || !data) return;
+  SIGNINS = {};
+  data.forEach(r => { SIGNINS[r.employee_id] = r; });
+  render();
+}
+function signInDot(rec){
+  const s = SIGNINS[rec.id];
+  if(!s || !s.has_account) return '';
+  if(!s.last_sign_in_at) return '<span class="signin-dot never" title="My Leave account set up, not signed in yet"></span>';
+  const d = new Date(s.last_sign_in_at);
+  const when = d.toLocaleString('en-AU', { day:'numeric', month:'short', year:'numeric', hour:'numeric', minute:'2-digit' });
+  return '<span class="signin-dot on" title="Signed in to My Leave \u00b7 last sign-in ' + when + '"></span>';
 }
 
 function populateFilterOptions(){
@@ -5040,7 +5063,7 @@ function render(){
 
   tbody.innerHTML = rows.map(rec => `
     <tr class="${rec.status === 'Terminated' ? 'emp-row-terminated' : (rec.status && rec.status !== 'Active' ? 'emp-row-inactive' : (isNewThisPeriod(rec) ? 'emp-row-new' : ''))}">
-      <td>${field(rec,'name')}</td>
+      <td><div style="display:flex;align-items:center;gap:6px">${signInDot(rec)}${field(rec,'name')}</div></td>
       <td>${field(rec,'employee_id','DDL-000')}</td>
       <td>${field(rec,'role','Role')}</td>
       <td>${field(rec,'department','Department')}</td>
