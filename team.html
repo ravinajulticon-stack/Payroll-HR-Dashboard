@@ -48,6 +48,8 @@ body{ margin:0; background:var(--bg); color:var(--text); font-family:-apple-syst
 .st.declined{ background:rgba(255,59,48,0.12); color:#c9271d; }
 .st.cancelled{ background:rgba(142,142,147,0.18); color:var(--text-2); }
 .vic-tile-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:10px; padding:14px 16px; }
+.hist-sub{ padding:12px 16px 0; font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--text-3); }
+.hist-sub + .vic-tile-grid{ padding-top:8px; }
 .vic-tile{ background:linear-gradient(135deg,#5ac8fa 0%,#2f9fd4 100%); border-radius:12px; padding:12px 10px; color:#fff; text-align:center; box-shadow:0 2px 10px rgba(47,159,212,0.25); }
 .vic-tile.lv-away{ background:linear-gradient(135deg,#af52de 0%,#7d3aa5 100%); box-shadow:0 2px 10px rgba(125,58,165,0.25); }
 .vic-tile.lv-annual{ background:linear-gradient(135deg,#0a84ff 0%,#0060df 100%); box-shadow:0 2px 10px rgba(0,96,223,0.25); }
@@ -417,13 +419,20 @@ async function loadMine(){
   }
 
   if(myId){
-    document.getElementById('leaveCount').textContent = used.length + ' record' + (used.length === 1 ? '' : 's');
+    // Split recorded leave into Upcoming (after today, soonest first) and Taken (today or earlier, newest first)
+    var upcoming = used.filter(function(u){ return u.leave_date > todayStr; })
+      .sort(function(a, b){ return a.leave_date.localeCompare(b.leave_date); });
+    var taken = used.filter(function(u){ return u.leave_date <= todayStr; });
+    var histTile = function(u){
+      var cls = u.leave_type === 'Annual Leave' ? 'lv-annual' : (u.leave_type === 'Personal Leave' ? 'lv-personal' : 'lv-unpaid');
+      var hrs = parseFloat(u.hours) || 0;
+      return tile(u.leave_date, cls, u.leave_type.replace(' Leave',''), hrs + 'h \u00b7 ' + (hrs/HOURS_PER_DAY).toFixed(2) + ' d');
+    };
+    document.getElementById('leaveCount').textContent = upcoming.length + ' upcoming \u00b7 ' + taken.length + ' taken';
     document.getElementById('leaveList').innerHTML = used.length
-      ? '<div class="vic-tile-grid">' + used.map(function(u){
-          var cls = u.leave_type === 'Annual Leave' ? 'lv-annual' : (u.leave_type === 'Personal Leave' ? 'lv-personal' : 'lv-unpaid');
-          var hrs = parseFloat(u.hours) || 0;
-          return tile(u.leave_date, cls, u.leave_type.replace(' Leave',''), hrs + 'h \u00b7 ' + (hrs/HOURS_PER_DAY).toFixed(2) + ' d');
-        }).join('') + '</div>'
+      ? (upcoming.length ? '<div class="hist-sub">Upcoming</div><div class="vic-tile-grid">' + upcoming.map(histTile).join('') + '</div>' : '')
+        + '<div class="hist-sub">Taken</div>'
+        + (taken.length ? '<div class="vic-tile-grid">' + taken.map(histTile).join('') + '</div>' : '<div class="empty">No leave taken yet.</div>')
       : '<div class="empty">No leave taken.</div>';
   }
 
