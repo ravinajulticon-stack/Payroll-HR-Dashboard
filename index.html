@@ -1457,21 +1457,23 @@ async function loadEmployees(){
   loadSignIns();
 }
 
-// My Leave sign-in status (admin-only Supabase function). Green = has signed in, grey ring = account but never signed in.
+// My Leave visit status (admin-only Supabase function, shown in Employee 206).
+// Green = has opened My Leave (recorded by My Leave itself), grey ring = has an account but hasn't opened it yet.
 async function loadSignIns(){
   const { data, error } = await sb.rpc('staff_sign_ins');
   if(error || !data) return;
   SIGNINS = {};
   data.forEach(r => { SIGNINS[r.employee_id] = r; });
-  render();
+  var lb = document.getElementById('locatorBody');
+  if(lb && lb.offsetParent !== null && typeof renderLocator === 'function') renderLocator();
 }
 function signInDot(rec){
   const s = SIGNINS[rec.id];
   if(!s || !s.has_account) return '';
-  if(!s.last_sign_in_at) return '<span class="signin-dot never" title="My Leave account set up, not signed in yet"></span>';
-  const d = new Date(s.last_sign_in_at);
+  if(!s.last_seen_at) return '<span class="signin-dot never" title="Has a My Leave account, hasn\u2019t opened it yet"></span>';
+  const d = new Date(s.last_seen_at);
   const when = d.toLocaleString('en-AU', { day:'numeric', month:'short', year:'numeric', hour:'numeric', minute:'2-digit' });
-  return '<span class="signin-dot on" title="Signed in to My Leave \u00b7 last sign-in ' + when + '"></span>';
+  return '<span class="signin-dot on" title="Opened My Leave \u00b7 last visit ' + when + '"></span>';
 }
 
 function populateFilterOptions(){
@@ -3310,7 +3312,7 @@ function renderLocator(){
       return '<option value="' + c + '"' + (e.city === c ? ' selected' : '') + '>' + c + '</option>';
     }).join('');
     return '<tr>'
-      + '<td>' + e.name + '</td>'
+      + '<td><div style="display:flex;align-items:center;gap:7px">' + signInDot(e) + '<span>' + e.name + '</span></div></td>'
       + '<td><select class="wk-sel" style="width:190px" onchange="saveEmployeeCity(\'' + e.id + '\', this.value)">'
       +   '<option value="">\u2014 not set \u2014</option>' + sel + '</select></td>'
       + '<td>' + (m ? m[2] : '\u2014') + '</td>'
@@ -3329,7 +3331,7 @@ function renderLocator(){
     + '</div></div>'
     + '<div class="card" style="margin-bottom:14px"><div id="phMap" style="height:760px;border-radius:0 0 var(--radius) var(--radius);overflow:hidden"></div></div>'
     + '<div class="card"><div class="card-header"><span class="card-title">Set Location</span>'
-    +   '<span class="rec-count">City only \u2014 no street addresses</span></div>'
+    +   '<span class="rec-count"><span class="signin-dot on" style="margin-right:4px"></span>Opened My Leave &nbsp; <span class="signin-dot never" style="margin-right:4px"></span>Not yet &nbsp;\u00b7&nbsp; City only \u2014 no street addresses</span></div>'
     + '<div class="tbl-scroll"><table class="rec-table"><thead><tr><th>Name</th><th>City</th><th>Province</th><th>Island group</th></tr></thead>'
     + '<tbody>' + rows + '</tbody></table></div></div>';
 
@@ -5063,7 +5065,7 @@ function render(){
 
   tbody.innerHTML = rows.map(rec => `
     <tr class="${rec.status === 'Terminated' ? 'emp-row-terminated' : (rec.status && rec.status !== 'Active' ? 'emp-row-inactive' : (isNewThisPeriod(rec) ? 'emp-row-new' : ''))}">
-      <td><div style="display:flex;align-items:center;gap:6px">${signInDot(rec)}${field(rec,'name')}</div></td>
+      <td>${field(rec,'name')}</td>
       <td>${field(rec,'employee_id','DDL-000')}</td>
       <td>${field(rec,'role','Role')}</td>
       <td>${field(rec,'department','Department')}</td>
