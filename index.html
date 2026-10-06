@@ -1591,7 +1591,7 @@ function fmtMoney(n){
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// Employee 205 only: whole numbers stay whole, but any number with a fraction always
+// Employee 205 only (except Total Payout, which always shows 2 decimals): whole numbers stay whole, but any number with a fraction always
 // shows exactly 2 decimals (e.g. 47596.1 -> "47,596.10", not "47,596.1").
 function fmtMoneyHistory(n){
   if(n === '' || n === null || n === undefined) return '';
@@ -1754,7 +1754,7 @@ const HISTORY_ROW_TEMPLATE = (r) => `
       <td style="text-align:right">${fmtMoneyHistory(r.loan_php ?? 0)}</td>
       <td style="text-align:right">${fmtMoneyHistory(r.others_php)}</td>
       <td style="text-align:right">${fmtMoneyHistory(r.ebury_rate)}</td>
-      <td style="text-align:right;font-weight:600;color:var(--blue-light)">${fmtMoneyHistory(r.total_payout)}</td>
+      <td style="text-align:right;font-weight:600;color:var(--blue-light)">${fmtMoney(r.total_payout)}</td>
       <td><span class="status-pill ${(r.status||'').toLowerCase()==='paid'?'active':''}">${r.status||''}</span></td>
     </tr>`;
 
@@ -1812,7 +1812,7 @@ function renderHistory(){
         <span class="sec-hd-name">${name}</span>
         <div class="sec-hd-right">
           <span class="rec-count">${recs.length} period${recs.length!==1?'s':''}</span>
-          <span class="sec-total" style="color:var(--blue-light)">${fmtMoneyHistory(total)} total</span>
+          <span class="sec-total" style="color:var(--blue-light)">${fmtMoney(total)} total</span>
         </div>
       </div>
       <div class="tbl-scroll">
