@@ -285,7 +285,9 @@ async function loadRequests(){
   if(MY_ID){
     const mine = await sb.from('leave_requests').select('*').eq('employee_id', MY_ID)
       .order('created_at', { ascending:false });
-    var rows = mine.data || [];
+    // Hide requests the staff member withdrew themselves (Cancelled with no decision).
+    // Cancellations by an admin/approver after approval have decided_at set, so they still show.
+    var rows = (mine.data || []).filter(function(r){ return !(r.status === 'Cancelled' && !r.decided_at); });
     document.getElementById('myReqCount').textContent = rows.length + ' request' + (rows.length===1?'':'s');
     document.getElementById('myRequests').innerHTML = rows.length
       ? rows.map(function(r){
