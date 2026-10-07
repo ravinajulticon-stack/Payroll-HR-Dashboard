@@ -310,6 +310,8 @@ async function loadRequests(){
   const all = await sb.rpc('leave_requests_for_approval');
   if(all.error){ document.getElementById('approvalsCard').style.display = 'none'; return; }
   var list = all.data || [];
+  REQ_REASONS = {};
+  list.forEach(function(r){ REQ_REASONS[r.id] = r.reason || ''; });
   var names = {};
   list.forEach(function(r){ names[r.employee_id] = r.employee_name; });
   var pending = list.filter(function(r){ return r.status === 'Pending'; });
@@ -334,6 +336,10 @@ async function loadRequests(){
           acts = '<button class="btn ghost sm" onclick="moveApproved(\'' + r.id + '\')">Move</button>'
                + '<button class="btn ghost sm" onclick="cancelApproved(\'' + r.id + '\')">Cancel</button>';
         }
+        // Admin only: edit the reason on Pending or Approved requests still on the card
+        if(IS_ADMIN && (r.status === 'Pending' || r.status === 'Approved')){
+          acts += '<button class="btn ghost sm" onclick="editReason(\'' + r.id + '\')">Edit Reason</button>';
+        }
         return '<div class="rq"><div class="rq-main">'
           + '<div class="rq-when">' + (names[r.employee_id] || '?') + ' \u00b7 ' + rangeLabel(r.start_date, r.end_date) + '</div>'
           + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' \u00b7 ' + r.reason : '') + '</div></div>'
@@ -357,6 +363,18 @@ async function decide(id, approve){
   if(approve) alert('Approved \u2014 ' + data + ' leave day' + (data===1?'':'s') + ' recorded.');
   await loadRequests();
   await loadMine();
+}
+
+var REQ_REASONS = {};
+async function editReason(id){
+  if(!IS_ADMIN) return;
+  var current = REQ_REASONS[id] || '';
+  var val = prompt('Edit reason for this leave request (leave blank to clear):', current);
+  if(val === null) return;
+  val = val.trim();
+  const { error } = await sb.from('leave_requests').update({ reason: val || null }).eq('id', id);
+  if(error){ alert(error.message); return; }
+  await loadRequests();
 }
 
 async function moveApproved(id){
