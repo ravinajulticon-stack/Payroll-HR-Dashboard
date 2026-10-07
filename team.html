@@ -98,6 +98,7 @@ button{ font-family:inherit; }
 .rq-when .arr{ color:var(--text-3); margin:0 6px; }
 .rq-meta{ font-size:11px; color:var(--text-3); margin-top:3px; }
 .rq-acts{ display:flex; gap:6px; flex-wrap:wrap; }
+.rq-sub{ font-size:10.5px; color:var(--text-3); margin-top:2px; font-style:italic; }
 @media(max-width:640px){ .rq-name{ width:auto; flex:1 1 auto; } }
 .st{ font-size:10.5px; font-weight:700; padding:4px 11px; border-radius:999px; white-space:nowrap; }
 .st.pending{ background:#fff3e0; color:#b26200; }
@@ -444,6 +445,14 @@ function rangeLabel(a, b){
   return a === b ? fmtDay(a) : fmtDay(a) + '<span class="arr">→</span>' + fmtDay(b);
 }
 
+// When the request was submitted (created_at), shown under each request
+function submittedLine(r){
+  if(!r.created_at) return '';
+  var d = new Date(r.created_at);
+  if(isNaN(d)) return '';
+  return '<div class="rq-sub">Submitted ' + fmtDay(isoOf(d)) + '</div>';
+}
+
 function reqSummary(r){
   var days = workingDays(r.start_date, r.end_date);
   var hrs = days.length * parseFloat(r.hours_per_day || 0);
@@ -467,7 +476,7 @@ async function loadRequests(){
             + '<div class="rq-when">' + rangeLabel(r.start_date, r.end_date) + '</div>'
             + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' · ' + esc(r.reason) : '')
             + (r.previous_dates ? ' · <i>moved from ' + esc(r.previous_dates) + '</i>' : '')
-            + (r.decision_note ? ' · <i>' + esc(r.decision_note) + '</i>' : '') + '</div></div>'
+            + (r.decision_note ? ' · <i>' + esc(r.decision_note) + '</i>' : '') + '</div>' + submittedLine(r) + '</div>'
             + '<span class="st ' + cls + '">' + r.status + '</span>'
             + (canWithdraw ? '<div class="rq-acts"><button class="btn ghost sm" onclick="withdrawRequest(\'' + r.id + '\')">Withdraw</button></div>' : '')
             + '</div>';
@@ -516,7 +525,7 @@ async function loadRequests(){
         return '<div class="rq">' + avatar(nm)
           + '<div class="rq-name">' + esc(nm) + '</div>'
           + '<div class="rq-main"><div class="rq-when">' + rangeLabel(r.start_date, r.end_date) + '</div>'
-          + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' · ' + esc(r.reason) : '') + '</div></div>'
+          + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' · ' + esc(r.reason) : '') + '</div>' + submittedLine(r) + '</div>'
           + '<span class="st ' + cls + '">' + r.status + '</span>'
           + (acts ? '<div class="rq-acts">' + acts + '</div>' : '') + '</div>';
       }).join('')
