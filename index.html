@@ -735,6 +735,108 @@ body {
 .ov-card-hint{ font-size:10.5px; color:var(--text-3); margin-top:3px; }
 .ov-card-arrow{ color:var(--text-3); font-size:17px; line-height:1; align-self:center; }
 .ov-card.go:hover .ov-card-arrow{ color:var(--blue); }
+/* ---- Overview v2 layout ---- */
+.ovx-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin:2px 2px 16px; }
+.ovx-hello{ font-size:26px; font-weight:700; color:#14213d; letter-spacing:-0.6px; line-height:1.15; }
+.ovx-hello-sub{ font-size:13.5px; color:var(--text-2); margin-top:4px; }
+.ovx-head-r{ display:flex; align-items:center; gap:10px; }
+.ovx-period{ display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--border); border-radius:12px; padding:5px 6px 5px 12px; box-shadow:0 1px 4px rgba(0,0,0,0.05); }
+.ovx-period svg{ color:var(--text-2); flex-shrink:0; }
+.ovx-period-range{ font-size:12.5px; color:var(--text); font-weight:500; white-space:nowrap; }
+.ovx-period .mp-field{ border:none; box-shadow:none; background:var(--surface-3); min-width:0; font-size:12px; font-weight:600; padding:6px 28px 6px 10px; border-radius:8px; }
+.ovx-period .mp-panel{ left:auto; right:0; }
+.ovx-bell{ position:relative; width:40px; height:40px; border-radius:12px; background:#fff; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,0.05); }
+.ovx-bell:hover{ border-color:var(--blue); color:var(--blue); }
+.ovx-bell b{ position:absolute; top:-5px; right:-5px; min-width:17px; height:17px; padding:0 4px; border-radius:9px; background:#ff3b30; color:#fff; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg); }
+.ovx-layout{ display:grid; grid-template-columns:minmax(0,1fr) 290px; gap:16px; align-items:start; }
+@media(max-width:1180px){ .ovx-layout{ grid-template-columns:1fr; } }
+.ovx-main, .ovx-side{ display:flex; flex-direction:column; gap:16px; min-width:0; }
+.ovx-card{ background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:0 1px 6px rgba(20,33,61,0.05); }
+.ovx-card-h{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:15px 18px 4px; }
+.ovx-title{ display:flex; align-items:center; gap:9px; font-size:15px; font-weight:700; color:#14213d; }
+.ovx-title svg{ color:#14213d; }
+.ovx-meta{ font-size:11px; color:var(--text-3); }
+.ovx-link{ font-size:11.5px; font-weight:600; color:var(--blue); background:none; border:none; cursor:pointer; font-family:inherit; padding:0; }
+.ovx-link.red{ color:#e0352b; }
+.ovx-body{ padding:10px 16px 16px; }
+/* Needs Attention */
+.ovx-attn{ background:linear-gradient(180deg,#fff4f3 0%,#fffafa 100%); border-color:#ffd9d6; }
+.ovx-attn .ovx-title .ovx-dot{ width:22px; height:22px; border-radius:50%; background:#ff3b30; color:#fff; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.ovx-issues{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
+.ovx-issue{ display:flex; align-items:flex-start; gap:10px; background:#fff; border:1px solid #f1e3e2; border-radius:12px; padding:12px 12px; cursor:pointer; transition:all 0.14s; }
+.ovx-issue:hover{ transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,0.08); }
+.ovx-issue-ic{ width:22px; height:22px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; background:#8e8e93; }
+.ovx-issue.high .ovx-issue-ic{ background:#ff3b30; }
+.ovx-issue.med .ovx-issue-ic{ background:#ff9500; }
+.ovx-issue-t{ font-size:12px; font-weight:600; color:var(--text); line-height:1.35; }
+.ovx-issue-s{ font-size:10.5px; color:var(--text-3); margin-top:3px; }
+.ovx-issue-a{ margin-left:auto; color:var(--text-3); font-size:17px; line-height:1; align-self:center; padding-left:4px; }
+.ovx-clear{ display:flex; align-items:center; gap:10px; font-size:13px; color:#1e7a35; font-weight:600; }
+/* Tiles */
+.ovx-tiles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+.ovx-tile{ border-radius:14px; padding:13px 14px 14px; border:1px solid var(--tb,#e6e9f2); background:var(--tbg,#f7f8fc); min-width:0; }
+.ovx-tile-ic{ width:34px; height:34px; border-radius:50%; background:#fff; color:var(--tc,#007aff); display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:12px; }
+.ovx-tile-l{ font-size:12px; color:#3a3f55; font-weight:500; }
+.ovx-tile-v{ font-size:23px; font-weight:700; color:#14213d; letter-spacing:-0.5px; margin-top:3px; line-height:1.2; overflow-wrap:anywhere; }
+.ovx-tile-v.warn{ color:#f57c00; }
+.ovx-tile-v.ok{ color:#1e7a35; }
+.ovx-tile-s{ font-size:10.5px; color:var(--text-2); margin-top:6px; line-height:1.45; }
+.ovx-tile.big .ovx-tile-v{ font-size:27px; }
+.ovx-prog{ height:5px; background:rgba(0,0,0,0.07); border-radius:3px; overflow:hidden; margin-top:9px; }
+.ovx-prog i{ display:block; height:100%; background:#34c759; border-radius:3px; }
+.t-blue{ --tbg:linear-gradient(160deg,#eef4ff,#e3ecff); --tb:#d6e3ff; --tc:#2f6bff; }
+.t-green{ --tbg:linear-gradient(160deg,#effaf2,#e5f6ea); --tb:#d3efdb; --tc:#1f9d55; }
+.t-orange{ --tbg:linear-gradient(160deg,#fff6ec,#ffefdf); --tb:#ffe1c2; --tc:#f57c00; }
+.t-purple{ --tbg:linear-gradient(160deg,#f5f3ff,#eeeaff); --tb:#e2dcff; --tc:#6a4cff; }
+.t-teal{ --tbg:linear-gradient(160deg,#ecf9f7,#e1f4f1); --tb:#cfeee8; --tc:#14a08a; }
+.t-indigo{ --tbg:linear-gradient(160deg,#f1f4ff,#e8ecff); --tb:#dbe1ff; --tc:#3d5afe; }
+.t-violet{ --tbg:linear-gradient(160deg,#f7f2ff,#f0e8ff); --tb:#e6d9ff; --tc:#8e44ec; }
+.t-plain{ --tbg:#fbfcfe; --tb:#e8ebf3; --tc:#2f6bff; }
+.ovx-tile.solid{ background:linear-gradient(135deg,#2f6bff 0%,#1d4ed8 100%); border-color:transparent; position:relative; }
+.ovx-tile.solid .ovx-tile-ic{ background:rgba(255,255,255,0.18); color:#fff; box-shadow:none; }
+.ovx-tile.solid .ovx-tile-l, .ovx-tile.solid .ovx-tile-s{ color:rgba(255,255,255,0.85); }
+.ovx-tile.solid .ovx-tile-v{ color:#fff; }
+.ovx-tile.row{ display:flex; gap:12px; align-items:flex-start; }
+.ovx-tile.row .ovx-tile-ic{ margin-bottom:0; flex-shrink:0; }
+.ovx-cmp{ font-size:10.5px; margin-top:6px; color:var(--text-2); }
+.ovx-cmp b{ font-weight:700; }
+.ovx-cmp .up{ color:#c25e00; } .ovx-cmp .down{ color:#1e7a35; }
+/* Forecast + trend cards with bars */
+.ovx-fc{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; }
+.ovx-fc-card{ border-radius:14px; border:1px solid var(--tb,#e6e9f2); background:var(--tbg,#fff); padding:12px 14px 6px; min-width:0; }
+.ovx-fc-top{ display:flex; gap:10px; align-items:flex-start; }
+.ovx-fc-top .ovx-tile-ic{ margin-bottom:0; flex-shrink:0; }
+.ovx-fc-l{ font-size:11px; color:#3a3f55; font-weight:500; }
+.ovx-fc-v{ font-size:18px; font-weight:700; color:#14213d; letter-spacing:-0.4px; margin-top:2px; }
+.ovx-fc-s{ font-size:10.5px; color:var(--text-2); margin-top:3px; line-height:1.4; }
+.ovx-bars{ width:100%; height:auto; display:block; margin-top:6px; color:var(--text-2); }
+.ovx-trend .ov-panels{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; background:none; border:none; padding:10px 16px 6px; }
+.ovx-trend .ov-panel{ border-radius:14px; border:1px solid #e8ebf3; background:#fff; padding:12px 14px 6px; }
+.ovx-trend .ov-panel:nth-child(1){ background:linear-gradient(180deg,#fff,#f4f7ff); }
+.ovx-trend .ov-panel:nth-child(2){ background:linear-gradient(180deg,#fff,#f3fbf5); }
+.ovx-trend .ov-panel:nth-child(3){ background:linear-gradient(180deg,#fff,#f6f4ff); }
+.ovx-trend .ov-panel:nth-child(4){ background:linear-gradient(180deg,#fff,#fff7ee); }
+.ovx-trend .ov-mixwrap{ padding:8px 18px 16px; }
+/* Sidebar */
+.ovx-list{ padding:6px 10px 10px; }
+.ovx-li{ display:flex; gap:12px; align-items:flex-start; padding:11px 8px; border-top:1px solid #f0f1f6; }
+.ovx-li:first-child{ border-top:none; }
+.ovx-li.go{ cursor:pointer; border-radius:10px; }
+.ovx-li.go:hover{ background:#f7f8fc; }
+.ovx-li-ic{ width:34px; height:34px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:var(--tbg,#f2f4fa); color:var(--tc,#2f6bff); }
+.ovx-li-t{ font-size:12.5px; font-weight:600; color:var(--text); line-height:1.35; }
+.ovx-li-s{ font-size:10.5px; color:var(--text-3); margin-top:2px; line-height:1.4; }
+.ovx-li-a{ margin-left:auto; color:var(--text-3); font-size:18px; line-height:1; align-self:center; }
+.ovx-actions{ display:flex; flex-direction:column; gap:7px; padding:8px 14px 14px; }
+.ovx-act{ display:flex; align-items:center; gap:10px; width:100%; border:1px solid #e8ebf3; background:#f7f8fc; border-radius:10px; padding:9px 12px; font-family:inherit; font-size:12px; font-weight:500; color:var(--text); cursor:pointer; text-align:left; transition:all 0.12s; }
+.ovx-act:hover{ border-color:#c9d6ff; background:#eef3ff; }
+.ovx-act.primary{ background:linear-gradient(135deg,#2f6bff,#1d4ed8); color:#fff; border-color:transparent; font-weight:600; }
+.ovx-act.primary:hover{ filter:brightness(1.06); }
+.ovx-act span{ margin-left:auto; }
+.ovx-track{ display:flex; gap:12px; padding:15px 16px; background:linear-gradient(135deg,#eef4ff,#e8f0ff); border-color:#d6e3ff; }
+.ovx-track.warn{ background:linear-gradient(135deg,#fff6ec,#ffefdf); border-color:#ffe1c2; }
+.ovx-track-t{ font-size:13px; font-weight:700; color:#14213d; }
+.ovx-track-s{ font-size:11px; color:var(--text-2); margin-top:3px; line-height:1.45; }
 .ov-clear{ padding:18px; text-align:center; font-size:12.5px; color:var(--green); font-weight:600; }
 .ov-clear-tick{ display:inline-flex; width:18px; height:18px; border-radius:50%; background:var(--green); color:#fff; align-items:center; justify-content:center; font-size:11px; margin-right:7px; vertical-align:middle; }
 .ov-cmp{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:0 16px 14px; }
@@ -4082,10 +4184,10 @@ function ovAnalytics(){
   var t3 = tag(last.heads, prev && prev.heads, true);
   var t4 = tag(last.ded, prev && prev.ded);
   return '<div class="ov-panels">'
-    + ovPanel('Total payout', money(last.total), t1.txt, ovSpark(S.map(function(d){return d.total;}), labels, '#007aff', money, ['#4da2ff','#0056b3']), t1.tone, 0)
-    + ovPanel('Cost per employee', money(last.perHead), t2.txt, ovSpark(S.map(function(d){return d.perHead;}), labels, '#34c759', money, ['#63d67f','#248a3d']), t2.tone, 1)
+    + ovPanel('Total Payout', money(last.total), t1.txt, ovSpark(S.map(function(d){return d.total;}), labels, '#007aff', money, ['#4da2ff','#0056b3']), t1.tone, 0)
+    + ovPanel('Cost Per Employee', money(last.perHead), t2.txt, ovSpark(S.map(function(d){return d.perHead;}), labels, '#34c759', money, ['#63d67f','#248a3d']), t2.tone, 1)
     + ovPanel('Headcount paid', String(last.heads), t3.txt, ovSpark(S.map(function(d){return d.heads;}), labels, '#5e5ce6', function(v){ return v + ' paid'; }, ['#8a88f0','#4340b8']), t3.tone, 2)
-    + ovPanel('Deductions and benefits', money(last.ded), t4.txt, ovSpark(S.map(function(d){return d.ded;}), labels, '#ff9500', money, ['#ffb04d','#c26f00']), t4.tone, 3)
+    + ovPanel('Deductions & Benefits', money(last.ded), t4.txt, ovSpark(S.map(function(d){return d.ded;}), labels, '#ff9500', money, ['#ffb04d','#c26f00']), t4.tone, 3)
     + '</div>' + ovMixChart();
 }
 
@@ -4110,7 +4212,7 @@ function ovMixChart(){
       + ' <span class="ov-mixamt">' + "₱" + fmtMoney(p.v) + '</span></span>';
   }).join('');
   return '<div class="ov-mixwrap">'
-    + '<div class="ov-mixlbl">Where this period went</div>'
+    + '<div class="ov-mixlbl">Where This Period Went</div>'
     + '<div class="ov-mixbar">' + segs + '</div>'
     + '<div class="ov-mixkeys">' + keys + '</div>'
     + '</div>';
@@ -4118,6 +4220,149 @@ function ovMixChart(){
 
 undefined
 
+
+// ---- Overview v2 ----
+var ovShowAllIssues = false;
+var OVX_IC = {
+  wallet:'<path d="M2.5 5.5h11a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h9"/><circle cx="11.2" cy="9.5" r="0.9" fill="currentColor"/>',
+  check:'<rect x="2" y="2.5" width="12" height="11.5" rx="2"/><path d="M5 1.5v2M11 1.5v2M5.2 9l1.9 1.9 3.7-3.7"/>',
+  cal:'<rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/>',
+  clock:'<circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.2 1.4"/>',
+  heart:'<circle cx="8" cy="5.3" r="2.6"/><path d="M3 14c.4-2.8 2.4-4.4 5-4.4s4.6 1.6 5 4.4"/>',
+  doc:'<path d="M4 1.8h5.5L13 5.3V14a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V2.7a.9.9 0 0 1 .9-.9z"/><path d="M9.3 1.8v3.6H13M5.6 8.5h4.8M5.6 11h4.8"/>',
+  run:'<circle cx="9.5" cy="2.8" r="1.4"/><path d="M5 7.2l2.6-2 2.3 1.6 1.6 2.4M7.6 5.2 6.4 10l-2.6 3.5M6.4 10l2.8 1.6.8 3"/>',
+  coins:'<ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v4c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8v4c0 1.1 2.2 2 5 2s5-.9 5-2V8"/>',
+  exit:'<rect x="2" y="3.5" width="12" height="10" rx="2"/><path d="M6 3.5V2.3h4v1.2M8 6.5v4M6 8.5h4"/>',
+  user:'<circle cx="8" cy="5" r="2.8"/><path d="M2.5 14.3c.5-3 2.7-4.8 5.5-4.8s5 1.8 5.5 4.8"/>',
+  users:'<circle cx="6" cy="5.2" r="2.4"/><path d="M1.6 13.8c.4-2.6 2.1-4.1 4.4-4.1s4 1.5 4.4 4.1"/><path d="M10.6 3.2a2.2 2.2 0 1 1 0 4.3M12 9.8c1.4.5 2.2 1.9 2.4 3.6"/>',
+  bag:'<rect x="2" y="5" width="12" height="9" rx="2"/><path d="M5.5 5V3.6A1.1 1.1 0 0 1 6.6 2.5h2.8a1.1 1.1 0 0 1 1.1 1.1V5M2 9h12"/>',
+  trend:'<path d="M2 12l4-4 3 3 5-6M10 5h4v4"/>',
+  bulb:'<path d="M5.5 11.5h5M6.3 14h3.4M8 1.8a4.4 4.4 0 0 0-2.6 8c.4.3.6.8.6 1.3v.4h4v-.4c0-.5.2-1 .6-1.3A4.4 4.4 0 0 0 8 1.8z"/>',
+  bolt:'<path d="M9 1.5 3.5 9H8l-1 5.5L12.5 7H8z"/>',
+  bell:'<path d="M4 11V7.3a4 4 0 0 1 8 0V11l1.2 1.5H2.8zM6.5 14a1.6 1.6 0 0 0 3 0"/>',
+  grid:'<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>',
+  pin:'<path d="M8 14.5s4.5-4.3 4.5-8a4.5 4.5 0 0 0-9 0c0 3.7 4.5 8 4.5 8z"/><circle cx="8" cy="6.5" r="1.6"/>',
+  sun:'<circle cx="8" cy="9" r="3"/><path d="M8 2.5v1.5M3.4 4.4l1 1M12.6 4.4l-1 1M1.5 9H3M13 9h1.5M2 13.5h12"/>',
+  sheet:'<rect x="2.5" y="2" width="11" height="12" rx="1.5"/><path d="M2.5 6h11M2.5 10h11M6.5 2v12"/>',
+  arrowup:'<path d="M3.5 12.5 12.5 3.5M6 3.5h6.5V10"/>',
+  holiday:'<path d="M2 14h12M8 14V6M8 6c-1.6-2-4-2.4-5.5-1.5C4.3 4.8 6 5.6 8 6zM8 6c1.6-2 4-2.4 5.5-1.5C11.7 4.8 10 5.6 8 6zM8 6c-.3-2.4.8-4 2.3-4.5C9.6 3.2 9 4.6 8 6z"/>'
+};
+function ovxIcon(k, size){ return '<svg viewBox="0 0 16 16" width="' + (size||16) + '" height="' + (size||16) + '" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + (OVX_IC[k]||'') + '</svg>'; }
+
+function ovxGo(label){
+  var btn = Array.prototype.slice.call(document.querySelectorAll('.seg-btn'))
+    .find(function(b){ return b.textContent.trim() === label; });
+  if(btn){ btn.click(); window.scrollTo(0,0); }
+}
+function ovxToggleIssues(){ ovShowAllIssues = !ovShowAllIssues; renderOverview(); }
+function ovxScrollAttn(){ var el = document.getElementById('ovxAttn'); if(el) el.scrollIntoView({ behavior:'smooth', block:'start' }); }
+
+function ovxTile(o){
+  return '<div class="ovx-tile ' + (o.tone || 't-plain') + (o.cls ? ' ' + o.cls : '') + '">'
+    + '<div class="ovx-tile-ic">' + ovxIcon(o.icon, 17) + '</div>'
+    + '<div class="ovx-tile-l">' + o.label + '</div>'
+    + '<div class="ovx-tile-v' + (o.vtone ? ' ' + o.vtone : '') + '">' + o.value + '</div>'
+    + (o.sub ? '<div class="ovx-tile-s">' + o.sub + '</div>' : '')
+    + '</div>';
+}
+function ovxRowTile(o){
+  return '<div class="ovx-tile row ' + (o.tone || 't-plain') + (o.cls ? ' ' + o.cls : '') + '">'
+    + '<div class="ovx-tile-ic">' + ovxIcon(o.icon, 17) + '</div>'
+    + '<div style="min-width:0"><div class="ovx-tile-l">' + o.label + '</div>'
+    + '<div class="ovx-tile-v' + (o.vtone ? ' ' + o.vtone : '') + '">' + o.value + '</div>'
+    + (o.sub ? '<div class="ovx-tile-s">' + o.sub + '</div>' : '') + '</div>'
+    + '</div>';
+}
+
+// Small static bar chart (no hover), latest bar highlighted.
+function ovxBars(vals, label, colour, shades){
+  if(!vals.length) return '';
+  var max = Math.max.apply(null, vals.map(Math.abs)) || 1;
+  var w = 300, h = 64, padB = 14, padT = 6, padR = 22, n = vals.length;
+  var slot = (w - padR) / n, bw = Math.min(slot*0.52, 16), dx = Math.min(slot*0.18, 5), dy = dx * 0.66;
+  var plotH = h - padB - padT;
+  var out = vals.map(function(v, i){
+    var bh = Math.max(plotH * (Math.abs(v) / max), 2);
+    var x = i*slot + (slot-bw)/2, y = h - padB - bh;
+    var last = i === n-1;
+    return '<g opacity="' + (last ? 1 : 0.32) + '">'
+      + '<polygon points="' + (x+bw) + ',' + y + ' ' + (x+bw+dx) + ',' + (y-dy) + ' ' + (x+bw+dx) + ',' + (y+bh-dy) + ' ' + (x+bw) + ',' + (y+bh) + '" fill="' + shades[1] + '"/>'
+      + '<polygon points="' + x + ',' + y + ' ' + (x+dx) + ',' + (y-dy) + ' ' + (x+bw+dx) + ',' + (y-dy) + ' ' + (x+bw) + ',' + y + '" fill="' + shades[0] + '"/>'
+      + '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh + '" fill="' + colour + '"/></g>'
+      + (last && label ? '<text x="' + (x+bw/2+dx/2) + '" y="' + (h-2) + '" text-anchor="middle" font-size="9" fill="currentColor" opacity="0.6">' + label + '</text>' : '');
+  }).join('');
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="ovx-bars">' + out + '</svg>';
+}
+
+// Per pay date history incl. loan deductions (last 11 periods).
+function ovxHistory(){
+  var by = {};
+  OV_HISTORY.forEach(function(r){
+    var k = r.pay_date;
+    if(!by[k]) by[k] = { total:0, loan:0, ded:0, heads:0 };
+    by[k].total += parseFloat(r.total_payout)||0;
+    var loan = Math.abs(parseFloat(r.loan_php)||0);
+    by[k].loan += loan;
+    by[k].ded += (parseFloat(r.maxicare_php)||0) + (parseFloat(r.sss_php)||0) + loan;
+    by[k].heads += 1;
+  });
+  return Object.keys(by).sort().slice(-11).map(function(k){ return by[k]; });
+}
+
+function ovxDate(ds){
+  var MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var p = ds.split('-').map(Number);
+  return MN[p[1]-1] + ' ' + String(p[2]).padStart(2,'0') + ', ' + p[0];
+}
+
+function ovxUpcoming(){
+  var now = new Date();
+  var today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  var MNF = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var items = [];
+  // next pay run
+  var p = ovPeriod;
+  for(var i = 0; i < 3 && ovPeriodRange(p).payDate < today; i++) p = ovShiftPeriod(p, 1);
+  items.push({ date: ovPeriodRange(p).payDate, t:'Payroll run', s: MNF[parseInt(p.slice(5,7))-1] + ' ' + p.slice(0,4) + ' pay date', icon:'clock', tone:'t-blue', go:'Employee 202' });
+  // next VIC holiday
+  var hol = ovNextHoliday();
+  if(hol) items.push({ date: hol.date, t: hol.name, s:'Public holiday (VIC)', icon:'holiday', tone:'t-orange', go:'Employee 203' });
+  // next SSS and 13th month months
+  for(var k = 0; k < 12; k++){
+    var q = ovShiftPeriod(p, k), m = parseInt(q.slice(5,7)), pd = ovPeriodRange(q).payDate;
+    if(pd < today) continue;
+    if([3,6,9,12].indexOf(m) > -1 && !items.some(function(x){ return x.kind==='13'; })) items.push({ kind:'13', date: pd, t:'13th month payout', s: MNF[m-1] + ' pay period', icon:'cal', tone:'t-violet', go:'Employee 202' });
+    if([1,4,7,10].indexOf(m) > -1 && !items.some(function(x){ return x.kind==='sss'; })) items.push({ kind:'sss', date: pd, t:'SSS remittance', s: MNF[m-1] + ' pay period', icon:'heart', tone:'t-teal', go:'Employee 202' });
+  }
+  ovUpcomingExits().forEach(function(e){ items.push({ date: e.exit_date, t: e.name + ' leaving', s:'Exit date', icon:'exit', tone:'t-orange', go:'Employee 201' }); });
+  items.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  return items.slice(0, 5);
+}
+
+function ovxInsights(gaps){
+  var S = ovSeries(), out = [];
+  if(S.length > 1){
+    var a = S[S.length-1], b = S[S.length-2];
+    var pc = b.total ? (a.total - b.total) / b.total * 100 : 0;
+    out.push({ icon:'trend', tone: pc >= 0 ? 't-green' : 't-orange', t:'Payroll cost ' + (pc >= 0 ? 'increased' : 'decreased') + ' by ' + Math.abs(pc).toFixed(1) + '%', s: a.mon + " '" + a.yr + ' vs ' + b.mon + " '" + b.yr + ' (₱' + fmtMoney(a.total) + ')' });
+    var dh = a.heads - b.heads;
+    out.push({ icon:'users', tone:'t-purple', t: dh ? 'Headcount ' + (dh > 0 ? 'increased' : 'decreased') + ' to ' + a.heads : 'Headcount steady at ' + a.heads, s: dh ? (dh > 0 ? '+' : '−') + Math.abs(dh) + ' employee' + (Math.abs(dh)!==1?'s':'') + ' vs previous period' : 'Same as previous period' });
+  }
+  if(gaps.total) out.push({ icon:'cal', tone:'t-orange', t: gaps.total + ' day' + (gaps.total!==1?'s':'') + ' timesheet gap', s: gaps.staff.slice(0,3).map(function(x){ return x.name.split(' ')[0]; }).join(', '), go:'Timesheet' });
+  else out.push({ icon:'check', tone:'t-green', t:'Timesheets complete', s:'All weekdays recorded this period' });
+  return out;
+}
+
+function ovxListItem(x, withDate){
+  return '<div class="ovx-li' + (x.go ? ' go' : '') + '"' + (x.go ? ' onclick="ovxGo(\'' + x.go + '\')"' : '') + '>'
+    + '<div class="ovx-li-ic ' + (x.tone||'') + '">' + ovxIcon(x.icon, 16) + '</div>'
+    + '<div style="min-width:0">'
+    + (withDate ? '<div class="ovx-li-t">' + ovxDate(x.date) + '</div><div class="ovx-li-s">' + x.t + (x.s ? ' · ' + x.s : '') + '</div>'
+                : '<div class="ovx-li-t">' + x.t + '</div>' + (x.s ? '<div class="ovx-li-s">' + x.s + '</div>' : ''))
+    + '</div>'
+    + (x.go ? '<span class="ovx-li-a">›</span>' : '')
+    + '</div>';
+}
 
 function renderOverview(){
   var c = document.getElementById('overviewBody');
@@ -4131,58 +4376,122 @@ function renderOverview(){
   var bestRate = ovBestRate(ovPeriod);
   var r = ovPeriodRange(ovPeriod);
   var liab = ovLeaveLiability(r.end);
-  var MNF = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var pp = ovPeriod.split('-').map(Number);
   var pct = st.expected ? Math.round(st.paid / st.expected * 100) : 0;
-  var payTone = (st.expected && st.paid >= st.expected) ? 'ok' : (st.expected ? 'warn' : '');
+  var issues = ovIssues(ovPeriod);
+  var highs = issues.filter(function(x){ return x.sev === 'high'; }).length;
+  var cmp = ovComparison(ovPeriod);
+  var fc = ovForecast(ovPeriod);
+  var H = ovxHistory();
+  var lastLbl = (function(){ var S = ovSeries(); var l = S[S.length-1]; return l ? l.mon + " '" + l.yr : ''; })();
+  var fcLbl = (function(){ var MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return MN[parseInt(fc.period.slice(5,7))-1] + " '" + fc.period.slice(2,4); })();
 
+  // Greeting
+  var hr = new Date().getHours();
+  var greet = hr < 12 ? 'Good morning' : (hr < 17 ? 'Good afternoon' : 'Good evening');
+  var email = (typeof AUTH_USER !== 'undefined' && AUTH_USER && AUTH_USER.email) ? AUTH_USER.email.toLowerCase() : '';
+  var me = email ? EMP201.find(function(e){ return (e.work_email||'').toLowerCase() === email; }) : null;
+  var first = me ? me.name.split(' ')[0] : (email ? email.split('@')[0].split(/[._]/)[0] : '');
+  first = first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
+
+  var head = '<div class="ovx-head">'
+    + '<div><div class="ovx-hello">' + greet + (first ? ', ' + first : '') + ' 👋</div>'
+    + '<div class="ovx-hello-sub">Here’s what’s happening with your payroll this period.</div></div>'
+    + '<div class="ovx-head-r">'
+    +   '<div class="ovx-period">' + ovxIcon('cal', 16)
+    +     '<span class="ovx-period-range">' + ovxDate(r.start).replace(/, \d{4}$/, '') + ' – ' + ovxDate(r.end) + '</span>'
+    +     '<input type="month" id="ovPeriodInput" min="' + MIN_OPEN_PERIOD + '" value="' + ovPeriod + '">'
+    +   '</div>'
+    +   '<div class="ovx-bell" onclick="ovxScrollAttn()" title="' + issues.length + ' item' + (issues.length!==1?'s':'') + ' need attention">' + ovxIcon('bell', 18) + (issues.length ? '<b>' + issues.length + '</b>' : '') + '</div>'
+    + '</div></div>';
+
+  // Needs Attention
+  var shown = ovShowAllIssues ? issues : issues.slice(0, 4);
+  var attn = '<div class="ovx-card ovx-attn" id="ovxAttn">'
+    + '<div class="ovx-card-h"><div class="ovx-title"><span class="ovx-dot">!</span>Needs Attention</div>'
+    + (issues.length > 4 ? '<button class="ovx-link red" onclick="ovxToggleIssues()">' + (ovShowAllIssues ? 'Show less' : 'View all (' + issues.length + ') →') + '</button>' : '')
+    + '</div><div class="ovx-body">'
+    + (issues.length ? '<div class="ovx-issues">' + shown.map(function(x){
+        return '<div class="ovx-issue ' + x.sev + '"' + (x.go ? ' onclick="ovGoTo(\'' + x.go + '\')"' : '') + '>'
+          + '<span class="ovx-issue-ic">' + (x.sev === 'low' ? 'i' : '!') + '</span>'
+          + '<div style="min-width:0"><div class="ovx-issue-t">' + x.text + '</div>' + (x.hint ? '<div class="ovx-issue-s">' + x.hint + '</div>' : '') + '</div>'
+          + (x.go ? '<span class="ovx-issue-a">›</span>' : '') + '</div>';
+      }).join('') + '</div>'
+      : '<div class="ovx-clear">✓ Nothing needs attention for this period.</div>')
+    + '</div></div>';
+
+  // Overview (this period)
+  var cmpTxt = '';
+  if(cmp && cmp.prevPayout){
+    var up = cmp.diff >= 0;
+    cmpTxt = '<div class="ovx-cmp"><b class="' + (up ? 'up' : 'down') + '">' + (up ? '▲ ' : '▼ ') + Math.abs(cmp.pct).toFixed(1) + '%</b> vs ' + cmp.prevLabel + (cmp.reasons.length ? ' · ' + cmp.reasons.join(', ') : '') + '</div>';
+  } else if(!st.payout){
+    cmpTxt = '<div class="ovx-cmp">Not paid yet this period</div>';
+  }
+  var fx = (rate ? '$' + fmtMoney(st.payout/rate) : '') + (arate ? ' · A$' + fmtMoney(st.payout/arate) : '');
   var periodTiles = ''
-    + ovTile('Total Payout', "₱" + fmtMoney(st.payout), (rate ? '$' + fmtMoney(st.payout/rate) : '') + (arate ? '  A$' + fmtMoney(st.payout/arate) : ''), 'accent')
-    + ovTile('Payroll Marked Paid', st.paid + ' of ' + st.expected, '<div class="ov-bar"><div class="ov-bar-fill" style="width:' + pct + '%"></div></div>', payTone)
-    + ovTile('Timesheet Gaps', gaps.total ? gaps.total + ' days' : 'Complete', gaps.staff.length ? gaps.staff.slice(0,3).map(function(s){ return s.name.split(' ')[0] + ' ' + s.miss + 'd'; }).join(' \u00b7 ') : 'All weekdays recorded', gaps.total ? 'warn' : 'ok')
-    + ovTile('SSS to Remit', st.sss ? "₱" + fmtMoney(st.sss) : "—", 'Jan / Apr / Jul / Oct')
-    + ovTile('Maxicare to Remit', st.maxicare ? "₱" + fmtMoney(st.maxicare) : "—", 'Quarterly per employee')
-    + ovTile('13th Month Accrued', st.thirteenth ? "₱" + fmtMoney(st.thirteenth) : "—", 'Mar / Jun / Sep / Dec')
-    + ovTile('Leave Liability', "₱" + fmtMoney(liab.php + (bestRate.rate ? liab.usd * bestRate.rate : 0)), 'Annual Leave owed as at ' + r.end + (bestRate.estimated ? ' \u00b7 est. rate ' + bestRate.rate.toFixed(4) : ''));
+    + ovxTile({ tone:'t-blue', cls:'big', icon:'wallet', label:'Total Payout', value:'₱' + fmtMoney(st.payout), sub: (st.payout && fx ? fx : '') + cmpTxt })
+    + ovxTile({ tone:'t-green', icon:'check', label:'Payroll Marked Paid', value: st.paid + ' of ' + st.expected, sub:'<div class="ovx-prog"><i style="width:' + pct + '%"></i></div><div style="margin-top:6px">' + pct + '% complete</div>', vtone: (st.expected && st.paid >= st.expected) ? 'ok' : '' })
+    + ovxTile({ tone:'t-orange', icon:'cal', label:'Timesheet Gaps', value: gaps.total ? gaps.total + ' days' : 'Complete', vtone: gaps.total ? 'warn' : 'ok', sub: gaps.staff.length ? gaps.staff.slice(0,3).map(function(s){ return s.name.split(' ')[0] + ' ' + s.miss + 'd'; }).join(' · ') : 'All weekdays recorded' })
+    + ovxTile({ tone:'t-purple', icon:'clock', label:'SSS to Remit', value: st.sss ? '₱' + fmtMoney(st.sss) : '—', sub:'Jan / Apr / Jul / Oct' })
+    + ovxTile({ tone:'t-teal', icon:'heart', label:'Maxicare to Remit', value: st.maxicare ? '₱' + fmtMoney(st.maxicare) : '—', sub:'Quarterly per employee' })
+    + ovxTile({ tone:'t-indigo', icon:'cal', label:'13th Month Accrued', value: st.thirteenth ? '₱' + fmtMoney(st.thirteenth) : '—', sub:'Mar / Jun / Sep / Dec' })
+    + ovxTile({ tone:'t-violet', icon:'doc', label:'Leave Liability', value:'₱' + fmtMoney(liab.php + (bestRate.rate ? liab.usd * bestRate.rate : 0)), sub:'Annual Leave owed as at ' + r.end + (bestRate.estimated ? ' · est. rate ' + bestRate.rate.toFixed(4) : '') });
 
+  // Current position
   var run = ovRunRate();
   var nowTiles = ''
-    + ovTile('Monthly Run Rate', "₱" + fmtMoney(run.php), run.headcount + ' active \u00b7 ' + run.usdCount + ' USD, ' + run.phpCount + ' PHP', 'accent')
-    + ovTile('Loans Outstanding', (loans.php ? "₱" + fmtMoney(loans.php) : (loans.usd ? '$' + fmtMoney(loans.usd) : "—")), loans.count + ' active loan' + (loans.count!==1?'s':'') + (loans.php && loans.usd ? ' \u00b7 $' + fmtMoney(loans.usd) : ''))
-    + ovTile('Next VIC Holiday', hol ? (hol.days === 0 ? 'Today' : hol.days + ' Day' + (hol.days!==1?'s':'')) : "—", hol ? hol.name + ' \u00b7 ' + hol.date : 'None scheduled', hol && hol.days <= 7 ? 'warn' : '')
-    + ovTile('Upcoming Exits', exits.length ? String(exits.length) : 'None', exits.length ? exits.slice(0,2).map(function(e){ return e.name.split(' ')[0] + ' ' + e.exit_date; }).join(' \u00b7 ') : 'No scheduled departures', exits.length ? 'warn' : 'ok');
+    + ovxRowTile({ cls:'solid', icon:'run', label:'Monthly Run Rate', value:'₱' + fmtMoney(run.php), sub: run.headcount + ' active · ' + run.usdCount + ' USD, ' + run.phpCount + ' PHP' })
+    + ovxRowTile({ tone:'t-plain', icon:'coins', label:'Loans Outstanding', value:(loans.php ? '₱' + fmtMoney(loans.php) : (loans.usd ? '$' + fmtMoney(loans.usd) : '—')), sub: loans.count + ' active loan' + (loans.count!==1?'s':'') + (loans.php && loans.usd ? ' · $' + fmtMoney(loans.usd) : '') })
+    + ovxRowTile({ tone:'t-plain', icon:'cal', label:'Next VIC Holiday', value: hol ? (hol.days === 0 ? 'Today' : hol.days + ' Day' + (hol.days!==1?'s':'')) : '—', vtone: hol && hol.days <= 7 ? 'warn' : '', sub: hol ? hol.name + ' · ' + hol.date : 'None scheduled' })
+    + ovxRowTile({ tone: exits.length ? 't-orange' : 't-green', icon:'exit', label:'Upcoming Exits', value: exits.length ? String(exits.length) : 'None', vtone: exits.length ? 'warn' : '', sub: exits.length ? exits.slice(0,2).map(function(e){ return e.name.split(' ')[0] + ' ' + e.exit_date; }).join(' · ') : 'No scheduled departures' });
 
-  c.innerHTML = ''
-    + '<div class="card" style="margin-bottom:14px">'
-    +   '<div class="card-header"><span class="card-title">Needs Attention</span>'
-    +   '<span class="rec-count">' + MNF[pp[1]-1] + ' ' + pp[0] + '</span></div>'
-    +   ovIssuesPanel(ovPeriod)
-    + '</div>'
-    + '<div class="card" style="margin-bottom:14px">'
-    +   '<div class="card-header"><span class="card-title">This Period</span>'
-    +   '<span class="rec-count">' + r.start + ' – ' + r.end + ' \u00b7 paid ' + r.payDate + '</span></div>'
-    +   '<div class="card-body" style="display:flex;gap:10px;align-items:flex-end;padding-bottom:6px">'
-    +     '<div><label class="wk-label" style="display:block;margin-bottom:4px">Pay Period</label>'
-    +       '<input type="month" class="search-box" id="ovPeriodInput" min="' + MIN_OPEN_PERIOD + '" value="' + ovPeriod + '" style="width:160px"></div>'
-    +   '</div>'
-    +   '<div class="ov-grid">' + periodTiles + '</div>'
-    +   ovComparePanel(ovPeriod)
-    + '</div>'
-    + '<div class="card" style="margin-bottom:14px">'
-    +   '<div class="card-header"><span class="card-title">Current Position</span>'
-    +   '<span class="rec-count">As of today \u00b7 not tied to the selected period</span></div>'
-    +   '<div class="ov-grid">' + nowTiles + '</div>'
-    + '</div>'
-    + '<div class="card" style="margin-bottom:14px">'
-    +   '<div class="card-header"><span class="card-title">Next Period Forecast</span>'
-    +   '<span class="rec-count">' + ovForecast(ovPeriod).label + (ovForecast(ovPeriod).estimated ? ' \u00b7 USD converted at last known rate' : '') + ' \u00b7 based on current setup</span></div>'
-    +   ovForecastPanel(ovPeriod)
-    + '</div>'
-    + '<div class="card">'
-    +   '<div class="card-header"><span class="card-title">Payroll Cost Trend</span>'
-    +   '<span class="rec-count">Last 12 pay periods \u00b7 latest highlighted</span></div>'
-    +   ovAnalytics()
-    + '</div>';
+  // Forecast
+  var due = [];
+  if(fc.sssDue) due.push('SSS');
+  if(fc.thDue) due.push('13th month');
+  if(fc.maxiCount) due.push('Maxicare (' + fc.maxiCount + ')');
+  function fcCard(tone, icon, label, value, sub, bars){
+    return '<div class="ovx-fc-card ' + tone + '"><div class="ovx-fc-top"><div class="ovx-tile-ic">' + ovxIcon(icon, 16) + '</div>'
+      + '<div style="min-width:0"><div class="ovx-fc-l">' + label + '</div><div class="ovx-fc-v">' + value + '</div><div class="ovx-fc-s">' + sub + '</div></div></div>' + bars + '</div>';
+  }
+  var fcCards = ''
+    + fcCard('t-blue', 'coins', 'Base Payroll', fc.basePhp ? '₱' + fmtMoney(fc.basePhp) : '—', fc.headcount + ' employees at current rates' + (fc.estimated ? ', est. at ' + fc.rate.toFixed(4) : ''), ovxBars(H.map(function(x){ return x.total; }).concat([fc.basePhp]), fcLbl, '#2f6bff', ['#6f97ff','#1d4ed8']))
+    + fcCard('t-green', 'wallet', 'Loan Deductions', fc.loanPhp ? '−₱' + fmtMoney(Math.abs(fc.loanPhp)) : '—', fc.loanPhp ? 'Scheduled instalments' : 'None scheduled', ovxBars(H.map(function(x){ return x.loan; }).concat([Math.abs(fc.loanPhp)]), fcLbl, '#22a35a', ['#5cc485','#17793f']))
+    + fcCard('t-purple', 'user', 'Headcount Paid', String(fc.headcount), 'Employees in scope next period', ovxBars(H.map(function(x){ return x.heads; }).concat([fc.headcount]), fcLbl, '#6a4cff', ['#9a85ff','#4a30d0']))
+    + fcCard('t-orange', 'bag', 'Also Due', due.length ? due.join(' · ') : 'Nothing extra', due.length ? 'On top of base payroll' : 'Base payroll only', ovxBars(H.map(function(x){ return x.ded; }), lastLbl, '#ff9500', ['#ffb04d','#c26f00']));
+
+  // Sidebar
+  var ins = ovxInsights(gaps);
+  var upc = ovxUpcoming();
+  var side = ''
+    + '<div class="ovx-card"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('bulb', 17) + 'Quick Insights</div></div>'
+    +   '<div class="ovx-list">' + ins.map(function(x){ return ovxListItem(x, false); }).join('') + '</div></div>'
+    + '<div class="ovx-card"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('cal', 17) + 'Upcoming</div></div>'
+    +   '<div class="ovx-list">' + upc.map(function(x){ return ovxListItem(x, true); }).join('') + '</div></div>'
+    + '<div class="ovx-card"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('bolt', 17) + 'Quick Actions</div></div>'
+    +   '<div class="ovx-actions">'
+    +     '<button class="ovx-act primary" onclick="ovxGo(\'Employee 202\')">' + ovxIcon('sheet', 15) + 'Run Payroll<span>→</span></button>'
+    +     '<button class="ovx-act" onclick="ovxGo(\'Employee 201\')">' + ovxIcon('users', 15) + 'View Employees</button>'
+    +     '<button class="ovx-act" onclick="ovxGo(\'Timesheet\')">' + ovxIcon('clock', 15) + 'Timesheets</button>'
+    +     '<button class="ovx-act" onclick="ovxGo(\'Payslip\')">' + ovxIcon('doc', 15) + 'Payslips</button>'
+    +     '<button class="ovx-act" onclick="ovxGo(\'Employee 205\')">' + ovxIcon('trend', 15) + 'Payroll History</button>'
+    +   '</div></div>'
+    + (highs
+        ? '<div class="ovx-card ovx-track warn"><div class="ovx-li-ic t-orange">' + ovxIcon('bell', 16) + '</div><div><div class="ovx-track-t">' + highs + ' urgent item' + (highs!==1?'s':'') + '</div><div class="ovx-track-s">Clear these before marking payroll paid. <button class="ovx-link" onclick="ovxScrollAttn()">Review</button></div></div></div>'
+        : '<div class="ovx-card ovx-track"><div class="ovx-li-ic t-blue">' + ovxIcon('sun', 16) + '</div><div><div class="ovx-track-t">Stay on Track</div><div class="ovx-track-s">Your payroll is running smoothly. Keep it up!</div></div></div>');
+
+  c.innerHTML = head
+    + '<div class="ovx-layout"><div class="ovx-main">'
+    +   attn
+    +   '<div class="ovx-card"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('grid', 17) + 'Overview</div><span class="ovx-meta">' + r.start + ' – ' + r.end + ' · paid ' + r.payDate + '</span></div>'
+    +     '<div class="ovx-body"><div class="ovx-tiles">' + periodTiles + '</div></div></div>'
+    +   '<div class="ovx-card"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('user', 17) + 'Current Position</div><span class="ovx-meta">As of today · not tied to the selected period</span></div>'
+    +     '<div class="ovx-body"><div class="ovx-tiles" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">' + nowTiles + '</div></div></div>'
+    +   '<div class="ovx-card"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('doc', 17) + 'Next Period Forecast</div><span class="ovx-meta">' + fc.label + (fc.estimated ? ' · USD converted at last known rate' : '') + ' · based on current setup</span></div>'
+    +     '<div class="ovx-body"><div class="ovx-fc">' + fcCards + '</div></div></div>'
+    +   '<div class="ovx-card ovx-trend"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('trend', 17) + 'Payroll Cost Trend</div><span class="ovx-meta">Last 12 pay periods · latest highlighted · hover a bar</span></div>'
+    +     ovAnalytics() + '</div>'
+    + '</div><div class="ovx-side">' + side + '</div></div>';
 
   var pi = document.getElementById('ovPeriodInput');
   if(pi) pi.addEventListener('change', function(e){
