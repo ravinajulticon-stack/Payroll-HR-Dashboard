@@ -1030,6 +1030,45 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 .del-btn:hover{ color:#c9271d; background:rgba(255,69,58,0.1); }
 .rec-count{ font-size:11.5px; color:var(--text-3); }
 .seg-ctrl .seg-btn{ min-width:170px; text-align:center; }
+/* ---- Dark navy header (matches My Leave) ---- */
+.titlebar.nav-dark{ height:auto; min-height:60px; padding:12px 20px; background:#0f1b3d; backdrop-filter:none; -webkit-backdrop-filter:none; border-bottom:none; box-shadow:none; justify-content:space-between; flex-wrap:wrap; }
+.nav-brand{ display:flex; align-items:center; gap:12px; }
+.nav-mark{ width:38px; height:38px; border-radius:11px; background:rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.nav-title{ font-size:15px; font-weight:700; color:#fff; letter-spacing:-0.2px; }
+.nav-sub{ font-size:11.5px; color:rgba(255,255,255,0.62); margin-top:1px; }
+.nav-user{ display:flex; align-items:center; gap:10px; }
+.nav-av{ width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#5b8cff,#2f6bff); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
+.nav-name{ font-size:12.5px; font-weight:600; color:#fff; }
+.titlebar.nav-dark .auth-who{ font-size:10.5px; color:rgba(255,255,255,0.6); margin:0; }
+.titlebar.nav-dark .myleave-link{ font-size:11px; font-weight:600; color:#fff; background:rgba(255,255,255,0.12); padding:6px 12px; border-radius:999px; margin:0; }
+.titlebar.nav-dark .myleave-link:hover{ background:rgba(255,255,255,0.2); text-decoration:none; }
+.titlebar.nav-dark .auth-out{ font-size:11px; color:#fff; background:rgba(255,255,255,0.12); padding:6px 12px; margin:0; }
+.titlebar.nav-dark .auth-out:hover{ background:rgba(255,59,48,0.85); color:#fff; }
+.titlebar.nav-dark .ph-flag{ margin-left:2px; }
+.toolbar.nav-dark{ background:#0f1b3d; border-bottom:none; backdrop-filter:none; padding:4px 20px 12px; }
+.toolbar.nav-dark .seg-ctrl{ background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.10); border-radius:10px; padding:3px; }
+.toolbar.nav-dark .seg-btn{ color:rgba(255,255,255,0.72); border-radius:8px; }
+.toolbar.nav-dark .seg-btn .seg-ic{ opacity:0.75; }
+.toolbar.nav-dark .seg-btn:hover:not(.active){ color:#fff; background:rgba(255,255,255,0.08); }
+.toolbar.nav-dark .seg-btn.active{ background:#fff; color:#1d4ed8; box-shadow:0 2px 8px rgba(0,0,0,0.25); }
+.toolbar.nav-dark .seg-btn.active .seg-ic{ opacity:1; }
+.toolbar.nav-dark .toolbar-sep{ background:rgba(255,255,255,0.15); }
+.toolbar.nav-dark .rec-count{ color:rgba(255,255,255,0.65); }
+.toolbar.nav-dark .search-box{ background:rgba(255,255,255,0.95); border-color:transparent; }
+/* Overview: greeting band continues the navy header, content overlaps it */
+.ovx-hero{ background:linear-gradient(180deg,#0f1b3d 0%,#14244f 100%); margin:-20px -20px 0; padding:22px 20px 64px; }
+.ovx-hero .ovx-head{ margin:0; }
+.ovx-hero .ovx-hello{ color:#fff; }
+.ovx-hero .ovx-hello-sub{ color:rgba(255,255,255,0.68); }
+.ovx-hero .ovx-period{ background:rgba(255,255,255,0.10); border-color:rgba(255,255,255,0.14); box-shadow:none; }
+.ovx-hero .ovx-period svg{ color:rgba(255,255,255,0.75); }
+.ovx-hero .ovx-period-range{ color:#fff; }
+.ovx-hero .ovx-period .mp-field{ background:#fff; color:var(--text); }
+.ovx-hero .ovx-bell{ background:rgba(255,255,255,0.10); border-color:rgba(255,255,255,0.14); color:#fff; box-shadow:none; }
+.ovx-hero .ovx-bell:hover{ background:rgba(255,255,255,0.2); color:#fff; }
+.ovx-hero .ovx-bell b{ border-color:#0f1b3d; }
+.ovx-hero + .ovx-layout{ margin-top:-44px; position:relative; }
+@media print{ .toolbar.nav-dark{ display:none !important; } }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1068,22 +1107,22 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 <div id="appRoot" style="display:none">
 
 <!-- TITLEBAR -->
-<div class="titlebar">
-  <div class="traffic-lights">
-    <div class="tl tl-red"></div>
-    <div class="tl tl-amber"></div>
-    <div class="tl tl-green"></div>
+<div class="titlebar nav-dark">
+  <div class="nav-brand">
+    <div class="nav-mark"><svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="5.2" r="2.4"/><path d="M1.6 13.8c.4-2.6 2.1-4.1 4.4-4.1s4 1.5 4.4 4.1"/><path d="M10.6 3.2a2.2 2.2 0 1 1 0 4.3M12 9.8c1.4.5 2.2 1.9 2.4 3.6"/></svg></div>
+    <div><div class="nav-title">Human Resources Information System</div><div class="nav-sub">Digital Door Locks Pty Limited</div></div>
   </div>
-  <div class="titlebar-center">
-    <span class="titlebar-title">Human Resources Information System</span>
-    <span class="titlebar-sub">- Digital Door Locks Pty Limited</span>
-    <a href="team.html" class="myleave-link">My Leave</a><span class="auth-who" id="authWho"></span><button class="auth-out" onclick="authSignOut()" title="Sign out">Sign out</button>
+  <div class="nav-user">
+    <a href="team.html" class="myleave-link">My Leave →</a>
+    <div class="nav-av" id="navAv"></div>
+    <div><div class="nav-name" id="navName"></div><span class="auth-who" id="authWho"></span></div>
+    <button class="auth-out" onclick="authSignOut()" title="Sign out">Sign out</button>
     <span class="ph-flag" title="Philippines team"><svg viewBox="0 0 24 16" width="19" height="13" aria-label="Philippine flag"><rect width="24" height="8" fill="#0038a8"/><rect y="8" width="24" height="8" fill="#ce1126"/><path d="M0 0 L12 8 L0 16 Z" fill="#ffffff"/><circle cx="3.6" cy="8" r="2" fill="#fcd116"/><path d="M3.6 4.1l.42 1.3h1.37l-1.1.8.42 1.3-1.11-.8-1.11.8.42-1.3-1.1-.8h1.37z" fill="#fcd116"/><path d="M3.6 11.9l.42-1.3h1.37l-1.1-.8.42-1.3-1.11.8-1.11-.8.42 1.3-1.1.8h1.37z" fill="#fcd116"/><circle cx="1.1" cy="1.2" r="0.62" fill="#fcd116"/><circle cx="1.1" cy="14.8" r="0.62" fill="#fcd116"/><circle cx="9.6" cy="8" r="0.62" fill="#fcd116"/></svg></span>
   </div>
 </div>
 
 <!-- TOOLBAR -->
-<div class="toolbar">
+<div class="toolbar nav-dark">
   <div class="seg-ctrl">
     <button class="seg-btn active" onclick="switchView('overview',this)"><span class="seg-txt">Overview</span><span class="seg-ic" style="color:#007aff"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></span></button>
     <button class="seg-btn" onclick="switchView('timesheet',this)"><span class="seg-txt">Timesheet</span><span class="seg-ic" style="color:#5ac8fa"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5" stroke-linecap="round"/></svg></span></button>
@@ -1524,6 +1563,12 @@ function showApp(){
   if(a) a.style.display = 'block';
   var who = document.getElementById('authWho');
   if(who && AUTH_USER) who.textContent = AUTH_USER.email;
+  // name + initial for the dark header, from the email (jerald@... -> Jerald)
+  var first = (AUTH_USER && AUTH_USER.email ? AUTH_USER.email.split('@')[0].split(/[._-]/)[0] : '');
+  first = first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
+  var nn = document.getElementById('navName'), na = document.getElementById('navAv');
+  if(nn) nn.textContent = first;
+  if(na) na.textContent = first ? first[0] : '';
 }
 
 async function authSignIn(){
@@ -4480,7 +4525,7 @@ function renderOverview(){
         ? '<div class="ovx-card ovx-track warn"><div class="ovx-li-ic t-orange">' + ovxIcon('bell', 16) + '</div><div><div class="ovx-track-t">' + highs + ' urgent item' + (highs!==1?'s':'') + '</div><div class="ovx-track-s">Clear these before marking payroll paid. <button class="ovx-link" onclick="ovxScrollAttn()">Review</button></div></div></div>'
         : '<div class="ovx-card ovx-track"><div class="ovx-li-ic t-blue">' + ovxIcon('sun', 16) + '</div><div><div class="ovx-track-t">Stay on Track</div><div class="ovx-track-s">Your payroll is running smoothly. Keep it up!</div></div></div>');
 
-  c.innerHTML = head
+  c.innerHTML = '<div class="ovx-hero">' + head + '</div>'
     + '<div class="ovx-layout"><div class="ovx-main">'
     +   attn
     +   '<div class="ovx-card"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('grid', 17) + 'Overview</div><span class="ovx-meta">' + r.start + ' – ' + r.end + ' · paid ' + r.payDate + '</span></div>'
