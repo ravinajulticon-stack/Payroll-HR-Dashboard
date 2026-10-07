@@ -1112,6 +1112,7 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
                 <th>HO</th>
                 <th>HO Amount (USD)</th>
                 <th>Insurance</th>
+                <th>Insurance Cycle</th>
                 <th>Insurance Amount (PHP)</th>
                 <th>Basic Pay Rate</th>
                 <th>Latest Total Payout</th>
@@ -1582,14 +1583,17 @@ function insuranceSelect(rec){
   const freq = `<select onchange="setInsuranceFrequency('${rec.id}',this.value)">
     ${opts.map(o => `<option value="${o}" ${rec.insurance_frequency===o?'selected':''}>${labels[o]}</option>`).join('')}
   </select>`;
-  if(rec.insurance_frequency !== 'Quarterly') return freq;
-  // Maxicare cycle: which months Employee 202 charges the quarterly insurance (1 = Jan/Apr/Jul/Oct, 2 = Feb/May/Aug/Nov, 3 = Mar/Jun/Sep/Dec)
+  return freq;
+}
+// Maxicare cycle column: only for Quarterly insurance: which months Employee 202 charges the quarterly insurance (1 = Jan/Apr/Jul/Oct, 2 = Feb/May/Aug/Nov, 3 = Mar/Jun/Sep/Dec)
+function insuranceCycleSelect(rec){
+  if(rec.insurance_frequency !== 'Quarterly') return '<span style="color:var(--text-3)">\u2014</span>';
   const q = parseInt(rec.maxicare_quarter) || 0;
   const cyc = { 0:'Cycle not set', 1:'Jan/Apr/Jul/Oct', 2:'Feb/May/Aug/Nov', 3:'Mar/Jun/Sep/Dec' };
   const cycle = `<select title="Months the quarterly insurance is charged in Employee 202" onchange="setMaxicareCycle('${rec.id}',this.value)" style="${q ? '' : 'color:#c9271d;'}">
     ${[0,1,2,3].map(c => `<option value="${c || ''}" ${q===c?'selected':''}>${cyc[c]}</option>`).join('')}
   </select>`;
-  return `<div style="display:flex;flex-direction:column;gap:4px">${freq}${cycle}</div>`;
+  return cycle;
 }
 async function setInsuranceFrequency(id, val){
   await updateField(id, 'insurance_frequency', val);
@@ -5080,7 +5084,7 @@ function render(){
 
   const tbody = document.getElementById('empBody');
   if(rows.length === 0){
-    tbody.innerHTML = `<tr><td colspan="19" style="text-align:center;color:var(--text-3);padding:24px">No employees match the current search/filters.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="22" style="text-align:center;color:var(--text-3);padding:24px">No employees match the current search/filters.</td></tr>`;
     return;
   }
 
@@ -5102,6 +5106,7 @@ function render(){
       <td style="text-align:center"><input type="checkbox" ${rec.home_office?'checked':''} onchange="toggleHomeOffice('${rec.id}',this.checked)" style="width:16px;height:16px;cursor:pointer;min-width:0"></td>
       <td>${moneyField(rec,'home_office_amount','Amount')}</td>
       <td>${insuranceSelect(rec)}</td>
+      <td>${insuranceCycleSelect(rec)}</td>
       <td>${moneyField(rec,'insurance_amount','Amount')}</td>
       <td><div style="display:flex;gap:4px;align-items:center">${currencySelect(rec)}${moneyField(rec,'basic_pay_rate','Rate')}</div></td>
       <td>${(() => { const h = latestHistoryFor(rec.name); return h ? fmtMoney(h.total_payout) : '\u2014'; })()}</td>
