@@ -608,7 +608,13 @@ function setAwayView(v){
   document.getElementById('calCtl').style.display = v === 'cal' ? 'inline' : 'none';
   document.getElementById('awayRange').style.display = v === 'list' ? 'inline' : 'none';
 }
-function calShift(n){ CAL.m += n; if(CAL.m < 0){ CAL.m = 11; CAL.y--; } if(CAL.m > 11){ CAL.m = 0; CAL.y++; } renderCal(); }
+// Upcoming only: the calendar never goes back before the current month
+function calShift(n){
+  var now = new Date(), y = CAL.y, m = CAL.m + n;
+  if(m < 0){ m = 11; y--; } if(m > 11){ m = 0; y++; }
+  if(y < now.getFullYear() || (y === now.getFullYear() && m < now.getMonth())) return;
+  CAL.y = y; CAL.m = m; renderCal();
+}
 function calToday(){ var d = new Date(); CAL.y = d.getFullYear(); CAL.m = d.getMonth(); renderCal(); }
 
 async function renderCal(){
@@ -617,22 +623,29 @@ async function renderCal(){
   var last = new Date(CAL.y, CAL.m + 1, 0);
   var end = new Date(last); end.setDate(last.getDate() + (7 - ((last.getDay() + 6) % 7) - 1)); // Sunday on or after the last
   document.getElementById('calMonth').textContent = MONS[CAL.m] + ' ' + CAL.y;
-  var key = isoOf(start) + '|' + isoOf(end);
+  var nowD = new Date(), atFirst = CAL.y === nowD.getFullYear() && CAL.m === nowD.getMonth();
+  var prevBtn = document.querySelector('#calNav button');
+  if(prevBtn){ prevBtn.disabled = atFirst; prevBtn.style.opacity = atFirst ? '0.3' : ''; prevBtn.style.cursor = atFirst ? 'default' : ''; }
+  var today = todayISO();
+  // Only fetch from today onwards: past leave is never shown here
+  var from = isoOf(start) < today ? today : isoOf(start);
+  var key = from + '|' + isoOf(end);
   var rows = CAL_CACHE[key];
   if(!rows){
-    var res = await sb.rpc('team_leave', { from_date: isoOf(start), to_date: isoOf(end) });
+    var res = await sb.rpc('team_leave', { from_date: from, to_date: isoOf(end) });
     rows = CAL_CACHE[key] = (res.data || []);
   }
   var byDate = {};
   rows.forEach(function(a){ (byDate[a.leave_date] = byDate[a.leave_date] || []).push(a); });
   var hol = {};
   HOLIDAYS.forEach(function(h){ hol[h.date] = h.name; });
-  var today = todayISO();
   var html = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(function(d){ return '<div class="cal-h">' + d + '</div>'; }).join('');
   for(var d = new Date(start); d <= end; d.setDate(d.getDate() + 1)){
     var iso = isoOf(d), dow = d.getDay();
-    var cls = 'cal-c' + (d.getMonth() !== CAL.m ? ' dim' : '') + ((dow === 0 || dow === 6) ? ' we' : '') + (iso === today ? ' today' : '');
+    var past = iso < today;
+    var cls = 'cal-c' + ((d.getMonth() !== CAL.m || past) ? ' dim' : '') + ((dow === 0 || dow === 6) ? ' we' : '') + (iso === today ? ' today' : '');
     var chips = '';
+    if(past){ html += '<div class="' + cls + '"><div class="cal-d">' + d.getDate() + '</div></div>'; continue; }
     if(hol[iso]) chips += '<span class="chip hol" title="' + esc(hol[iso]) + '">' + esc(hol[iso]) + '</span>';
     var list = byDate[iso] || [];
     var shown = list.slice(0, 3);
