@@ -1579,9 +1579,30 @@ async function toggleHomeOffice(id, checked){
 function insuranceSelect(rec){
   const opts = ['', 'Monthly', 'Quarterly', 'Semi-Annually', 'Annual'];
   const labels = { '': '—', 'Monthly':'Monthly', 'Quarterly':'Quarterly', 'Semi-Annually':'Semi-Annually', 'Annual':'Annual' };
-  return `<select onchange="updateField('${rec.id}','insurance_frequency',this.value)">
+  const freq = `<select onchange="setInsuranceFrequency('${rec.id}',this.value)">
     ${opts.map(o => `<option value="${o}" ${rec.insurance_frequency===o?'selected':''}>${labels[o]}</option>`).join('')}
   </select>`;
+  if(rec.insurance_frequency !== 'Quarterly') return freq;
+  // Maxicare cycle: which months Employee 202 charges the quarterly insurance (1 = Jan/Apr/Jul/Oct, 2 = Feb/May/Aug/Nov, 3 = Mar/Jun/Sep/Dec)
+  const q = parseInt(rec.maxicare_quarter) || 0;
+  const cyc = { 0:'Cycle not set', 1:'Jan/Apr/Jul/Oct', 2:'Feb/May/Aug/Nov', 3:'Mar/Jun/Sep/Dec' };
+  const cycle = `<select title="Months the quarterly insurance is charged in Employee 202" onchange="setMaxicareCycle('${rec.id}',this.value)" style="${q ? '' : 'color:#c9271d;'}">
+    ${[0,1,2,3].map(c => `<option value="${c || ''}" ${q===c?'selected':''}>${cyc[c]}</option>`).join('')}
+  </select>`;
+  return `<div style="display:flex;flex-direction:column;gap:4px">${freq}${cycle}</div>`;
+}
+async function setInsuranceFrequency(id, val){
+  await updateField(id, 'insurance_frequency', val);
+  render();
+}
+async function setMaxicareCycle(id, val){
+  const rec = EMP201.find(r => r.id === id);
+  if(!rec) return;
+  const q = val ? parseInt(val) : null;
+  const { error } = await sb.from('employees_201').update({ maxicare_quarter: q }).eq('id', id);
+  if(error){ alert('Could not save Maxicare cycle: ' + error.message); return; }
+  rec.maxicare_quarter = q;
+  render();
 }
 
 function fmtMoney(n){
