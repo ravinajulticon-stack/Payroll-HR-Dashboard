@@ -21,9 +21,23 @@ button{ font-family:inherit; }
 .ddl-logo{ display:block; background:url(ddl-logo.png) left center/contain no-repeat; width:120px; height:48px; margin-bottom:14px; }
 .bar-title{ font-size:16px; font-weight:700; letter-spacing:-0.2px; }
 .bar-sub{ font-size:11.5px; color:rgba(255,255,255,0.62); margin-top:1px; }
-.user{ display:flex; align-items:center; gap:10px; }
+.user{ display:flex; align-items:center; gap:10px; position:relative; }
 .user-av{ width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#5b8cff,#2f6bff); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; }
 .user-name{ font-size:12.5px; font-weight:600; }
+/* Profile photos */
+.user-av{ position:relative; cursor:pointer; overflow:visible; }
+.user-av img{ width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; }
+.user-av .cam{ position:absolute; right:-3px; bottom:-3px; width:16px; height:16px; border-radius:50%; background:#fff; color:#0f1b3d; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,0.3); }
+.user-av:hover{ box-shadow:0 0 0 3px rgba(255,255,255,0.25); }
+.photo-menu{ position:absolute; top:46px; right:0; z-index:30; background:#fff; color:var(--text); border-radius:12px; box-shadow:0 10px 30px rgba(15,27,61,0.25); padding:6px; min-width:180px; display:none; }
+.photo-menu.open{ display:block; }
+.photo-menu button{ display:flex; width:100%; align-items:center; gap:8px; border:none; background:none; padding:9px 10px; border-radius:8px; font-family:inherit; font-size:12.5px; font-weight:600; color:var(--text); cursor:pointer; text-align:left; }
+.photo-menu button:hover{ background:#f1f5ff; }
+.photo-menu button.danger{ color:#c9271d; }
+.photo-menu .pm-note{ font-size:10.5px; color:var(--text-3); padding:4px 10px 6px; }
+img.av{ object-fit:cover; background:#e6e9f2; }
+.chip-av{ width:13px; height:13px; border-radius:50%; object-fit:cover; vertical-align:-3px; margin-right:3px; }
+.dt-av{ width:14px; height:14px; border-radius:50%; object-fit:cover; vertical-align:-3px; margin-right:4px; }
 .who{ font-size:10.5px; color:rgba(255,255,255,0.6); }
 .admin-link{ display:none; font-size:11px; font-weight:600; color:#fff; text-decoration:none; background:rgba(255,255,255,0.12); padding:6px 12px; border-radius:999px; }
 .admin-link:hover{ background:rgba(255,255,255,0.2); }
@@ -266,7 +280,7 @@ button{ font-family:inherit; }
       </div>
       <div class="user">
         <a href="index.html" id="adminLink" class="admin-link">Dashboard →</a>
-        <div class="user-av" id="userAv"></div>
+        <div class="user-av" id="userAv" onclick="togglePhotoMenu(event)" title="Change your profile photo"></div><div class="photo-menu" id="photoMenu" onclick="event.stopPropagation()"><button type="button" onclick="pickPhoto()"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5a1 1 0 0 1 1-1h2l1-1.5h4l1 1.5h2a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><circle cx="8" cy="8.5" r="2.3"/></svg><span id="pmUpload">Upload Photo</span></button><button type="button" class="danger" id="pmRemove" onclick="removeMyPhoto()" style="display:none"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/></svg>Remove Photo</button><div class="pm-note" id="pmNote">JPG or PNG · it’s cropped to a circle</div></div><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="photoChosen(this)">
         <div><div class="user-name" id="userName"></div><div class="who" id="who"></div></div>
         <button class="out" onclick="signOut()">Sign out</button>
         <span class="ph-flag" title="Philippines team"><svg viewBox="0 0 24 16" width="19" height="13" aria-label="Philippine flag"><rect width="24" height="8" fill="#0038a8"/><rect y="8" width="24" height="8" fill="#ce1126"/><path d="M0 0 L12 8 L0 16 Z" fill="#ffffff"/><circle cx="3.6" cy="8" r="2" fill="#fcd116"/><path d="M3.6 4.1l.42 1.3h1.37l-1.1.8.42 1.3-1.11-.8-1.11.8.42-1.3-1.1-.8h1.37z" fill="#fcd116"/><path d="M3.6 11.9l.42-1.3h1.37l-1.1-.8.42-1.3-1.11.8-1.11-.8.42 1.3-1.1.8h1.37z" fill="#fcd116"/><circle cx="1.1" cy="1.2" r="0.62" fill="#fcd116"/><circle cx="1.1" cy="14.8" r="0.62" fill="#fcd116"/><circle cx="9.6" cy="8" r="0.62" fill="#fcd116"/></svg></span>
@@ -426,12 +440,88 @@ function typeCls(t){ return t === 'Annual Leave' ? 'annual' : (t === 'Personal L
 
 // Initials avatar with a stable colour per name
 var AV_COLS = ['#2f6bff','#22a35a','#8e5cff','#ff9500','#14a08a','#e0457b','#3d5afe','#c26f00'];
-function avatar(name){
+// Profile photos: employee id -> data URL, and name -> data URL (team_leave returns names)
+var PHOTO_BY_ID = {}, PHOTO_BY_NAME = {};
+async function loadPhotos(){
+  const res = await sb.rpc('team_photos');
+  PHOTO_BY_ID = {}; PHOTO_BY_NAME = {};
+  (res.data || []).forEach(function(r){ PHOTO_BY_ID[r.employee_id] = r.photo; PHOTO_BY_NAME[r.name] = r.photo; });
+}
+function photoFor(id, name){ return (id && PHOTO_BY_ID[id]) || (name && PHOTO_BY_NAME[name]) || null; }
+
+function avatar(name, id){
+  var ph = photoFor(id, name);
+  if(ph) return '<img class="av" src="' + ph + '" alt="' + esc(name || '') + '">';
   var n = String(name || '?').trim();
   var parts = n.split(/\s+/);
   var ini = (parts[0] ? parts[0][0] : '?') + (parts.length > 1 ? parts[parts.length-1][0] : '');
   var h = 0; for(var i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0;
   return '<span class="av" style="background:' + AV_COLS[h % AV_COLS.length] + '">' + esc(ini.toUpperCase()) + '</span>';
+}
+
+var MY_INITIAL = '?';
+function renderMyAvatar(){
+  var el = document.getElementById('userAv'), ph = MY_ID ? PHOTO_BY_ID[MY_ID] : null;
+  var cam = '<span class="cam"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5a1 1 0 0 1 1-1h2l1-1.5h4l1 1.5h2a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><circle cx="8" cy="8.5" r="2.3"/></svg></span>';
+  el.innerHTML = (ph ? '<img src="' + ph + '" alt="">' : esc(MY_INITIAL)) + (MY_ID ? cam : '');
+  document.getElementById('pmUpload').textContent = ph ? 'Change Photo' : 'Upload Photo';
+  document.getElementById('pmRemove').style.display = ph ? 'flex' : 'none';
+}
+
+function togglePhotoMenu(ev){
+  ev.stopPropagation();
+  if(!MY_ID){ alert('No employee record is linked to this account yet, so a photo can’t be saved.'); return; }
+  document.getElementById('photoMenu').classList.toggle('open');
+}
+document.addEventListener('click', function(){ var m = document.getElementById('photoMenu'); if(m) m.classList.remove('open'); });
+
+function pickPhoto(){ document.getElementById('photoInput').click(); }
+
+// Shrink any photo to a 256px square JPEG (centre crop) so it stays small
+function photoToDataUrl(file){
+  return new Promise(function(resolve, reject){
+    var img = new Image(), url = URL.createObjectURL(file);
+    img.onload = function(){
+      var side = Math.min(img.naturalWidth, img.naturalHeight), c = document.createElement('canvas');
+      c.width = c.height = 256;
+      c.getContext('2d').drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, 256, 256);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('That file isn’t an image we can read.')); };
+    img.src = url;
+  });
+}
+
+async function photoChosen(input){
+  var f = input.files && input.files[0]; input.value = '';
+  if(!f) return;
+  var note = document.getElementById('pmNote');
+  try {
+    note.textContent = 'Saving…';
+    var data = await photoToDataUrl(f);
+    const { error } = await sb.from('profile_photos').upsert({ employee_id: MY_ID, photo: data, updated_at: new Date().toISOString() });
+    if(error) throw error;
+    await refreshPhotos();
+    note.textContent = 'Saved';
+    setTimeout(function(){ document.getElementById('photoMenu').classList.remove('open'); note.textContent = 'JPG or PNG · it’s cropped to a circle'; }, 900);
+  } catch(e){ note.textContent = 'Couldn’t save: ' + (e.message || e); }
+}
+
+async function removeMyPhoto(){
+  if(!confirm('Remove your profile photo?')) return;
+  const { error } = await sb.from('profile_photos').delete().eq('employee_id', MY_ID);
+  if(error){ alert(error.message); return; }
+  await refreshPhotos();
+  document.getElementById('photoMenu').classList.remove('open');
+}
+
+// redraw everything that shows faces
+async function refreshPhotos(){
+  await loadPhotos();
+  renderMyAvatar();
+  if(IS_ADMIN || IS_APPROVER) loadRequests();
+  CAL_CACHE = {}; renderCal();
 }
 
 function goTo(id, focusId){
@@ -468,7 +558,9 @@ async function start(){
   var first = email.split('@')[0].split(/[._-]/)[0];
   first = first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
   document.getElementById('userName').textContent = first;
-  document.getElementById('userAv').textContent = first ? first[0] : '?';
+  MY_INITIAL = first ? first[0] : '?';
+  document.getElementById('userAv').textContent = MY_INITIAL;
+  await loadPhotos();
   var hr = new Date().getHours();
   document.getElementById('hello').textContent = (hr < 12 ? 'Good morning' : (hr < 17 ? 'Good afternoon' : 'Good evening')) + (first ? ', ' + first : '');
   const { data: adm } = await sb.rpc('is_admin');
@@ -679,7 +771,7 @@ async function loadRequests(){
           acts += '<button class="btn ghost sm" onclick="editReason(\'' + r.id + '\')">Edit Reason</button>';
         }
         var nm = names[r.employee_id] || '?';
-        return '<div class="rq">' + avatar(nm)
+        return '<div class="rq">' + avatar(nm, r.employee_id)
           + '<div class="rq-name">' + esc(nm) + '</div>'
           + '<div class="rq-main"><div class="rq-when">' + rangeLabel(r.start_date, r.end_date) + '</div>'
           + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' · ' + esc(r.reason) : '') + '</div>' + submittedLine(r) + '</div>'
@@ -1082,7 +1174,8 @@ async function renderCal(){
     chips += shown.map(function(a){
       var lt = String(a.leave_type || '').replace(/ Leave$/, '');
       var label = String(a.person || '').split(' ')[0];
-      return '<span class="chip ' + typeCls(a.leave_type) + '" title="' + esc(a.person + ' · ' + a.leave_type) + '">' + esc(label) + (lt ? ' · ' + esc(lt) : '') + '</span>';
+      var cph = PHOTO_BY_NAME[a.person];
+      return '<span class="chip ' + typeCls(a.leave_type) + '" title="' + esc(a.person + ' · ' + a.leave_type) + '">' + (cph ? '<img class="chip-av" src="' + cph + '" alt="">' : '') + esc(label) + (lt ? ' · ' + esc(lt) : '') + '</span>';
     }).join('');
     if(list.length > 3){
       chips += '<span class="chip more" title="' + esc(list.slice(3).map(function(a){ return a.person + ' · ' + a.leave_type; }).join('\n')) + '">+' + (list.length - 3) + ' more</span>';
@@ -1099,6 +1192,7 @@ async function loadMine(){
 
   const { data: myId } = await sb.rpc('my_employee_id');
   MY_ID = myId || null;
+  renderMyAvatar();
   if(!myId){
     document.getElementById('balances').innerHTML = '<div class="empty">No employee record is linked to this account yet. Please contact HR.</div>';
     document.getElementById('leaveList').innerHTML = '<div class="empty">—</div>';
@@ -1169,7 +1263,8 @@ async function loadMine(){
   away.forEach(function(a){
     if(!byDate[a.leave_date]) byDate[a.leave_date] = [];
     var lt = String(a.leave_type || '').replace(/ Leave$/, '');
-    byDate[a.leave_date].push(esc(a.person.split(' ')[0]) + (lt ? ' · ' + esc(lt) : ''));
+    var lph = PHOTO_BY_NAME[a.person];
+    byDate[a.leave_date].push((lph ? '<img class="dt-av" src="' + lph + '" alt="">' : '') + esc(a.person.split(' ')[0]) + (lt ? ' · ' + esc(lt) : ''));
   });
   var dates = Object.keys(byDate).sort();
   document.getElementById('awayList').innerHTML = dates.length
