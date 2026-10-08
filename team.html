@@ -241,25 +241,25 @@ button{ font-family:inherit; }
     </div>
 
     <div class="card" id="reportCard" style="display:none">
-      <div class="card-head"><span class="card-title">Leave Report</span><span class="card-meta">Admin only · opens a printable report (Save as PDF)</span></div>
+      <div class="card-head"><span class="card-title">Leave Report</span><span class="card-meta">Admin Only · Opens a Printable Report (Save as PDF)</span></div>
       <div class="rep-presets">
-        <button class="btn ghost sm" onclick="repPreset('month')">This month</button>
-        <button class="btn ghost sm" onclick="repPreset('lastmonth')">Last month</button>
-        <button class="btn ghost sm" onclick="repPreset('year')">This year</button>
-        <button class="btn ghost sm" onclick="repPreset('fy')">Financial year</button>
+        <button class="btn ghost sm" onclick="repPreset('month')">This Month</button>
+        <button class="btn ghost sm" onclick="repPreset('lastmonth')">Last Month</button>
+        <button class="btn ghost sm" onclick="repPreset('year')">This Year</button>
+        <button class="btn ghost sm" onclick="repPreset('fy')">Financial Year</button>
       </div>
       <div class="repform">
         <div><label>From</label><input type="date" id="repFrom" class="fld"></div>
         <div><label>To</label><input type="date" id="repTo" class="fld"></div>
-        <div><label>Employee</label><select id="repEmp" class="fld"><option value="">All employees</option></select></div>
-        <div><label>Leave type</label><select id="repType" class="fld"><option value="">All leave types</option><option>Annual Leave</option><option>Personal Leave</option><option>Unpaid Leave</option></select></div>
+        <div><label>Employee</label><select id="repEmp" class="fld"><option value="">All Employees</option></select></div>
+        <div><label>Leave Type</label><select id="repType" class="fld"><option value="">All Leave Types</option><option>Annual Leave</option><option>Personal Leave</option><option>Unpaid Leave</option></select></div>
         <button class="btn lg" onclick="generateReport()">Generate Report</button>
       </div>
       <div class="rep-inc">
-        <label><input type="checkbox" id="incSummary" checked> Summary per person</label>
-        <label><input type="checkbox" id="incBalances" checked> Current balances</label>
-        <label><input type="checkbox" id="incTaken" checked> Leave taken (by date)</label>
-        <label><input type="checkbox" id="incRequests" checked> Leave requests</label>
+        <label><input type="checkbox" id="incSummary" checked> Summary Per Person</label>
+        <label><input type="checkbox" id="incBalances" checked> Current Balances</label>
+        <label><input type="checkbox" id="incTaken" checked> Leave Taken (By Date)</label>
+        <label><input type="checkbox" id="incRequests" checked> Leave Requests</label>
       </div>
       <div id="repMsg" class="reqmsg" style="text-align:left"></div>
     </div>
@@ -588,7 +588,7 @@ async function initReport(){
   const { data } = await sb.from('employees_201').select('id,name,exit_date').order('name');
   REP_EMPS = data || [];
   var sel = document.getElementById('repEmp');
-  sel.innerHTML = '<option value="">All employees</option>' + REP_EMPS.map(function(e){
+  sel.innerHTML = '<option value="">All Employees</option>' + REP_EMPS.map(function(e){
     return '<option value="' + esc(e.id) + '">' + esc(e.name) + (e.exit_date ? ' (exited)' : '') + '</option>';
   }).join('');
 }
@@ -666,7 +666,7 @@ async function generateReport(){
     if(type) types = [type];
 
     var out = '';
-    var filt = 'Period: <b>' + fmtDay(from) + ' – ' + fmtDay(to) + '</b> · Employee: <b>' + esc(empId ? nameOf(empId) : 'All employees') + '</b> · Leave type: <b>' + esc(type || 'All') + '</b>';
+    var filt = 'Period: <b>' + fmtDay(from) + ' – ' + fmtDay(to) + '</b> · Employee: <b>' + esc(empId ? nameOf(empId) : 'All Employees') + '</b> · Leave Type: <b>' + esc(type || 'All') + '</b>';
 
     // 1. Summary per person
     if(inc.summary){
@@ -677,7 +677,7 @@ async function generateReport(){
       });
       var ids = Object.keys(sumRows).sort(function(a, b){ return nameOf(a).localeCompare(nameOf(b)); });
       var tot = {};
-      out += '<h2>Summary per person</h2><p class="sub">Hours (days at ' + HOURS_PER_DAY + ' hrs/day) recorded in the period. Dates after today are booked leave.</p>';
+      out += '<h2>Summary Per Person</h2><p class="sub">Hours (days at ' + HOURS_PER_DAY + ' hrs/day) recorded in the period. Dates after today are booked leave.</p>';
       if(!ids.length) out += '<p class="none">No leave recorded in this period.</p>';
       else {
         out += '<table><thead><tr><th>Employee</th>' + types.map(function(t){ return '<th class="n">' + esc(t) + '</th>'; }).join('') + (types.length > 1 ? '<th class="n">Total</th>' : '') + '</tr></thead><tbody>';
@@ -695,16 +695,16 @@ async function generateReport(){
     // 2. Current balances (as at today)
     if(inc.balances){
       var bTypes = ['Annual Leave', 'Personal Leave'].filter(function(t){ return !type || t === type; });
-      out += '<h2>Current balances</h2><p class="sub">As at ' + fmtDay(todayStr) + '. Available = opening balance + monthly accrual (15th) − leave taken to date; leave booked after today is shown separately. Exited staff are frozen at their exit date.</p>';
+      out += '<h2>Current Balances</h2><p class="sub">As at ' + fmtDay(todayStr) + '. Available = opening balance + monthly accrual (15th) − leave taken to date; leave booked after today is shown separately. Exited staff are frozen at their exit date.</p>';
       if(!bTypes.length) out += '<p class="none">' + esc(type) + ' has no accruing balance.</p>';
       else {
         var bRows = people.slice().sort(function(a, b){ return a.name.localeCompare(b.name); });
-        out += '<table><thead><tr><th>Employee</th>' + bTypes.map(function(t){ return '<th class="n">' + esc(t) + '<br><span class="th2">available · booked</span></th>'; }).join('') + '</tr></thead><tbody>';
+        out += '<table><thead><tr><th>Employee</th>' + bTypes.map(function(t){ return '<th class="n">' + esc(t) + '<br><span class="th2">Available · Booked</span></th>'; }).join('') + '</tr></thead><tbody>';
         var anyB = false;
         bRows.forEach(function(e){
           var cells = bTypes.map(function(t){
             var rec = bals.find(function(b){ return b.employee_id === e.id && b.leave_type === t; });
-            if(!rec) return '<td class="n dd">not set up</td>';
+            if(!rec) return '<td class="n dd">Not Set Up</td>';
             anyB = true;
             var bal = repBalance(e, rec, entries, today);
             var booked = entries.filter(function(l){ return l.employee_id === e.id && l.leave_type === t && l.leave_date > todayStr; })
@@ -720,14 +720,14 @@ async function generateReport(){
 
     // 3. Leave taken by date
     if(inc.taken){
-      out += '<h2>Leave taken (by date)</h2><p class="sub">Every leave day recorded in the period, in date order.</p>';
+      out += '<h2>Leave Taken (By Date)</h2><p class="sub">Every leave day recorded in the period, in date order.</p>';
       if(!inRange.length) out += '<p class="none">No leave recorded in this period.</p>';
       else {
         var sumH = 0;
-        out += '<table><thead><tr><th>Date</th><th>Employee</th><th>Leave type</th><th class="n">Hours</th><th>Note</th></tr></thead><tbody>';
+        out += '<table><thead><tr><th>Date</th><th>Employee</th><th>Leave Type</th><th class="n">Hours</th><th>Note</th></tr></thead><tbody>';
         inRange.slice().sort(function(a, b){ return a.leave_date.localeCompare(b.leave_date) || nameOf(a.employee_id).localeCompare(nameOf(b.employee_id)); }).forEach(function(l){
           var hrs = parseFloat(l.hours) || 0; sumH += hrs;
-          out += '<tr><td class="nw">' + fmtDay(l.leave_date) + (l.leave_date > todayStr ? ' <span class="tag">booked</span>' : '') + '</td><td>' + esc(nameOf(l.employee_id)) + '</td><td>' + esc(l.leave_type) + '</td><td class="n">' + h2(hrs) + '</td><td class="note">' + esc(l.note || '') + '</td></tr>';
+          out += '<tr><td class="nw">' + fmtDay(l.leave_date) + (l.leave_date > todayStr ? ' <span class="tag">Booked</span>' : '') + '</td><td>' + esc(nameOf(l.employee_id)) + '</td><td>' + esc(l.leave_type) + '</td><td class="n">' + h2(hrs) + '</td><td class="note">' + esc(l.note || '') + '</td></tr>';
         });
         out += '</tbody><tfoot><tr><td colspan="3">' + inRange.length + ' day' + (inRange.length === 1 ? '' : 's') + '</td><td class="n">' + h2(sumH) + '</td><td></td></tr></tfoot></table>';
       }
@@ -738,10 +738,10 @@ async function generateReport(){
       var rq = reqs.filter(function(r){ return r.start_date <= to && r.end_date >= from && (!empId || r.employee_id === empId) && (!type || r.leave_type === type); })
         .sort(function(a, b){ return a.start_date.localeCompare(b.start_date) || String(a.employee_name).localeCompare(String(b.employee_name)); });
       var cnt = {}; rq.forEach(function(r){ cnt[r.status] = (cnt[r.status] || 0) + 1; });
-      out += '<h2>Leave requests</h2><p class="sub">Requests with any day inside the period' + (rq.length ? ' · ' + Object.keys(cnt).map(function(k){ return cnt[k] + ' ' + k.toLowerCase(); }).join(', ') : '') + '.</p>';
+      out += '<h2>Leave Requests</h2><p class="sub">Requests with any day inside the period' + (rq.length ? ' · ' + Object.keys(cnt).map(function(k){ return cnt[k] + ' ' + k.toLowerCase(); }).join(', ') : '') + '.</p>';
       if(!rq.length) out += '<p class="none">No requests in this period.</p>';
       else {
-        out += '<table><thead><tr><th>Submitted</th><th>Employee</th><th>Dates</th><th>Leave type</th><th class="n">Days · hrs</th><th>Status</th><th>Reason / note</th></tr></thead><tbody>';
+        out += '<table><thead><tr><th>Submitted</th><th>Employee</th><th>Dates</th><th>Leave Type</th><th class="n">Days · Hrs</th><th>Status</th><th>Reason / Note</th></tr></thead><tbody>';
         rq.forEach(function(r){
           var days = workingDays(r.start_date, r.end_date).length, hrs = days * parseFloat(r.hours_per_day || 0);
           var sub = r.created_at ? fmtDay(isoOf(new Date(r.created_at))) : '—';
