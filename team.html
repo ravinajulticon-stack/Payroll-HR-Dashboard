@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My Leave — Digital Door Locks</title>
+<link rel="icon" type="image/png" href="ddl-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{ --bg:#f4f6fb; --surface:#fff; --border:#e6e9f2; --text:#14213d; --text-2:#5b6478; --text-3:#8a91a5; --blue:#2f6bff; --green:#22a35a; --amber:#ff9500; --navy:#0f1b3d; --radius:14px; }
@@ -15,7 +16,9 @@ button{ font-family:inherit; }
 .hero{ background:radial-gradient(1200px 300px at 85% -40%, #23397a 0%, transparent 60%), linear-gradient(180deg,#0f1b3d 0%,#14244f 100%); color:#fff; padding:0 0 64px; }
 .bar{ max-width:1120px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
 .brand{ display:flex; align-items:center; gap:12px; }
-.brand-mark{ width:38px; height:38px; border-radius:11px; background:rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; }
+.brand-mark{ width:30px; height:42px; flex-shrink:0; }
+.ddl-icon{ background:url(ddl-icon.png) center/contain no-repeat; }
+.ddl-logo{ display:block; background:url(ddl-logo.png) left center/contain no-repeat; width:120px; height:48px; margin-bottom:14px; }
 .bar-title{ font-size:16px; font-weight:700; letter-spacing:-0.2px; }
 .bar-sub{ font-size:11.5px; color:rgba(255,255,255,0.62); margin-top:1px; }
 .user{ display:flex; align-items:center; gap:10px; }
@@ -178,6 +181,7 @@ button{ font-family:inherit; }
 
 <div id="gate">
   <div class="auth">
+    <span class="ddl-logo" role="img" aria-label="DDL"></span>
     <h1>My Leave</h1>
     <p>Digital Door Locks Pty Limited</p>
     <label>Email</label>
@@ -193,7 +197,7 @@ button{ font-family:inherit; }
   <div class="hero">
     <div class="bar">
       <div class="brand">
-        <div class="brand-mark"><svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3M5.5 10l1.7 1.6L10.8 8.5"/></svg></div>
+        <div class="brand-mark ddl-icon" role="img" aria-label="DDL"></div>
         <div><div class="bar-title">My Leave</div><div class="bar-sub">Digital Door Locks Pty Limited</div></div>
       </div>
       <div class="user">
