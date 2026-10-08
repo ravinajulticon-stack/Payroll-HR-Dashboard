@@ -727,7 +727,7 @@ async function loadMine(){
   const allHol = await sb.from('vic_holidays').select('date,name').order('date');
   HOLIDAYS = allHol.data || [];
   HOLIDAY_SET = new Set(HOLIDAYS.map(function(x){ return x.date; }));
-  var h = HOLIDAYS.filter(function(x){ return x.date >= todayStr; }).slice(0, 12);
+  var h = HOLIDAYS.filter(function(x){ return x.date >= todayStr; }).slice(0, 16);
   document.getElementById('holidayList').innerHTML = h.length
     ? '<div class="dt-grid">' + h.map(function(x){ return dateTile(x.date, '', esc(x.name)); }).join('') + '</div>'
     : '<div class="empty">No upcoming holidays.</div>';
