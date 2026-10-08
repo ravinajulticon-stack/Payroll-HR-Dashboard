@@ -67,6 +67,14 @@ button{ font-family:inherit; }
 #leaveList .hist{ max-height:none; overflow:visible; }
 @media(max-width:860px){ .cols{ grid-template-columns:1fr; } #leaveList{ flex:none; max-height:360px; } }
 
+/* Admin: Leave Report */
+.repform{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)) auto; gap:12px; padding:2px 18px 18px; align-items:end; }
+.repform label{ display:block; font-size:11.5px; font-weight:600; color:var(--text-2); margin-bottom:6px; }
+.rep-inc{ display:flex; gap:16px; flex-wrap:wrap; padding:0 18px 16px; font-size:12px; color:var(--text-2); }
+.rep-inc label{ display:flex; align-items:center; gap:6px; cursor:pointer; }
+.rep-presets{ display:flex; gap:6px; flex-wrap:wrap; padding:0 18px 12px; }
+@media(max-width:860px){ .repform{ grid-template-columns:1fr 1fr; } .repform .btn{ grid-column:1 / -1; } }
+
 /* Quick actions */
 .qa{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; padding:4px 18px 18px; }
 @media(max-width:700px){ .qa{ grid-template-columns:repeat(2,1fr); } }
@@ -232,6 +240,30 @@ button{ font-family:inherit; }
       <div id="approvalsList"></div>
     </div>
 
+    <div class="card" id="reportCard" style="display:none">
+      <div class="card-head"><span class="card-title">Leave Report</span><span class="card-meta">Admin only · opens a printable report (Save as PDF)</span></div>
+      <div class="rep-presets">
+        <button class="btn ghost sm" onclick="repPreset('month')">This month</button>
+        <button class="btn ghost sm" onclick="repPreset('lastmonth')">Last month</button>
+        <button class="btn ghost sm" onclick="repPreset('year')">This year</button>
+        <button class="btn ghost sm" onclick="repPreset('fy')">Financial year</button>
+      </div>
+      <div class="repform">
+        <div><label>From</label><input type="date" id="repFrom" class="fld"></div>
+        <div><label>To</label><input type="date" id="repTo" class="fld"></div>
+        <div><label>Employee</label><select id="repEmp" class="fld"><option value="">All employees</option></select></div>
+        <div><label>Leave type</label><select id="repType" class="fld"><option value="">All leave types</option><option>Annual Leave</option><option>Personal Leave</option><option>Unpaid Leave</option></select></div>
+        <button class="btn lg" onclick="generateReport()">Generate Report</button>
+      </div>
+      <div class="rep-inc">
+        <label><input type="checkbox" id="incSummary" checked> Summary per person</label>
+        <label><input type="checkbox" id="incBalances" checked> Current balances</label>
+        <label><input type="checkbox" id="incTaken" checked> Leave taken (by date)</label>
+        <label><input type="checkbox" id="incRequests" checked> Leave requests</label>
+      </div>
+      <div id="repMsg" class="reqmsg" style="text-align:left"></div>
+    </div>
+
     <div class="cols">
       <div class="card" id="reqCard">
         <div class="card-head"><span class="card-title">Request Leave</span><span class="card-meta">Weekends and holidays are skipped</span></div>
@@ -365,6 +397,7 @@ async function start(){
   const { data: adm } = await sb.rpc('is_admin');
   IS_ADMIN = !!adm;
   if(adm) document.getElementById('adminLink').style.display = 'inline-block';
+  if(adm) initReport();
   // Leave Approvers (semi-admin): get the Leave Requests card here, but no Dashboard link
   // record this visit so the admin dashboard (Employee 206) can show who has opened My Leave
   sb.rpc('touch_my_leave').then(function(){}, function(){});
@@ -545,6 +578,213 @@ async function loadRequests(){
 }
 
 function todayISO(){ return isoOf(new Date()); }
+
+// ---------- Admin: Leave Report (printable, Save as PDF) ----------
+var REP_EMPS = [];
+
+async function initReport(){
+  document.getElementById('reportCard').style.display = 'block';
+  repPreset('month');
+  const { data } = await sb.from('employees_201').select('id,name,exit_date').order('name');
+  REP_EMPS = data || [];
+  var sel = document.getElementById('repEmp');
+  sel.innerHTML = '<option value="">All employees</option>' + REP_EMPS.map(function(e){
+    return '<option value="' + esc(e.id) + '">' + esc(e.name) + (e.exit_date ? ' (exited)' : '') + '</option>';
+  }).join('');
+}
+
+function repPreset(k){
+  var t = new Date(), y = t.getFullYear(), m = t.getMonth(), a, b;
+  if(k === 'month'){ a = new Date(y, m, 1); b = new Date(y, m + 1, 0); }
+  else if(k === 'lastmonth'){ a = new Date(y, m - 1, 1); b = new Date(y, m, 0); }
+  else if(k === 'year'){ a = new Date(y, 0, 1); b = new Date(y, 11, 31); }
+  else { var fy = m >= 6 ? y : y - 1; a = new Date(fy, 6, 1); b = new Date(fy + 1, 5, 30); }
+  document.getElementById('repFrom').value = isoOf(a);
+  document.getElementById('repTo').value = isoOf(b);
+}
+
+// Same balance rule as the dashboard (Employee 203): seed + hours credited on the 15th of each month
+// after the seed date, minus leave taken up to the date. Accrual stops on the exit date.
+function repAccrual(seedDate, asOf, rate){
+  var total = 0, y = seedDate.getFullYear(), m = seedDate.getMonth() + 1;
+  while(true){
+    var d = new Date(y, m - 1, 15);
+    if(d <= seedDate){ m++; if(m > 12){ m = 1; y++; } continue; }
+    if(d > asOf) break;
+    total += rate; m++; if(m > 12){ m = 1; y++; }
+  }
+  return Math.round(total * 100) / 100;
+}
+function repBalance(emp, rec, entries, asOf){
+  if(emp && emp.exit_date){ var ex = new Date(emp.exit_date + 'T00:00:00'); if(asOf > ex) asOf = ex; }
+  var seed = new Date(rec.seed_date + 'T00:00:00');
+  var acc = repAccrual(seed, asOf, ACCRUAL[rec.leave_type] || 0);
+  var asOfStr = isoOf(asOf), taken = 0;
+  entries.forEach(function(l){
+    if(l.employee_id === rec.employee_id && l.leave_type === rec.leave_type && l.leave_date > rec.seed_date && l.leave_date <= asOfStr) taken += parseFloat(l.hours) || 0;
+  });
+  return Math.round(((parseFloat(rec.seed_balance) || 0) + acc - taken) * 100) / 100;
+}
+
+function h2(n){ return (Math.round((n || 0) * 100) / 100).toFixed(2); }
+function d1(n){ return ((n || 0) / HOURS_PER_DAY).toFixed(1); }
+
+async function generateReport(){
+  var from = document.getElementById('repFrom').value, to = document.getElementById('repTo').value;
+  var empId = document.getElementById('repEmp').value, type = document.getElementById('repType').value;
+  var inc = { summary: document.getElementById('incSummary').checked, balances: document.getElementById('incBalances').checked,
+              taken: document.getElementById('incTaken').checked, requests: document.getElementById('incRequests').checked };
+  var msg = document.getElementById('repMsg');
+  if(!from || !to){ msg.className = 'reqmsg err'; msg.textContent = 'Choose a From and To date.'; return; }
+  if(from > to){ msg.className = 'reqmsg err'; msg.textContent = 'From date must be on or before the To date.'; return; }
+  if(!inc.summary && !inc.balances && !inc.taken && !inc.requests){ msg.className = 'reqmsg err'; msg.textContent = 'Tick at least one section.'; return; }
+
+  // open the window during the click so the browser doesn't block it as a pop-up
+  var w = window.open('', '_blank');
+  if(!w){ msg.className = 'reqmsg err'; msg.textContent = 'Your browser blocked the report window. Allow pop-ups for this site and try again.'; return; }
+  w.document.write('<p style="font-family:sans-serif;padding:30px;color:#5b6478">Building leave report…</p>');
+  msg.className = 'reqmsg'; msg.textContent = 'Building report…';
+
+  try {
+    var qE = sb.from('leave_entries').select('employee_id,leave_date,leave_type,hours,note').order('leave_date');
+    var qB = sb.from('leave_balances').select('employee_id,leave_type,seed_balance,seed_date');
+    if(empId){ qE = qE.eq('employee_id', empId); qB = qB.eq('employee_id', empId); }
+    const [eRes, bRes, rRes] = await Promise.all([qE, qB, sb.rpc('leave_requests_for_approval')]);
+    if(eRes.error) throw eRes.error; if(bRes.error) throw bRes.error; if(rRes.error) throw rRes.error;
+    var entries = eRes.data || [], bals = bRes.data || [], reqs = rRes.data || [];
+
+    var empById = {}; REP_EMPS.forEach(function(e){ empById[e.id] = e; });
+    function nameOf(id){ return empById[id] ? empById[id].name : '—'; }
+    // people in scope: the chosen one, or everyone still employed at the start of the range
+    var people = REP_EMPS.filter(function(e){ return empId ? e.id === empId : (!e.exit_date || e.exit_date >= from); });
+
+    var inRange = entries.filter(function(l){ return l.leave_date >= from && l.leave_date <= to && (!type || l.leave_type === type); });
+    var todayStr = todayISO(), today = new Date();
+
+    var types = ['Annual Leave', 'Personal Leave', 'Unpaid Leave'];
+    entries.forEach(function(l){ if(types.indexOf(l.leave_type) < 0) types.push(l.leave_type); });
+    if(type) types = [type];
+
+    var out = '';
+    var filt = 'Period: <b>' + fmtDay(from) + ' – ' + fmtDay(to) + '</b> · Employee: <b>' + esc(empId ? nameOf(empId) : 'All employees') + '</b> · Leave type: <b>' + esc(type || 'All') + '</b>';
+
+    // 1. Summary per person
+    if(inc.summary){
+      var sumRows = {};
+      inRange.forEach(function(l){
+        var r = sumRows[l.employee_id] || (sumRows[l.employee_id] = {});
+        r[l.leave_type] = (r[l.leave_type] || 0) + (parseFloat(l.hours) || 0);
+      });
+      var ids = Object.keys(sumRows).sort(function(a, b){ return nameOf(a).localeCompare(nameOf(b)); });
+      var tot = {};
+      out += '<h2>Summary per person</h2><p class="sub">Hours (days at ' + HOURS_PER_DAY + ' hrs/day) recorded in the period. Dates after today are booked leave.</p>';
+      if(!ids.length) out += '<p class="none">No leave recorded in this period.</p>';
+      else {
+        out += '<table><thead><tr><th>Employee</th>' + types.map(function(t){ return '<th class="n">' + esc(t) + '</th>'; }).join('') + (types.length > 1 ? '<th class="n">Total</th>' : '') + '</tr></thead><tbody>';
+        ids.forEach(function(id){
+          var r = sumRows[id], all = 0;
+          out += '<tr><td>' + esc(nameOf(id)) + '</td>' + types.map(function(t){ var v = r[t] || 0; all += v; tot[t] = (tot[t] || 0) + v; return '<td class="n">' + (v ? h2(v) + ' <span class="dd">(' + d1(v) + 'd)</span>' : '–') + '</td>'; }).join('')
+            + (types.length > 1 ? '<td class="n b">' + h2(all) + ' <span class="dd">(' + d1(all) + 'd)</span></td>' : '') + '</tr>';
+        });
+        var g = 0;
+        out += '</tbody><tfoot><tr><td>Total</td>' + types.map(function(t){ g += tot[t] || 0; return '<td class="n">' + h2(tot[t]) + ' <span class="dd">(' + d1(tot[t]) + 'd)</span></td>'; }).join('')
+          + (types.length > 1 ? '<td class="n">' + h2(g) + ' <span class="dd">(' + d1(g) + 'd)</span></td>' : '') + '</tr></tfoot></table>';
+      }
+    }
+
+    // 2. Current balances (as at today)
+    if(inc.balances){
+      var bTypes = ['Annual Leave', 'Personal Leave'].filter(function(t){ return !type || t === type; });
+      out += '<h2>Current balances</h2><p class="sub">As at ' + fmtDay(todayStr) + '. Available = opening balance + monthly accrual (15th) − leave taken to date; leave booked after today is shown separately. Exited staff are frozen at their exit date.</p>';
+      if(!bTypes.length) out += '<p class="none">' + esc(type) + ' has no accruing balance.</p>';
+      else {
+        var bRows = people.slice().sort(function(a, b){ return a.name.localeCompare(b.name); });
+        out += '<table><thead><tr><th>Employee</th>' + bTypes.map(function(t){ return '<th class="n">' + esc(t) + '<br><span class="th2">available · booked</span></th>'; }).join('') + '</tr></thead><tbody>';
+        var anyB = false;
+        bRows.forEach(function(e){
+          var cells = bTypes.map(function(t){
+            var rec = bals.find(function(b){ return b.employee_id === e.id && b.leave_type === t; });
+            if(!rec) return '<td class="n dd">not set up</td>';
+            anyB = true;
+            var bal = repBalance(e, rec, entries, today);
+            var booked = entries.filter(function(l){ return l.employee_id === e.id && l.leave_type === t && l.leave_date > todayStr; })
+              .reduce(function(a, l){ return a + (parseFloat(l.hours) || 0); }, 0);
+            return '<td class="n"><b' + (bal < 0 ? ' class="neg"' : '') + '>' + h2(bal) + '</b> hrs <span class="dd">(' + d1(bal) + 'd)</span>' + (booked ? '<br><span class="dd">' + h2(booked) + ' hrs booked</span>' : '') + '</td>';
+          }).join('');
+          out += '<tr><td>' + esc(e.name) + (e.exit_date ? ' <span class="dd">· exited ' + fmtDay(e.exit_date) + '</span>' : '') + '</td>' + cells + '</tr>';
+        });
+        out += '</tbody></table>';
+        if(!anyB) out += '<p class="none">No balances have been set up for the selection.</p>';
+      }
+    }
+
+    // 3. Leave taken by date
+    if(inc.taken){
+      out += '<h2>Leave taken (by date)</h2><p class="sub">Every leave day recorded in the period, in date order.</p>';
+      if(!inRange.length) out += '<p class="none">No leave recorded in this period.</p>';
+      else {
+        var sumH = 0;
+        out += '<table><thead><tr><th>Date</th><th>Employee</th><th>Leave type</th><th class="n">Hours</th><th>Note</th></tr></thead><tbody>';
+        inRange.slice().sort(function(a, b){ return a.leave_date.localeCompare(b.leave_date) || nameOf(a.employee_id).localeCompare(nameOf(b.employee_id)); }).forEach(function(l){
+          var hrs = parseFloat(l.hours) || 0; sumH += hrs;
+          out += '<tr><td class="nw">' + fmtDay(l.leave_date) + (l.leave_date > todayStr ? ' <span class="tag">booked</span>' : '') + '</td><td>' + esc(nameOf(l.employee_id)) + '</td><td>' + esc(l.leave_type) + '</td><td class="n">' + h2(hrs) + '</td><td class="note">' + esc(l.note || '') + '</td></tr>';
+        });
+        out += '</tbody><tfoot><tr><td colspan="3">' + inRange.length + ' day' + (inRange.length === 1 ? '' : 's') + '</td><td class="n">' + h2(sumH) + '</td><td></td></tr></tfoot></table>';
+      }
+    }
+
+    // 4. Leave requests overlapping the period
+    if(inc.requests){
+      var rq = reqs.filter(function(r){ return r.start_date <= to && r.end_date >= from && (!empId || r.employee_id === empId) && (!type || r.leave_type === type); })
+        .sort(function(a, b){ return a.start_date.localeCompare(b.start_date) || String(a.employee_name).localeCompare(String(b.employee_name)); });
+      var cnt = {}; rq.forEach(function(r){ cnt[r.status] = (cnt[r.status] || 0) + 1; });
+      out += '<h2>Leave requests</h2><p class="sub">Requests with any day inside the period' + (rq.length ? ' · ' + Object.keys(cnt).map(function(k){ return cnt[k] + ' ' + k.toLowerCase(); }).join(', ') : '') + '.</p>';
+      if(!rq.length) out += '<p class="none">No requests in this period.</p>';
+      else {
+        out += '<table><thead><tr><th>Submitted</th><th>Employee</th><th>Dates</th><th>Leave type</th><th class="n">Days · hrs</th><th>Status</th><th>Reason / note</th></tr></thead><tbody>';
+        rq.forEach(function(r){
+          var days = workingDays(r.start_date, r.end_date).length, hrs = days * parseFloat(r.hours_per_day || 0);
+          var sub = r.created_at ? fmtDay(isoOf(new Date(r.created_at))) : '—';
+          var notes = [r.reason ? esc(r.reason) : '', r.previous_dates ? '<i>moved from ' + esc(r.previous_dates) + '</i>' : '', r.decision_note ? '<i>' + esc(r.decision_note) + '</i>' : ''].filter(Boolean).join(' · ');
+          out += '<tr><td class="nw">' + sub + '</td><td>' + esc(r.employee_name || nameOf(r.employee_id)) + '</td><td class="nw">' + (r.start_date === r.end_date ? fmtDay(r.start_date) : fmtDay(r.start_date) + ' –<br>' + fmtDay(r.end_date)) + '</td><td>' + esc(r.leave_type) + '</td><td class="n">' + days + ' · ' + h2(hrs) + '</td><td><span class="st ' + String(r.status).toLowerCase() + '">' + esc(r.status) + '</span></td><td class="note">' + notes + '</td></tr>';
+        });
+        out += '</tbody></table>';
+      }
+    }
+
+    var logo = new URL('ddl-logo.png', location.href).href;
+    var gen = new Date();
+    var css = '*{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#14213d;margin:0;background:#f4f6fb}'
+      + '.page{max-width:1000px;margin:0 auto;padding:28px 32px 40px;background:#fff}'
+      + '.bar{position:sticky;top:0;background:#0f1b3d;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;z-index:2}'
+      + '.bar button{background:#2f6bff;color:#fff;border:none;border-radius:8px;height:32px;padding:0 16px;font-weight:700;cursor:pointer;margin-left:8px}.bar button.g{background:transparent;border:1px solid rgba(255,255,255,.4)}'
+      + 'header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #0f1b3d;padding-bottom:14px;margin-bottom:6px}'
+      + 'header img{height:46px}h1{font-size:22px;margin:0 0 2px;text-align:right}.co{font-size:11.5px;color:#5b6478;text-align:right}'
+      + '.filters{font-size:12px;color:#5b6478;margin:10px 0 4px}.gen{font-size:10.5px;color:#8a91a5}'
+      + 'h2{font-size:15px;margin:26px 0 2px;padding-top:4px;color:#0f1b3d}.sub{font-size:11px;color:#8a91a5;margin:0 0 8px}'
+      + 'table{width:100%;border-collapse:collapse;font-size:11.5px}th{text-align:left;background:#eef2fa;color:#3d4660;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;padding:7px 8px;border-bottom:1px solid #d6dcea}'
+      + 'td{padding:6px 8px;border-bottom:1px solid #e9ecf3;vertical-align:top}tfoot td{font-weight:700;background:#f7f9fd;border-top:2px solid #d6dcea}'
+      + '.n{text-align:right;white-space:nowrap}.nw{white-space:nowrap}.b{font-weight:700}.dd{color:#8a91a5;font-weight:400;font-size:10.5px}.th2{text-transform:none;font-weight:500;letter-spacing:0;color:#8a91a5}'
+      + '.neg{color:#c9271d}.note{color:#5b6478;font-size:11px}.none{font-size:12px;color:#8a91a5;font-style:italic}'
+      + '.tag{font-size:9px;background:#fff1e3;color:#c26f00;border-radius:4px;padding:1px 5px;font-weight:700;text-transform:uppercase}'
+      + '.st{font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}.st.approved{background:#e6f6ec;color:#1a8a4b}.st.pending{background:#fff4e0;color:#b86b00}.st.declined{background:#ffe9e8;color:#c9271d}.st.cancelled{background:#f0f1f5;color:#5b6478}'
+      + 'footer{margin-top:30px;font-size:10px;color:#8a91a5;border-top:1px solid #e6e9f2;padding-top:8px}'
+      + '@media print{body{background:#fff}.bar{display:none}.page{padding:0;max-width:none}th,tfoot td,.st,.tag{-webkit-print-color-adjust:exact;print-color-adjust:exact}tr{break-inside:avoid}h2{break-after:avoid}thead{display:table-header-group}}'
+      + '@page{size:A4;margin:14mm 12mm}';
+    var title = 'DDL Leave Report ' + from + ' to ' + to;
+    var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>' + css + '</style></head><body>'
+      + '<div class="bar"><span>Leave Report · use <b>Save as PDF</b> in the print dialog</span><span><button class="g" onclick="window.close()">Close</button><button onclick="window.print()">Print / Save as PDF</button></span></div>'
+      + '<div class="page"><header><img src="' + logo + '" alt="DDL"><div><h1>Leave Report</h1><div class="co">Digital Door Locks Pty Limited</div></div></header>'
+      + '<div class="filters">' + filt + '</div><div class="gen">Generated ' + fmtDay(isoOf(gen)) + ' ' + gen.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + '</div>'
+      + out + '<footer>Balances follow the same rule as the HR dashboard (Employee 203). ' + HOURS_PER_DAY + ' hours = 1 day.</footer></div>'
+      + '<script>window.onload=function(){setTimeout(function(){window.print();},350);};<\/script></body></html>';
+    w.document.open(); w.document.write(doc); w.document.close();
+    msg.className = 'reqmsg ok'; msg.textContent = 'Report opened in a new tab.';
+  } catch(err){
+    try { w.close(); } catch(e){}
+    msg.className = 'reqmsg err'; msg.textContent = 'Could not build the report: ' + (err.message || err);
+  }
+}
 
 async function decide(id, approve){
   // only ask for a note when declining — approvals rarely need one
