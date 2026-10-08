@@ -814,7 +814,7 @@ body {
 .ovx-tile.go:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(20,33,61,0.18); }
 .ovx-tile-chev{ position:absolute; top:12px; right:13px; font-size:18px; line-height:1; color:rgba(255,255,255,0.85); }
 .ovx-tile.row .ovx-tile-l, .ovx-fc-l{ text-transform:uppercase; letter-spacing:0.5px; font-size:10.5px; font-weight:600; }
-.ovx-fc-v.c-purple{ color:#5b2fd0; } .ovx-fc-v.c-orange{ color:#f27a00; }
+.ovx-fc-v.c-purple{ color:#5b2fd0; } .ovx-fc-v.c-green{ color:#1f8a50; } .ovx-fc-v.c-orange{ color:#f27a00; }
 .ovx-main .ovx-card:not(.ovx-attn) .ovx-title{ text-transform:uppercase; font-size:13px; letter-spacing:0.6px; }
 .ovx-tile.row{ display:flex; gap:12px; align-items:flex-start; }
 .ovx-tile.row .ovx-tile-ic{ margin-bottom:0; flex-shrink:0; }
@@ -4521,12 +4521,12 @@ function renderOverview(){
   if(fc.maxiCount) due.push('Maxicare (' + fc.maxiCount + ')');
   function fcCard(tone, icon, label, value, sub, bars){
     return '<div class="ovx-fc-card ' + tone + '"><div class="ovx-fc-top"><div class="ovx-tile-ic">' + ovxIcon(icon, 16) + '</div>'
-      + '<div style="min-width:0"><div class="ovx-fc-l">' + label + '</div><div class="ovx-fc-v' + (label === 'Loan Deductions' ? ' c-purple' : (label === 'Also Due' ? ' c-orange' : '')) + '">' + value + '</div><div class="ovx-fc-s">' + sub + '</div></div></div>' + bars + '</div>';
+      + '<div style="min-width:0"><div class="ovx-fc-l">' + label + '</div><div class="ovx-fc-v' + (label === 'Loan Deductions' ? ' c-green' : (label === 'Also Due' ? ' c-orange' : '')) + '">' + value + '</div><div class="ovx-fc-s">' + sub + '</div></div></div>' + bars + '</div>';
   }
   var fcCards = ''
-    + fcCard('t-blue', 'coins', 'Base Payroll', fc.basePhp ? '₱' + fmtMoney(fc.basePhp) : '—', fc.headcount + ' employees at current rates' + (fc.estimated ? ', est. at ' + fc.rate.toFixed(4) : ''), ovxBars(H.map(function(x){ return x.total; }).concat([fc.basePhp]), fcLbl, '#2f6bff', ['#6f97ff','#1d4ed8']))
-    + fcCard('t-purple', 'wallet', 'Loan Deductions', fc.loanPhp ? '−₱' + fmtMoney(Math.abs(fc.loanPhp)) : '—', fc.loanPhp ? 'Scheduled instalments' : 'None scheduled', ovxBars(H.map(function(x){ return x.loan; }).concat([Math.abs(fc.loanPhp)]), fcLbl, '#6a4cff', ['#9a85ff','#4a30d0']))
-    + fcCard('t-green', 'user', 'Headcount Paid', String(fc.headcount), 'Employees in scope next period', ovxBars(H.map(function(x){ return x.heads; }).concat([fc.headcount]), fcLbl, '#22a35a', ['#5cc485','#17793f']))
+    + fcCard('t-blue', 'coins', 'Base Payroll', fc.basePhp ? '₱' + fmtMoney(fc.basePhp) : '—', fc.headcount + ' employees at current rates' + (fc.estimated ? ', est. at ' + fc.rate.toFixed(4) : ''), ovxBars(H.map(function(x){ return x.total; }).concat([fc.basePhp]), fcLbl, '#007aff', ['#4da2ff','#0056b3']))
+    + fcCard('t-green', 'wallet', 'Loan Deductions', fc.loanPhp ? '−₱' + fmtMoney(Math.abs(fc.loanPhp)) : '—', fc.loanPhp ? 'Scheduled instalments' : 'None scheduled', ovxBars(H.map(function(x){ return x.loan; }).concat([Math.abs(fc.loanPhp)]), fcLbl, '#34c759', ['#63d67f','#248a3d']))
+    + fcCard('t-purple', 'user', 'Headcount Paid', String(fc.headcount), 'Employees in scope next period', ovxBars(H.map(function(x){ return x.heads; }).concat([fc.headcount]), fcLbl, '#5e5ce6', ['#8a88f0','#4340b8']))
     + fcCard('t-orange', 'bag', 'Also Due', due.length ? due.join(' · ') : 'Nothing extra', due.length ? 'On top of base payroll' : 'Base payroll only', ovxBars(H.map(function(x){ return x.ded; }), lastLbl, '#ff9500', ['#ffb04d','#c26f00']));
 
   // Sidebar
