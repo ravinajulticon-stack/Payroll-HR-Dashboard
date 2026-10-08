@@ -68,12 +68,38 @@ button{ font-family:inherit; }
 @media(max-width:860px){ .cols{ grid-template-columns:1fr; } #leaveList{ flex:none; max-height:360px; } }
 
 /* Admin: Leave Report */
-.repform{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)) auto; gap:12px; padding:2px 18px 18px; align-items:end; }
-.repform label{ display:block; font-size:11.5px; font-weight:600; color:var(--text-2); margin-bottom:6px; }
-.rep-inc{ display:flex; gap:16px; flex-wrap:wrap; padding:0 18px 16px; font-size:12px; color:var(--text-2); }
-.rep-inc label{ display:flex; align-items:center; gap:6px; cursor:pointer; }
-.rep-presets{ display:flex; gap:6px; flex-wrap:wrap; padding:0 18px 12px; }
-@media(max-width:860px){ .repform{ grid-template-columns:1fr 1fr; } .repform .btn{ grid-column:1 / -1; } }
+.rep-hd{ display:flex; align-items:center; gap:12px; }
+.rep-ic{ width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,#3b82ff,#1d4ed8); color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 10px rgba(47,107,255,0.25); }
+.rep-sub{ font-size:11.5px; color:var(--text-3); margin-top:2px; font-weight:400; }
+.rep-badge{ font-size:10px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:#1d4ed8; background:#eaf0ff; border-radius:999px; padding:4px 10px; }
+.rep-body{ padding:4px 18px 16px; }
+.rep-step{ font-size:10.5px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:var(--text-3); margin:6px 0 9px; display:flex; align-items:center; gap:8px; }
+.rep-step b{ width:18px; height:18px; border-radius:50%; background:#0f1b3d; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:10px; }
+.rep-period{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.rep-range{ font-size:12px; color:var(--text-2); }
+.rep-range b{ color:var(--text); }
+.rep-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+.rep-grid label{ display:block; font-size:11.5px; font-weight:600; color:var(--text-2); margin-bottom:6px; }
+.rep-secs{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.rep-sec{ position:relative; display:flex; gap:10px; align-items:flex-start; padding:12px 30px 12px 12px; border:1.5px solid var(--border); border-radius:12px; background:#fbfcfe; cursor:pointer; transition:all 0.14s; user-select:none; }
+.rep-sec input{ position:absolute; opacity:0; pointer-events:none; }
+.rep-sec:hover{ border-color:#c9d6ff; }
+.rep-sec.on{ border-color:var(--blue); background:#f3f7ff; box-shadow:0 0 0 3px rgba(47,107,255,0.10); }
+.rep-sec-ic{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.rep-sec-t{ font-size:12.5px; font-weight:700; color:var(--text); line-height:1.25; }
+.rep-sec-d{ font-size:10.5px; color:var(--text-3); margin-top:3px; line-height:1.35; }
+.rep-chk{ position:absolute; top:9px; right:9px; width:16px; height:16px; border-radius:50%; border:1.5px solid #c8cfdd; background:#fff; display:flex; align-items:center; justify-content:center; }
+.rep-sec.on .rep-chk{ background:var(--blue); border-color:var(--blue); }
+.rep-chk svg{ opacity:0; } .rep-sec.on .rep-chk svg{ opacity:1; }
+.rep-foot{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; padding:14px 18px; border-top:1px solid var(--border); background:#f8fafd; }
+.rep-stats{ display:flex; gap:22px; flex-wrap:wrap; }
+.rep-stat-v{ font-size:17px; font-weight:800; color:var(--text); line-height:1.1; }
+.rep-stat-l{ font-size:10px; font-weight:600; letter-spacing:0.4px; text-transform:uppercase; color:var(--text-3); margin-top:2px; }
+.rep-acts{ display:flex; gap:8px; align-items:center; }
+.rep-acts .btn{ display:inline-flex; align-items:center; gap:7px; }
+#repMsg{ padding:0 18px 12px; text-align:right; background:#f8fafd; min-height:0; }
+#repMsg:empty{ display:none; }
+@media(max-width:860px){ .rep-grid, .rep-secs{ grid-template-columns:1fr 1fr; } .rep-acts{ width:100%; } .rep-acts .btn.lg{ flex:1; justify-content:center; } }
 
 /* Quick actions */
 .qa{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; padding:4px 18px 18px; }
@@ -241,27 +267,46 @@ button{ font-family:inherit; }
     </div>
 
     <div class="card" id="reportCard" style="display:none">
-      <div class="card-head"><span class="card-title">Leave Report</span><span class="card-meta">Admin Only · Opens a Printable Report (Save as PDF)</span></div>
-      <div class="rep-presets">
-        <button class="btn ghost sm" onclick="repPreset('month')">This Month</button>
-        <button class="btn ghost sm" onclick="repPreset('lastmonth')">Last Month</button>
-        <button class="btn ghost sm" onclick="repPreset('year')">This Year</button>
-        <button class="btn ghost sm" onclick="repPreset('fy')">Financial Year</button>
+      <div class="card-head">
+        <div class="rep-hd"><span class="rep-ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1.8h5.5L13 5.3V14a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V2.7a.9.9 0 0 1 .9-.9z"/><path d="M5.5 11.5V9M8 11.5V7M10.5 11.5V8.5"/></svg></span>
+          <div><div class="card-title">Leave Report</div><div class="rep-sub">Build a printable report for any period, person or leave type.</div></div></div>
+        <span class="rep-badge">Admin Only</span>
       </div>
-      <div class="repform">
-        <div><label>From</label><input type="date" id="repFrom" class="fld"></div>
-        <div><label>To</label><input type="date" id="repTo" class="fld"></div>
-        <div><label>Employee</label><select id="repEmp" class="fld"><option value="">All Employees</option></select></div>
-        <div><label>Leave Type</label><select id="repType" class="fld"><option value="">All Leave Types</option><option>Annual Leave</option><option>Personal Leave</option><option>Unpaid Leave</option></select></div>
-        <button class="btn lg" onclick="generateReport()">Generate Report</button>
+      <div class="rep-body">
+        <div class="rep-step"><b>1</b>Period</div>
+        <div class="rep-period">
+          <div class="tabs" id="repSeg">
+            <button class="tab on" data-k="month" onclick="repPreset('month')">This Month</button>
+            <button class="tab" data-k="lastmonth" onclick="repPreset('lastmonth')">Last Month</button>
+            <button class="tab" data-k="year" onclick="repPreset('year')">This Year</button>
+            <button class="tab" data-k="fy" onclick="repPreset('fy')">Financial Year</button>
+            <button class="tab" data-k="custom" onclick="repPreset('custom')">Custom</button>
+          </div>
+          <div class="rep-range" id="repRange"></div>
+        </div>
+        <div class="rep-step"><b>2</b>Filters</div>
+        <div class="rep-grid">
+          <div><label>From</label><input type="date" id="repFrom" class="fld" onchange="repCustom()"></div>
+          <div><label>To</label><input type="date" id="repTo" class="fld" onchange="repCustom()"></div>
+          <div><label>Employee</label><select id="repEmp" class="fld" onchange="repUpdate()"><option value="">All Employees</option></select></div>
+          <div><label>Leave Type</label><select id="repType" class="fld" onchange="repUpdate()"><option value="">All Leave Types</option><option>Annual Leave</option><option>Personal Leave</option><option>Unpaid Leave</option></select></div>
+        </div>
+        <div class="rep-step"><b>3</b>Sections To Include</div>
+        <div class="rep-secs">
+          <label class="rep-sec on" id="sec_incSummary"><input type="checkbox" id="incSummary" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic b"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 6.2a1.7 1.7 0 1 0 0-.01M2.6 12.5c.4-1.7 1.6-2.6 2.9-2.6s2.5.9 2.9 2.6M10 5.5h3.5M10 8h3.5M11 10.5h2.5"/></svg></span><span><div class="rep-sec-t">Summary Per Person</div><div class="rep-sec-d">Days and hours of each leave type, per person</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+          <label class="rep-sec on" id="sec_incBalances"><input type="checkbox" id="incBalances" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic g"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="12" height="9.5" rx="2"/><path d="M2 6.5h12M10.5 9.8h1.3"/></svg></span><span><div class="rep-sec-t">Current Balances</div><div class="rep-sec-d">Hours available today, plus leave booked ahead</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+          <label class="rep-sec on" id="sec_incTaken"><input type="checkbox" id="incTaken" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic p"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3M5.5 9.5h1M9.5 9.5h1M5.5 11.7h1"/></svg></span><span><div class="rep-sec-t">Leave Taken (By Date)</div><div class="rep-sec-d">Every leave day in the period, in date order</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+          <label class="rep-sec on" id="sec_incRequests"><input type="checkbox" id="incRequests" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic o"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1.8h5.5L13 5.3V14a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V2.7a.9.9 0 0 1 .9-.9z"/><path d="M5.6 9l1.6 1.6 3.2-3.2"/></svg></span><span><div class="rep-sec-t">Leave Requests</div><div class="rep-sec-d">Submitted, status, reason and approver note</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+        </div>
       </div>
-      <div class="rep-inc">
-        <label><input type="checkbox" id="incSummary" checked> Summary Per Person</label>
-        <label><input type="checkbox" id="incBalances" checked> Current Balances</label>
-        <label><input type="checkbox" id="incTaken" checked> Leave Taken (By Date)</label>
-        <label><input type="checkbox" id="incRequests" checked> Leave Requests</label>
+      <div class="rep-foot">
+        <div class="rep-stats" id="repStats"></div>
+        <div class="rep-acts">
+          <button class="btn ghost lg" onclick="repReset()">Reset</button>
+          <button class="btn lg" onclick="generateReport()"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5V2h7v3.5"/><rect x="2" y="5.5" width="12" height="6" rx="1.5"/><path d="M4.5 9.5h7V14h-7z"/></svg>Generate Report</button>
+        </div>
       </div>
-      <div id="repMsg" class="reqmsg" style="text-align:left"></div>
+      <div id="repMsg" class="reqmsg"></div>
     </div>
 
     <div class="cols">
@@ -582,6 +627,8 @@ function todayISO(){ return isoOf(new Date()); }
 // ---------- Admin: Leave Report (printable, Save as PDF) ----------
 var REP_EMPS = [];
 
+var REP_DATA = null;   // leave entries + requests cached for the live preview counts
+
 async function initReport(){
   document.getElementById('reportCard').style.display = 'block';
   repPreset('month');
@@ -589,11 +636,19 @@ async function initReport(){
   REP_EMPS = data || [];
   var sel = document.getElementById('repEmp');
   sel.innerHTML = '<option value="">All Employees</option>' + REP_EMPS.map(function(e){
-    return '<option value="' + esc(e.id) + '">' + esc(e.name) + (e.exit_date ? ' (exited)' : '') + '</option>';
+    return '<option value="' + esc(e.id) + '">' + esc(e.name) + (e.exit_date ? ' (Exited)' : '') + '</option>';
   }).join('');
+  const [eRes, rRes] = await Promise.all([
+    sb.from('leave_entries').select('employee_id,leave_date,leave_type,hours'),
+    sb.rpc('leave_requests_for_approval')
+  ]);
+  REP_DATA = { entries: eRes.data || [], reqs: rRes.data || [] };
+  repUpdate();
 }
 
 function repPreset(k){
+  document.querySelectorAll('#repSeg .tab').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k') === k); });
+  if(k === 'custom'){ document.getElementById('repFrom').focus(); repUpdate(); return; }
   var t = new Date(), y = t.getFullYear(), m = t.getMonth(), a, b;
   if(k === 'month'){ a = new Date(y, m, 1); b = new Date(y, m + 1, 0); }
   else if(k === 'lastmonth'){ a = new Date(y, m - 1, 1); b = new Date(y, m, 0); }
@@ -601,6 +656,45 @@ function repPreset(k){
   else { var fy = m >= 6 ? y : y - 1; a = new Date(fy, 6, 1); b = new Date(fy + 1, 5, 30); }
   document.getElementById('repFrom').value = isoOf(a);
   document.getElementById('repTo').value = isoOf(b);
+  repUpdate();
+}
+
+// typing a date switches the period buttons to Custom
+function repCustom(){
+  document.querySelectorAll('#repSeg .tab').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k') === 'custom'); });
+  repUpdate();
+}
+
+function repSecToggle(cb){ cb.closest('.rep-sec').classList.toggle('on', cb.checked); }
+
+function repReset(){
+  document.getElementById('repEmp').value = '';
+  document.getElementById('repType').value = '';
+  ['incSummary','incBalances','incTaken','incRequests'].forEach(function(id){ var c = document.getElementById(id); c.checked = true; repSecToggle(c); });
+  document.getElementById('repMsg').textContent = '';
+  repPreset('month');
+}
+
+// Period label and live counts in the footer, so you can see what the report will hold before printing
+function repUpdate(){
+  var from = document.getElementById('repFrom').value, to = document.getElementById('repTo').value;
+  var range = document.getElementById('repRange'), stats = document.getElementById('repStats');
+  if(!range) return;
+  if(!from || !to || from > to){ range.innerHTML = '<span style="color:#c9271d">Choose a valid From and To date</span>'; stats.innerHTML = ''; return; }
+  var wd = (typeof HOLIDAY_SET !== 'undefined') ? workingDays(from, to).length : null;
+  range.innerHTML = '<b>' + fmtDay(from) + '</b> to <b>' + fmtDay(to) + '</b>' + (wd != null ? ' · ' + wd + ' working day' + (wd === 1 ? '' : 's') : '');
+  if(!REP_DATA){ stats.innerHTML = '<div class="rep-stat-l">Loading…</div>'; return; }
+  var emp = document.getElementById('repEmp').value, type = document.getElementById('repType').value;
+  var ent = REP_DATA.entries.filter(function(l){ return l.leave_date >= from && l.leave_date <= to && (!emp || l.employee_id === emp) && (!type || l.leave_type === type); });
+  var hrs = ent.reduce(function(a, l){ return a + (parseFloat(l.hours) || 0); }, 0);
+  var ppl = {}; ent.forEach(function(l){ ppl[l.employee_id] = 1; });
+  var rq = REP_DATA.reqs.filter(function(r){ return r.start_date <= to && r.end_date >= from && (!emp || r.employee_id === emp) && (!type || r.leave_type === type); });
+  var pend = rq.filter(function(r){ return r.status === 'Pending'; }).length;
+  function st(v, l){ return '<div><div class="rep-stat-v">' + v + '</div><div class="rep-stat-l">' + l + '</div></div>'; }
+  stats.innerHTML = st((hrs / HOURS_PER_DAY).toFixed(1), 'Leave Days')
+    + st(hrs.toFixed(2), 'Hours')
+    + st(Object.keys(ppl).length, 'People')
+    + st(rq.length + (pend ? ' <span style="font-size:11px;color:#b86b00;font-weight:700">(' + pend + ' Pending)</span>' : ''), 'Requests');
 }
 
 // Same balance rule as the dashboard (Employee 203): seed + hours credited on the 15th of each month
@@ -666,6 +760,13 @@ async function generateReport(){
     if(type) types = [type];
 
     var out = '';
+    var kHrs = inRange.reduce(function(a, l){ return a + (parseFloat(l.hours) || 0); }, 0);
+    var kPpl = {}; inRange.forEach(function(l){ kPpl[l.employee_id] = 1; });
+    var kAhead = inRange.filter(function(l){ return l.leave_date > todayStr; }).reduce(function(a, l){ return a + (parseFloat(l.hours) || 0); }, 0);
+    var kReq = reqs.filter(function(r){ return r.start_date <= to && r.end_date >= from && (!empId || r.employee_id === empId) && (!type || r.leave_type === type); });
+    var kPend = kReq.filter(function(r){ return r.status === 'Pending'; }).length;
+    function kpi(v, l, s2){ return '<div class="kpi"><div class="kv">' + v + '</div><div class="kl">' + l + '</div>' + (s2 ? '<div class="ks">' + s2 + '</div>' : '') + '</div>'; }
+    var kpis = '<div class="kpis">' + kpi(d1(kHrs), 'Leave Days', h2(kHrs) + ' hours') + kpi(Object.keys(kPpl).length, 'People On Leave', '') + kpi(d1(kAhead), 'Booked Ahead', 'days after today') + kpi(kReq.length, 'Requests', kPend ? kPend + ' pending' : 'none pending') + '</div>';
     var filt = 'Period: <b>' + fmtDay(from) + ' – ' + fmtDay(to) + '</b> · Employee: <b>' + esc(empId ? nameOf(empId) : 'All Employees') + '</b> · Leave Type: <b>' + esc(type || 'All') + '</b>';
 
     // 1. Summary per person
@@ -768,6 +869,7 @@ async function generateReport(){
       + '.neg{color:#c9271d}.note{color:#5b6478;font-size:11px}.none{font-size:12px;color:#8a91a5;font-style:italic}'
       + '.tag{font-size:9px;background:#fff1e3;color:#c26f00;border-radius:4px;padding:1px 5px;font-weight:700;text-transform:uppercase}'
       + '.st{font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}.st.approved{background:#e6f6ec;color:#1a8a4b}.st.pending{background:#fff4e0;color:#b86b00}.st.declined{background:#ffe9e8;color:#c9271d}.st.cancelled{background:#f0f1f5;color:#5b6478}'
+      + '.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 4px}.kpi{border:1px solid #e1e6f0;border-radius:10px;padding:10px 12px;background:#f8faff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.kv{font-size:20px;font-weight:800;color:#0f1b3d}.kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#5b6478;margin-top:2px}.ks{font-size:10px;color:#8a91a5;margin-top:1px}'
       + 'footer{margin-top:30px;font-size:10px;color:#8a91a5;border-top:1px solid #e6e9f2;padding-top:8px}'
       + '@media print{body{background:#fff}.bar{display:none}.page{padding:0;max-width:none}th,tfoot td,.st,.tag{-webkit-print-color-adjust:exact;print-color-adjust:exact}tr{break-inside:avoid}h2{break-after:avoid}thead{display:table-header-group}}'
       + '@page{size:A4;margin:14mm 12mm}';
@@ -776,7 +878,7 @@ async function generateReport(){
       + '<div class="bar"><span>Leave Report · use <b>Save as PDF</b> in the print dialog</span><span><button class="g" onclick="window.close()">Close</button><button onclick="window.print()">Print / Save as PDF</button></span></div>'
       + '<div class="page"><header><img src="' + logo + '" alt="DDL"><div><h1>Leave Report</h1><div class="co">Digital Door Locks Pty Limited</div></div></header>'
       + '<div class="filters">' + filt + '</div><div class="gen">Generated ' + fmtDay(isoOf(gen)) + ' ' + gen.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + '</div>'
-      + out + '<footer>Balances follow the same rule as the HR dashboard (Employee 203). ' + HOURS_PER_DAY + ' hours = 1 day.</footer></div>'
+      + kpis + out + '<footer>Balances follow the same rule as the HR dashboard (Employee 203). ' + HOURS_PER_DAY + ' hours = 1 day.</footer></div>'
       + '<script>window.onload=function(){setTimeout(function(){window.print();},350);};<\/script></body></html>';
     w.document.open(); w.document.write(doc); w.document.close();
     msg.className = 'reqmsg ok'; msg.textContent = 'Report opened in a new tab.';
@@ -971,6 +1073,7 @@ async function loadMine(){
   const allHol = await sb.from('vic_holidays').select('date,name').order('date');
   HOLIDAYS = allHol.data || [];
   HOLIDAY_SET = new Set(HOLIDAYS.map(function(x){ return x.date; }));
+  if(IS_ADMIN) repUpdate();
   var h = HOLIDAYS.filter(function(x){ return x.date >= todayStr; }).slice(0, 16);
   document.getElementById('holidayList').innerHTML = h.length
     ? '<div class="dt-grid">' + h.map(function(x){ return dateTile(x.date, '', esc(x.name)); }).join('') + '</div>'
