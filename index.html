@@ -797,6 +797,25 @@ body {
 .ovx-tile.solid .ovx-tile-ic{ background:rgba(255,255,255,0.18); color:#fff; box-shadow:none; }
 .ovx-tile.solid .ovx-tile-l, .ovx-tile.solid .ovx-tile-s{ color:rgba(255,255,255,0.85); }
 .ovx-tile.solid .ovx-tile-v{ color:#fff; }
+/* Overview colourway: solid tiles with white text (blue, green, orange, slate) */
+.ovx-tile.fill{ position:relative; border-color:transparent; color:#fff; box-shadow:0 6px 16px rgba(20,33,61,0.12); }
+.ovx-tile.fill.f-blue{ background:linear-gradient(135deg,#3b82ff 0%,#1d4ed8 100%); }
+.ovx-tile.fill.f-green{ background:linear-gradient(135deg,#3fbf74 0%,#1f8a50 100%); }
+.ovx-tile.fill.f-orange{ background:linear-gradient(135deg,#ffa23f 0%,#f27a00 100%); }
+.ovx-tile.fill.f-slate{ background:linear-gradient(135deg,#5b6a8a 0%,#3f4b68 100%); }
+.ovx-tile.fill .ovx-tile-ic{ background:rgba(255,255,255,0.2); color:#fff; box-shadow:none; }
+.ovx-tile.fill .ovx-tile-l{ color:rgba(255,255,255,0.88); text-transform:uppercase; letter-spacing:0.5px; font-size:10.5px; font-weight:600; }
+.ovx-tile.fill .ovx-tile-v, .ovx-tile.fill .ovx-tile-v.warn, .ovx-tile.fill .ovx-tile-v.ok{ color:#fff; }
+.ovx-tile.fill .ovx-tile-s, .ovx-tile.fill .ovx-cmp{ color:rgba(255,255,255,0.82); }
+.ovx-tile.fill .ovx-cmp .up, .ovx-tile.fill .ovx-cmp .down{ color:#fff; }
+.ovx-tile.fill .ovx-prog{ background:rgba(255,255,255,0.28); }
+.ovx-tile.fill .ovx-prog i{ background:#fff; }
+.ovx-tile.go{ cursor:pointer; transition:transform 0.14s, box-shadow 0.14s; }
+.ovx-tile.go:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(20,33,61,0.18); }
+.ovx-tile-chev{ position:absolute; top:12px; right:13px; font-size:18px; line-height:1; color:rgba(255,255,255,0.85); }
+.ovx-tile.row .ovx-tile-l, .ovx-fc-l{ text-transform:uppercase; letter-spacing:0.5px; font-size:10.5px; font-weight:600; }
+.ovx-fc-v.c-purple{ color:#5b2fd0; } .ovx-fc-v.c-orange{ color:#f27a00; }
+.ovx-main .ovx-card:not(.ovx-attn) .ovx-title{ text-transform:uppercase; font-size:13px; letter-spacing:0.6px; }
 .ovx-tile.row{ display:flex; gap:12px; align-items:flex-start; }
 .ovx-tile.row .ovx-tile-ic{ margin-bottom:0; flex-shrink:0; }
 .ovx-cmp{ font-size:10.5px; margin-top:6px; color:var(--text-2); }
@@ -4307,7 +4326,8 @@ function ovxToggleIssues(){ ovShowAllIssues = !ovShowAllIssues; renderOverview()
 function ovxScrollAttn(){ var el = document.getElementById('ovxAttn'); if(el) el.scrollIntoView({ behavior:'smooth', block:'start' }); }
 
 function ovxTile(o){
-  return '<div class="ovx-tile ' + (o.tone || 't-plain') + (o.cls ? ' ' + o.cls : '') + '">'
+  return '<div class="ovx-tile ' + (o.tone || 't-plain') + (o.cls ? ' ' + o.cls : '') + (o.go ? ' go' : '') + '"' + (o.go ? ' onclick="ovxGo(\'' + o.go + '\')" title="Open ' + o.go + '"' : '') + '>'
+    + (o.go ? '<span class="ovx-tile-chev">\u203a</span>' : '')
     + '<div class="ovx-tile-ic">' + ovxIcon(o.icon, 17) + '</div>'
     + '<div class="ovx-tile-l">' + o.label + '</div>'
     + '<div class="ovx-tile-v' + (o.vtone ? ' ' + o.vtone : '') + '">' + o.value + '</div>'
@@ -4478,20 +4498,20 @@ function renderOverview(){
   }
   var fx = (rate ? '$' + fmtMoney(st.payout/rate) : '') + (arate ? ' · A$' + fmtMoney(st.payout/arate) : '');
   var periodTiles = ''
-    + ovxTile({ tone:'t-blue', cls:'big', icon:'wallet', label:'Total Payout', value:'₱' + fmtMoney(st.payout), sub: (st.payout && fx ? fx : '') + cmpTxt })
-    + ovxTile({ tone:'t-green', icon:'check', label:'Payroll Marked Paid', value: st.paid + ' of ' + st.expected, sub:'<div class="ovx-prog"><i style="width:' + pct + '%"></i></div><div style="margin-top:6px">' + pct + '% complete</div>', vtone: (st.expected && st.paid >= st.expected) ? 'ok' : '' })
-    + ovxTile({ tone:'t-orange', icon:'cal', label:'Timesheet Gaps', value: gaps.total ? gaps.total + ' days' : 'Complete', vtone: gaps.total ? 'warn' : 'ok', sub: gaps.staff.length ? gaps.staff.slice(0,3).map(function(s){ return s.name.split(' ')[0] + ' ' + s.miss + 'd'; }).join(' · ') : 'All weekdays recorded' })
-    + ovxTile({ tone:'t-purple', icon:'clock', label:'SSS to Remit', value: st.sss ? '₱' + fmtMoney(st.sss) : '—', sub:'Jan / Apr / Jul / Oct' })
-    + ovxTile({ tone:'t-teal', icon:'heart', label:'Maxicare to Remit', value: st.maxicare ? '₱' + fmtMoney(st.maxicare) : '—', sub:'Quarterly per employee' })
-    + ovxTile({ tone:'t-indigo', icon:'cal', label:'13th Month Accrued', value: st.thirteenth ? '₱' + fmtMoney(st.thirteenth) : '—', sub:'Mar / Jun / Sep / Dec' })
-    + ovxTile({ tone:'t-violet', icon:'doc', label:'Leave Liability', value:'₱' + fmtMoney(liab.php + (bestRate.rate ? liab.usd * bestRate.rate : 0)), sub:'Annual Leave owed as at ' + r.end + (bestRate.estimated ? ' · est. rate ' + bestRate.rate.toFixed(4) : '') });
+    + ovxTile({ tone:'f-blue', cls:'big fill', go:'Employee 205', icon:'wallet', label:'Total Payout', value:'₱' + fmtMoney(st.payout), sub: (st.payout && fx ? fx : '') + cmpTxt })
+    + ovxTile({ tone:'f-green', cls:'fill', go:'Employee 202', icon:'check', label:'Payroll Marked Paid', value: st.paid + ' of ' + st.expected, sub:'<div class="ovx-prog"><i style="width:' + pct + '%"></i></div><div style="margin-top:6px">' + pct + '% complete</div>', vtone: (st.expected && st.paid >= st.expected) ? 'ok' : '' })
+    + ovxTile({ tone:'f-orange', cls:'fill', go:'Timesheet', icon:'cal', label:'Timesheet Gaps', value: gaps.total ? gaps.total + ' days' : 'Complete', vtone: gaps.total ? 'warn' : 'ok', sub: gaps.staff.length ? gaps.staff.slice(0,3).map(function(s){ return s.name.split(' ')[0] + ' ' + s.miss + 'd'; }).join(' · ') : 'All weekdays recorded' })
+    + ovxTile({ tone:'f-slate', cls:'fill', go:'Employee 202', icon:'clock', label:'SSS to Remit', value: st.sss ? '₱' + fmtMoney(st.sss) : '—', sub:'Jan / Apr / Jul / Oct' })
+    + ovxTile({ tone:'f-slate', cls:'fill', go:'Employee 202', icon:'heart', label:'Maxicare to Remit', value: st.maxicare ? '₱' + fmtMoney(st.maxicare) : '—', sub:'Quarterly per employee' })
+    + ovxTile({ tone:'f-slate', cls:'fill', go:'Employee 202', icon:'cal', label:'13th Month Accrued', value: st.thirteenth ? '₱' + fmtMoney(st.thirteenth) : '—', sub:'Mar / Jun / Sep / Dec' })
+    + ovxTile({ tone:'f-slate', cls:'fill', go:'Employee 203', icon:'doc', label:'Leave Liability', value:'₱' + fmtMoney(liab.php + (bestRate.rate ? liab.usd * bestRate.rate : 0)), sub:'Annual Leave owed as at ' + r.end + (bestRate.estimated ? ' · est. rate ' + bestRate.rate.toFixed(4) : '') });
 
   // Current position
   var run = ovRunRate();
   var nowTiles = ''
     + ovxRowTile({ cls:'solid', icon:'run', label:'Monthly Run Rate', value:'₱' + fmtMoney(run.php), sub: run.headcount + ' active · ' + run.usdCount + ' USD, ' + run.phpCount + ' PHP' })
-    + ovxRowTile({ tone:'t-plain', icon:'coins', label:'Loans Outstanding', value:(loans.php ? '₱' + fmtMoney(loans.php) : (loans.usd ? '$' + fmtMoney(loans.usd) : '—')), sub: loans.count + ' active loan' + (loans.count!==1?'s':'') + (loans.php && loans.usd ? ' · $' + fmtMoney(loans.usd) : '') })
-    + ovxRowTile({ tone:'t-plain', icon:'cal', label:'Next VIC Holiday', value: hol ? (hol.days === 0 ? 'Today' : hol.days + ' Day' + (hol.days!==1?'s':'')) : '—', vtone: hol && hol.days <= 7 ? 'warn' : '', sub: hol ? hol.name + ' · ' + hol.date : 'None scheduled' })
+    + ovxRowTile({ tone:'t-blue', icon:'coins', label:'Loans Outstanding', value:(loans.php ? '₱' + fmtMoney(loans.php) : (loans.usd ? '$' + fmtMoney(loans.usd) : '—')), sub: loans.count + ' active loan' + (loans.count!==1?'s':'') + (loans.php && loans.usd ? ' · $' + fmtMoney(loans.usd) : '') })
+    + ovxRowTile({ tone:'t-indigo', icon:'cal', label:'Next VIC Holiday', value: hol ? (hol.days === 0 ? 'Today' : hol.days + ' Day' + (hol.days!==1?'s':'')) : '—', vtone: hol && hol.days <= 7 ? 'warn' : '', sub: hol ? hol.name + ' · ' + hol.date : 'None scheduled' })
     + ovxRowTile({ tone: exits.length ? 't-orange' : 't-green', icon:'exit', label:'Upcoming Exits', value: exits.length ? String(exits.length) : 'None', vtone: exits.length ? 'warn' : '', sub: exits.length ? exits.slice(0,2).map(function(e){ return e.name.split(' ')[0] + ' ' + e.exit_date; }).join(' · ') : 'No scheduled departures' });
 
   // Forecast
@@ -4501,12 +4521,12 @@ function renderOverview(){
   if(fc.maxiCount) due.push('Maxicare (' + fc.maxiCount + ')');
   function fcCard(tone, icon, label, value, sub, bars){
     return '<div class="ovx-fc-card ' + tone + '"><div class="ovx-fc-top"><div class="ovx-tile-ic">' + ovxIcon(icon, 16) + '</div>'
-      + '<div style="min-width:0"><div class="ovx-fc-l">' + label + '</div><div class="ovx-fc-v">' + value + '</div><div class="ovx-fc-s">' + sub + '</div></div></div>' + bars + '</div>';
+      + '<div style="min-width:0"><div class="ovx-fc-l">' + label + '</div><div class="ovx-fc-v' + (label === 'Loan Deductions' ? ' c-purple' : (label === 'Also Due' ? ' c-orange' : '')) + '">' + value + '</div><div class="ovx-fc-s">' + sub + '</div></div></div>' + bars + '</div>';
   }
   var fcCards = ''
     + fcCard('t-blue', 'coins', 'Base Payroll', fc.basePhp ? '₱' + fmtMoney(fc.basePhp) : '—', fc.headcount + ' employees at current rates' + (fc.estimated ? ', est. at ' + fc.rate.toFixed(4) : ''), ovxBars(H.map(function(x){ return x.total; }).concat([fc.basePhp]), fcLbl, '#2f6bff', ['#6f97ff','#1d4ed8']))
-    + fcCard('t-green', 'wallet', 'Loan Deductions', fc.loanPhp ? '−₱' + fmtMoney(Math.abs(fc.loanPhp)) : '—', fc.loanPhp ? 'Scheduled instalments' : 'None scheduled', ovxBars(H.map(function(x){ return x.loan; }).concat([Math.abs(fc.loanPhp)]), fcLbl, '#22a35a', ['#5cc485','#17793f']))
-    + fcCard('t-purple', 'user', 'Headcount Paid', String(fc.headcount), 'Employees in scope next period', ovxBars(H.map(function(x){ return x.heads; }).concat([fc.headcount]), fcLbl, '#6a4cff', ['#9a85ff','#4a30d0']))
+    + fcCard('t-purple', 'wallet', 'Loan Deductions', fc.loanPhp ? '−₱' + fmtMoney(Math.abs(fc.loanPhp)) : '—', fc.loanPhp ? 'Scheduled instalments' : 'None scheduled', ovxBars(H.map(function(x){ return x.loan; }).concat([Math.abs(fc.loanPhp)]), fcLbl, '#6a4cff', ['#9a85ff','#4a30d0']))
+    + fcCard('t-green', 'user', 'Headcount Paid', String(fc.headcount), 'Employees in scope next period', ovxBars(H.map(function(x){ return x.heads; }).concat([fc.headcount]), fcLbl, '#22a35a', ['#5cc485','#17793f']))
     + fcCard('t-orange', 'bag', 'Also Due', due.length ? due.join(' · ') : 'Nothing extra', due.length ? 'On top of base payroll' : 'Base payroll only', ovxBars(H.map(function(x){ return x.ded; }), lastLbl, '#ff9500', ['#ffb04d','#c26f00']));
 
   // Sidebar
