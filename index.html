@@ -567,6 +567,15 @@ body {
 .ts-grid-table td.ts-holiday input{ border-color:rgba(47,159,212,0.45); background:#f4fbff; }
 .ts-hol-tag{ display:block; margin-top:1px; font-size:7.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:#1f86b8; }
 .rec-table tr.emp-row-inactive td{ background:rgba(142,142,147,0.10); color:var(--text-2); }
+/* Profile photos (Employee 201 name column + header) */
+.nav-av img{ width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; }
+.e201-name{ display:flex; align-items:center; gap:8px; }
+.e201-name input{ flex:1; min-width:0; }
+.e201-ph{ position:relative; width:30px; height:30px; flex:0 0 30px; border-radius:50%; border:none; padding:0; cursor:pointer; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; overflow:visible; }
+.e201-ph img{ width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; }
+.e201-ph:hover{ box-shadow:0 0 0 3px rgba(0,122,255,0.25); }
+.e201-ph .x{ position:absolute; top:-5px; right:-5px; width:15px; height:15px; border-radius:50%; background:#ff3b30; color:#fff; font-size:10px; line-height:15px; text-align:center; display:none; }
+.e201-ph:hover .x{ display:block; }
 /* My Leave sign-in dot (Employee 201 name column) */
 .signin-dot{ flex:0 0 auto; width:8px; height:8px; border-radius:50%; display:inline-block; }
 .signin-dot.on{ background:#34c759; box-shadow:0 0 0 3px rgba(52,199,89,0.18); }
@@ -1618,10 +1627,73 @@ async function authSignOut(){
 
 authCheck();
 
+// Profile photos: employee id -> small JPEG data URL (table profile_photos; staff set their own on My Leave)
+let PHOTOS = {}, MY_EMP_ID = null;
+async function loadPhotos(){
+  const [ph, me] = await Promise.all([sb.from('profile_photos').select('employee_id,photo'), sb.rpc('my_employee_id')]);
+  PHOTOS = {}; (ph.data || []).forEach(function(r){ PHOTOS[r.employee_id] = r.photo; });
+  MY_EMP_ID = me.data || null;
+  var na = document.getElementById('navAv');
+  if(na && MY_EMP_ID && PHOTOS[MY_EMP_ID]) na.innerHTML = '<img src="' + PHOTOS[MY_EMP_ID] + '" alt="">';
+  else if(na && AUTH_USER){ var f = AUTH_USER.email.split('@')[0].split(/[._-]/)[0]; na.textContent = f ? f[0].toUpperCase() : ''; }
+}
+
+const PH_COLS = ['#2f6bff','#22a35a','#8e5cff','#ff9500','#14a08a','#e0457b','#3d5afe','#c26f00'];
+function photoCell(rec){
+  var ph = PHOTOS[rec.id], n = String(rec.name || '?').trim(), parts = n.split(/\s+/);
+  var ini = ((parts[0] || '?')[0] + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
+  var h = 0; for(var i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0;
+  return '<button type="button" class="e201-ph" style="background:' + (ph ? '#e6e9f2' : PH_COLS[h % PH_COLS.length]) + '" title="' + (ph ? 'Change photo' : 'Add photo') + '" onclick="pickEmpPhoto(\'' + rec.id + '\')">'
+    + (ph ? '<img src="' + ph + '" alt=""><span class="x" title="Remove photo" onclick="event.stopPropagation();removeEmpPhoto(\'' + rec.id + '\')">×</span>' : ini) + '</button>';
+}
+
+let PHOTO_TARGET = null;
+function pickEmpPhoto(id){
+  PHOTO_TARGET = id;
+  var inp = document.getElementById('empPhotoInput');
+  if(!inp){ inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'empPhotoInput'; inp.style.display = 'none'; inp.onchange = function(){ empPhotoChosen(inp); }; document.body.appendChild(inp); }
+  inp.click();
+}
+
+// Shrink to a 256px square JPEG (centre crop), same as My Leave
+function photoToDataUrl(file){
+  return new Promise(function(resolve, reject){
+    var img = new Image(), url = URL.createObjectURL(file);
+    img.onload = function(){
+      var side = Math.min(img.naturalWidth, img.naturalHeight), c = document.createElement('canvas');
+      c.width = c.height = 256;
+      c.getContext('2d').drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, 256, 256);
+      URL.revokeObjectURL(url); resolve(c.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('That file isn\u2019t an image we can read.')); };
+    img.src = url;
+  });
+}
+
+async function empPhotoChosen(inp){
+  var f = inp.files && inp.files[0]; inp.value = '';
+  if(!f || !PHOTO_TARGET) return;
+  try {
+    var data = await photoToDataUrl(f);
+    const { error } = await sb.from('profile_photos').upsert({ employee_id: PHOTO_TARGET, photo: data, updated_at: new Date().toISOString() });
+    if(error) throw error;
+    await loadPhotos(); render();
+  } catch(e){ alert('Could not save the photo: ' + (e.message || e)); }
+}
+
+async function removeEmpPhoto(id){
+  var rec = EMP201.find(function(r){ return r.id === id; });
+  if(!confirm('Remove the profile photo for ' + (rec ? rec.name : 'this employee') + '?')) return;
+  const { error } = await sb.from('profile_photos').delete().eq('employee_id', id);
+  if(error){ alert(error.message); return; }
+  await loadPhotos(); render();
+}
+
 async function loadEmployees(){
   const { data, error } = await sb.from('employees_201').select('*').order('name');
   if(error){ alert('Could not load employees: ' + error.message); return; }
   EMP201 = data;
+  await loadPhotos();
   populateFilterOptions();
   render();
   renderKpis();
@@ -5468,7 +5540,7 @@ function render(){
 
   tbody.innerHTML = rows.map(rec => `
     <tr class="${rec.status === 'Terminated' ? 'emp-row-terminated' : (rec.status && rec.status !== 'Active' ? 'emp-row-inactive' : (isNewThisPeriod(rec) ? 'emp-row-new' : ''))}">
-      <td>${field(rec,'name')}</td>
+      <td><div class="e201-name">${photoCell(rec)}${field(rec,'name')}</div></td>
       <td>${field(rec,'employee_id','DDL-000')}</td>
       <td>${field(rec,'role','Role')}</td>
       <td>${field(rec,'department','Department')}</td>
