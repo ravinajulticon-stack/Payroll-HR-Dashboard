@@ -1063,6 +1063,7 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 .rehire-btn{ background:#eef3ff; color:#2f6bff; border:1px solid #d6e3ff; border-radius:999px; font-size:11px; font-weight:600; padding:3px 10px; cursor:pointer; white-space:nowrap; margin-right:4px; }
 .rehire-btn:hover{ background:#2f6bff; color:#fff; }
 .rec-table tr.hist-gap td{ background:repeating-linear-gradient(135deg,#f7f8fb 0 6px,#f0f2f7 6px 12px); color:var(--text-3); font-style:italic; }
+.history-table .h-dash{ color:var(--text-3); opacity:0.6; }
 .rec-table tr.hist-gap td.gap-note{ text-align:left; font-weight:600; color:var(--text-2); }
 .rec-count{ font-size:11.5px; color:var(--text-3); }
 .seg-ctrl .seg-btn{ min-width:170px; text-align:center; }
@@ -2088,26 +2089,34 @@ function fmtDate(d){
 
 let HISTORY_LATEST_DATE = null;
 
+// Employee 205 cell formats: amounts always 2 decimals, Ebury rate 4 decimals, hours as entered;
+// anything empty or zero shows a muted dash so blanks and 0s look the same everywhere.
+const H_DASH = '<span class="h-dash">—</span>';
+function hNum(n){ const v = (n === '' || n === null || n === undefined) ? NaN : (typeof n === 'number' ? n : parseFloat(n)); return isNaN(v) ? null : v; }
+function hMoney(n){ const v = hNum(n); return (v === null || Math.abs(v) < 0.005) ? H_DASH : v.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function hHours(n){ const v = hNum(n); return (v === null || v === 0) ? H_DASH : v.toLocaleString('en-US', { maximumFractionDigits:2 }); }
+function hRate(n){ const v = hNum(n); return (v === null || v === 0) ? H_DASH : v.toLocaleString('en-US', { minimumFractionDigits:4, maximumFractionDigits:4 }); }
+
 const HISTORY_ROW_TEMPLATE = (r) => `
     <tr class="${r.pay_date === HISTORY_LATEST_DATE ? 'hist-row-latest' : ''}">
       <td>${fmtDate(r.pay_date)}</td>
       <td style="text-align:center">${r.period ?? ''}</td>
-      <td style="text-align:center">${r.standard_hours ?? 0}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.standard_pay_rate)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.standard_pay)}</td>
-      <td style="text-align:center">${r.overtime_hours || 0}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.overtime_pay)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.double_pay ?? 0)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.vacation_pay ?? 0)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.home_office)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.others_usd)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.bank_fees)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.maxicare_php)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.sss_php)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.thirteenth_php ?? 0)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.loan_php ?? 0)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.others_php)}</td>
-      <td style="text-align:right">${fmtMoneyHistory(r.ebury_rate)}</td>
+      <td style="text-align:center">${hHours(r.standard_hours)}</td>
+      <td style="text-align:right">${hMoney(r.standard_pay_rate)}</td>
+      <td style="text-align:right">${hMoney(r.standard_pay)}</td>
+      <td style="text-align:center">${hHours(r.overtime_hours)}</td>
+      <td style="text-align:right">${hMoney(r.overtime_pay)}</td>
+      <td style="text-align:right">${hMoney(r.double_pay)}</td>
+      <td style="text-align:right">${hMoney(r.vacation_pay)}</td>
+      <td style="text-align:right">${hMoney(r.home_office)}</td>
+      <td style="text-align:right">${hMoney(r.others_usd)}</td>
+      <td style="text-align:right">${hMoney(r.bank_fees)}</td>
+      <td style="text-align:right">${hMoney(r.maxicare_php)}</td>
+      <td style="text-align:right">${hMoney(r.sss_php)}</td>
+      <td style="text-align:right">${hMoney(r.thirteenth_php)}</td>
+      <td style="text-align:right">${hMoney(r.loan_php)}</td>
+      <td style="text-align:right">${hMoney(r.others_php)}</td>
+      <td style="text-align:right">${hRate(r.ebury_rate)}</td>
       <td style="text-align:right;font-weight:600;color:var(--blue-light)">${fmtMoney(r.total_payout)}</td>
       <td><span class="status-pill ${(r.status||'').toLowerCase()==='paid'?'active':''}">${r.status||''}</span></td>
     </tr>`;
