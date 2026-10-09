@@ -310,49 +310,6 @@ img.av{ object-fit:cover; background:#e6e9f2; }
       <div id="approvalsList"></div>
     </div>
 
-    <div class="card" id="reportCard" style="display:none">
-      <div class="card-head">
-        <div class="rep-hd"><span class="rep-ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1.8h5.5L13 5.3V14a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V2.7a.9.9 0 0 1 .9-.9z"/><path d="M5.5 11.5V9M8 11.5V7M10.5 11.5V8.5"/></svg></span>
-          <div><div class="card-title">Leave Report</div><div class="rep-sub">Build a printable report for any period, person or leave type.</div></div></div>
-        <span class="rep-badge">Admin Only</span>
-      </div>
-      <div class="rep-body">
-        <div class="rep-step"><b>1</b>Period</div>
-        <div class="rep-period">
-          <div class="tabs" id="repSeg">
-            <button class="tab on" data-k="month" onclick="repPreset('month')">This Month</button>
-            <button class="tab" data-k="lastmonth" onclick="repPreset('lastmonth')">Last Month</button>
-            <button class="tab" data-k="year" onclick="repPreset('year')">This Year</button>
-            <button class="tab" data-k="fy" onclick="repPreset('fy')">Financial Year</button>
-            <button class="tab" data-k="custom" onclick="repPreset('custom')">Custom</button>
-          </div>
-          <div class="rep-range" id="repRange"></div>
-        </div>
-        <div class="rep-step"><b>2</b>Filters</div>
-        <div class="rep-grid">
-          <div><label>From</label><input type="date" id="repFrom" class="fld" onchange="repCustom()"></div>
-          <div><label>To</label><input type="date" id="repTo" class="fld" onchange="repCustom()"></div>
-          <div><label>Employee</label><select id="repEmp" class="fld" onchange="repUpdate()"><option value="">All Employees</option></select></div>
-          <div><label>Leave Type</label><select id="repType" class="fld" onchange="repUpdate()"><option value="">All Leave Types</option><option>Annual Leave</option><option>Personal Leave</option><option>Unpaid Leave</option></select></div>
-        </div>
-        <div class="rep-step"><b>3</b>Sections To Include</div>
-        <div class="rep-secs">
-          <label class="rep-sec on" id="sec_incSummary"><input type="checkbox" id="incSummary" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic b"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 6.2a1.7 1.7 0 1 0 0-.01M2.6 12.5c.4-1.7 1.6-2.6 2.9-2.6s2.5.9 2.9 2.6M10 5.5h3.5M10 8h3.5M11 10.5h2.5"/></svg></span><span><div class="rep-sec-t">Summary Per Person</div><div class="rep-sec-d">Days and hours of each leave type, per person</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
-          <label class="rep-sec on" id="sec_incBalances"><input type="checkbox" id="incBalances" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic g"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="12" height="9.5" rx="2"/><path d="M2 6.5h12M10.5 9.8h1.3"/></svg></span><span><div class="rep-sec-t">Current Balances</div><div class="rep-sec-d">Hours available today, plus leave booked ahead</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
-          <label class="rep-sec on" id="sec_incTaken"><input type="checkbox" id="incTaken" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic p"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3M5.5 9.5h1M9.5 9.5h1M5.5 11.7h1"/></svg></span><span><div class="rep-sec-t">Leave Taken (By Date)</div><div class="rep-sec-d">Every leave day in the period, in date order</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
-          <label class="rep-sec on" id="sec_incRequests"><input type="checkbox" id="incRequests" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic o"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1.8h5.5L13 5.3V14a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V2.7a.9.9 0 0 1 .9-.9z"/><path d="M5.6 9l1.6 1.6 3.2-3.2"/></svg></span><span><div class="rep-sec-t">Leave Requests</div><div class="rep-sec-d">Submitted, status, reason and approver note</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
-        </div>
-      </div>
-      <div class="rep-foot">
-        <div class="rep-stats" id="repStats"></div>
-        <div class="rep-acts">
-          <button class="btn ghost lg" onclick="repReset()">Reset</button>
-          <button class="btn lg" onclick="generateReport()"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5V2h7v3.5"/><rect x="2" y="5.5" width="12" height="6" rx="1.5"/><path d="M4.5 9.5h7V14h-7z"/></svg>Generate Report</button>
-        </div>
-      </div>
-      <div id="repMsg" class="reqmsg"></div>
-    </div>
-
     <div class="cols">
       <div class="card" id="reqCard">
         <div class="card-head"><div class="rl-hd"><span class="rl-ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3M8 8.5v3.5M6.25 10.25h3.5"/></svg></span>
@@ -405,6 +362,49 @@ img.av{ object-fit:cover; background:#e6e9f2; }
     <div class="card">
       <div class="card-head"><div class="rl-hd"><span class="rl-ic c-red"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 14.5V2"/><path d="M3.5 2.5h8.5l-1.8 3 1.8 3H3.5"/></svg></span><div><div class="card-title">Public Holidays</div><div class="rl-sub">Victoria · upcoming holidays</div></div></div></div>
       <div id="holidayList"></div>
+    </div>
+
+    <div class="card" id="reportCard" style="display:none">
+      <div class="card-head">
+        <div class="rep-hd"><span class="rep-ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1.8h5.5L13 5.3V14a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V2.7a.9.9 0 0 1 .9-.9z"/><path d="M5.5 11.5V9M8 11.5V7M10.5 11.5V8.5"/></svg></span>
+          <div><div class="card-title">Leave Report</div><div class="rep-sub">Build a printable report for any period, person or leave type.</div></div></div>
+        <span class="rep-badge">Admin Only</span>
+      </div>
+      <div class="rep-body">
+        <div class="rep-step"><b>1</b>Period</div>
+        <div class="rep-period">
+          <div class="tabs" id="repSeg">
+            <button class="tab on" data-k="month" onclick="repPreset('month')">This Month</button>
+            <button class="tab" data-k="lastmonth" onclick="repPreset('lastmonth')">Last Month</button>
+            <button class="tab" data-k="year" onclick="repPreset('year')">This Year</button>
+            <button class="tab" data-k="fy" onclick="repPreset('fy')">Financial Year</button>
+            <button class="tab" data-k="custom" onclick="repPreset('custom')">Custom</button>
+          </div>
+          <div class="rep-range" id="repRange"></div>
+        </div>
+        <div class="rep-step"><b>2</b>Filters</div>
+        <div class="rep-grid">
+          <div><label>From</label><input type="date" id="repFrom" class="fld" onchange="repCustom()"></div>
+          <div><label>To</label><input type="date" id="repTo" class="fld" onchange="repCustom()"></div>
+          <div><label>Employee</label><select id="repEmp" class="fld" onchange="repUpdate()"><option value="">All Employees</option></select></div>
+          <div><label>Leave Type</label><select id="repType" class="fld" onchange="repUpdate()"><option value="">All Leave Types</option><option>Annual Leave</option><option>Personal Leave</option><option>Unpaid Leave</option></select></div>
+        </div>
+        <div class="rep-step"><b>3</b>Sections To Include</div>
+        <div class="rep-secs">
+          <label class="rep-sec on" id="sec_incSummary"><input type="checkbox" id="incSummary" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic b"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 6.2a1.7 1.7 0 1 0 0-.01M2.6 12.5c.4-1.7 1.6-2.6 2.9-2.6s2.5.9 2.9 2.6M10 5.5h3.5M10 8h3.5M11 10.5h2.5"/></svg></span><span><div class="rep-sec-t">Summary Per Person</div><div class="rep-sec-d">Days and hours of each leave type, per person</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+          <label class="rep-sec on" id="sec_incBalances"><input type="checkbox" id="incBalances" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic g"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="12" height="9.5" rx="2"/><path d="M2 6.5h12M10.5 9.8h1.3"/></svg></span><span><div class="rep-sec-t">Current Balances</div><div class="rep-sec-d">Hours available today, plus leave booked ahead</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+          <label class="rep-sec on" id="sec_incTaken"><input type="checkbox" id="incTaken" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic p"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3M5.5 9.5h1M9.5 9.5h1M5.5 11.7h1"/></svg></span><span><div class="rep-sec-t">Leave Taken (By Date)</div><div class="rep-sec-d">Every leave day in the period, in date order</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+          <label class="rep-sec on" id="sec_incRequests"><input type="checkbox" id="incRequests" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic o"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1.8h5.5L13 5.3V14a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V2.7a.9.9 0 0 1 .9-.9z"/><path d="M5.6 9l1.6 1.6 3.2-3.2"/></svg></span><span><div class="rep-sec-t">Leave Requests</div><div class="rep-sec-d">Submitted, status, reason and approver note</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+        </div>
+      </div>
+      <div class="rep-foot">
+        <div class="rep-stats" id="repStats"></div>
+        <div class="rep-acts">
+          <button class="btn ghost lg" onclick="repReset()">Reset</button>
+          <button class="btn lg" onclick="generateReport()"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5V2h7v3.5"/><rect x="2" y="5.5" width="12" height="6" rx="1.5"/><path d="M4.5 9.5h7V14h-7z"/></svg>Generate Report</button>
+        </div>
+      </div>
+      <div id="repMsg" class="reqmsg"></div>
     </div>
   </div>
 </div>
