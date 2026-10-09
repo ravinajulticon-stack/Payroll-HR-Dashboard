@@ -4224,7 +4224,9 @@ function ovIssues(periodStr){
 
   var holsInPeriod = VIC_HOLIDAYS.filter(function(h){ return h.date >= r.start && h.date <= r.end; })
     .filter(function(h){ var d = new Date(h.date + 'T00:00:00').getDay(); return d !== 0 && d !== 6; });
-  if(holsInPeriod.length) out.push({ sev:'low', text: holsInPeriod.length + ' public holiday' + (holsInPeriod.length!==1?'s':'') + ' fell on a weekday', hint: holsInPeriod.map(function(h){return h.name;}).slice(0,2).join(', '), go:'leave' });
+  // FYI only: hide once every employee in the period is marked paid
+  var periodFullyPaid = st.expected > 0 && st.paid >= st.expected;
+  if(holsInPeriod.length && !periodFullyPaid) out.push({ sev:'low', text: holsInPeriod.length + ' public holiday' + (holsInPeriod.length!==1?'s':'') + ' fell on a weekday', hint: holsInPeriod.map(function(h){return h.name;}).slice(0,2).join(', '), go:'leave' });
 
   var order = { high:0, med:1, low:2 };
   out.sort(function(a,b){ return order[a.sev] - order[b.sev]; });
