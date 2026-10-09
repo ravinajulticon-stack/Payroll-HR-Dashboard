@@ -1059,6 +1059,8 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 .del-btn:hover{ color:#c9271d; background:rgba(255,69,58,0.1); }
 .rehire-btn{ background:#eef3ff; color:#2f6bff; border:1px solid #d6e3ff; border-radius:999px; font-size:11px; font-weight:600; padding:3px 10px; cursor:pointer; white-space:nowrap; margin-right:4px; }
 .rehire-btn:hover{ background:#2f6bff; color:#fff; }
+.rec-table tr.hist-gap td{ background:repeating-linear-gradient(135deg,#f7f8fb 0 6px,#f0f2f7 6px 12px); color:var(--text-3); font-style:italic; }
+.rec-table tr.hist-gap td.gap-note{ text-align:left; font-weight:600; color:var(--text-2); }
 .rec-count{ font-size:11.5px; color:var(--text-3); }
 .seg-ctrl .seg-btn{ min-width:170px; text-align:center; }
 /* ---- Dark navy header (matches My Leave) ---- */
@@ -1418,6 +1420,7 @@ const SEED = JSON.parse(document.getElementById('seed-data').textContent);
 let EMP201 = [];
 let SIGNINS = {}; // employee id -> { has_account, last_sign_in_at } for the My Leave sign-in dot
 let HISTORY500 = [];
+let EMP_HISTORY = [];   // employment_history rows (rehired staff)
 let searchTerm = '';
 let historySearchTerm = '';
 let historyEmployeeFilter = '';
@@ -2039,6 +2042,9 @@ async function loadHistory(){
   HISTORY_LATEST_DATE = (data && data.length) ? data.map(function(x){ return x.pay_date; }).sort().slice(-1)[0] : null;
   if(error){ alert('Could not load history: ' + error.message); return; }
   HISTORY500 = data;
+  // previous stints of rehired staff (Rehire button), used for the gap rows
+  const eh = await sb.from('employment_history').select('employee_id,exit_date,rehired_on');
+  EMP_HISTORY = eh.data || [];
   populateHistoryFilterOptions();
   renderHistory();
   render();
@@ -2127,6 +2133,39 @@ const HISTORY_HEADER_ROW = `
                 <th>Status</th>
               </tr>`;
 
+// Pay date (15th) that covers a given day: the 11th–10th period ending on the 10th of the pay month.
+function payDateCovering(ds){
+  const d = new Date(ds + 'T00:00:00');
+  let y = d.getFullYear(), m = d.getMonth() + 1;
+  if(d.getDate() > 10){ m++; if(m > 12){ m = 1; y++; } }
+  return y + '-' + String(m).padStart(2,'0') + '-15';
+}
+
+// Grey "not employed" rows for the pay periods a rehired person missed between leaving and coming back.
+function historyGapRows(name){
+  const emp = EMP201.find(e => e.name === name);
+  if(!emp) return [];
+  const out = [];
+  EMP_HISTORY.filter(h => h.employee_id === emp.id && h.exit_date && h.rehired_on).forEach(h => {
+    const from = payDateCovering(h.exit_date), to = payDateCovering(h.rehired_on);
+    let [y, m] = from.split('-').map(Number);
+    while(true){
+      m++; if(m > 12){ m = 1; y++; }
+      const pd = y + '-' + String(m).padStart(2,'0') + '-15';
+      if(pd >= to) break;
+      if(historyYearFilter && !pd.startsWith(historyYearFilter)) continue;
+      if(historyPeriodFilter && String(m) !== historyPeriodFilter) continue;
+      out.push({ pay_date: pd, html: `
+    <tr class="hist-gap">
+      <td>${fmtDate(pd)}</td>
+      <td style="text-align:center">${m}</td>
+      <td class="gap-note" colspan="18">Not employed this period · left ${fmtDate(h.exit_date)}, rehired ${fmtDate(h.rehired_on)} · no pay</td>
+    </tr>` });
+    }
+  });
+  return out;
+}
+
 function renderHistory(){
   const rows = HISTORY500
     .filter(r => !historySearchTerm || r.employee_name.toLowerCase().includes(historySearchTerm))
@@ -2163,7 +2202,7 @@ function renderHistory(){
       <div class="tbl-scroll">
         <table class="rec-table history-table">
           <thead>${HISTORY_HEADER_ROW}</thead>
-          <tbody>${recs.map(HISTORY_ROW_TEMPLATE).join('')}</tbody>
+          <tbody>${recs.map(r => ({ pay_date: r.pay_date || '', html: HISTORY_ROW_TEMPLATE(r) })).concat(historyGapRows(name)).sort((a,b) => a.pay_date.localeCompare(b.pay_date)).map(x => x.html).join('')}</tbody>
         </table>
       </div>
     </div>`;
