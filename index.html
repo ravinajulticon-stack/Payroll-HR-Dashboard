@@ -1057,6 +1057,8 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 .leave-pill.leave-unpaid{ background:rgba(255,159,10,0.15); color:#a35b00; }
 .del-btn{ background:none; border:none; color:var(--text-3); cursor:pointer; font-size:13px; padding:4px 8px; border-radius:5px; }
 .del-btn:hover{ color:#c9271d; background:rgba(255,69,58,0.1); }
+.rehire-btn{ background:#eef3ff; color:#2f6bff; border:1px solid #d6e3ff; border-radius:999px; font-size:11px; font-weight:600; padding:3px 10px; cursor:pointer; white-space:nowrap; margin-right:4px; }
+.rehire-btn:hover{ background:#2f6bff; color:#fff; }
 .rec-count{ font-size:11.5px; color:var(--text-3); }
 .seg-ctrl .seg-btn{ min-width:170px; text-align:center; }
 /* ---- Dark navy header (matches My Leave) ---- */
@@ -1946,6 +1948,56 @@ function typeSelect(rec){
   return `<select onchange="updateField('${rec.id}','employment_type',this.value)">
     ${TYPE_OPTIONS.map(t => `<option ${rec.employment_type===t?'selected':''}>${t}</option>`).join('')}
   </select>`;
+}
+
+// Rehire someone who has left: records their previous stint, makes them Active again with a new start date,
+// and restarts both leave balances from the return date (old Annual Leave was paid out at exit).
+async function rehireEmployee(id){
+  const rec = EMP201.find(r => r.id === id);
+  if(!rec) return;
+  if(!rec.exit_date){ alert(rec.name + ' has no exit date, so there is nothing to rehire.'); return; }
+  const t = new Date();
+  const todayIso = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0');
+  let ret = prompt('Rehire ' + rec.name + '\n\nThey left on ' + rec.exit_date + '.\nReturn (new start) date, YYYY-MM-DD:', todayIso);
+  if(ret === null) return;
+  ret = ret.trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(ret) || isNaN(new Date(ret + 'T00:00:00'))){ alert('Please enter the date as YYYY-MM-DD, e.g. 2026-11-01.'); return; }
+  if(ret <= rec.exit_date){ alert('The return date must be after their exit date (' + rec.exit_date + ').'); return; }
+  const aRaw = prompt('Annual Leave to start with on return (hours).\nTheir previous Annual Leave was paid out when they left, so this is usually 0:', '0');
+  if(aRaw === null) return;
+  const pRaw = prompt('Personal Leave to start with on return (hours). Usually 0:', '0');
+  if(pRaw === null) return;
+  const aStart = parseFloat(aRaw), pStart = parseFloat(pRaw);
+  if(isNaN(aStart) || aStart < 0 || isNaN(pStart) || pStart < 0){ alert('Please enter a number of hours (0 or more).'); return; }
+
+  const exitD = new Date(rec.exit_date + 'T00:00:00');
+  const aAtExit = leaveBalanceAsOf(rec.id, 'Annual Leave', exitD);
+  const pAtExit = leaveBalanceAsOf(rec.id, 'Personal Leave', exitD);
+  const payout = annualLeavePayoutNative(rec);
+  if(!confirm('Rehire ' + rec.name + '?\n\n'
+    + '• Status → Active, exit date cleared, start date → ' + ret + '\n'
+    + '• Annual Leave restarts at ' + aStart + ' hrs, Personal Leave at ' + pStart + ' hrs, earning from ' + ret + '\n'
+    + '• Previous stint is kept in history: ' + (rec.start_date || '?') + ' to ' + rec.exit_date
+    + (aAtExit != null ? ' · Annual at exit ' + aAtExit + ' hrs' : '') + (pAtExit != null ? ' · Personal at exit ' + pAtExit + ' hrs' : '')
+    + (payout ? ' · leave payout ' + payout : '') + '\n\nLeave days already recorded stay in their history.')) return;
+
+  const h = await sb.from('employment_history').insert({
+    employee_id: rec.id, start_date: rec.start_date || null, exit_date: rec.exit_date,
+    leave_payout: payout == null ? null : payout, annual_at_exit: aAtExit, personal_at_exit: pAtExit, rehired_on: ret
+  });
+  if(h.error){ alert('Could not save their history, so nothing was changed: ' + h.error.message); return; }
+  const u = await sb.from('employees_201').update({ status: 'Active', exit_date: null, start_date: ret, leave_payout: null }).eq('id', rec.id);
+  if(u.error){ alert('Could not update ' + rec.name + ': ' + u.error.message); return; }
+  const now = new Date().toISOString();
+  const b = await sb.from('leave_balances').upsert([
+    { employee_id: rec.id, leave_type: 'Annual Leave', seed_balance: aStart, seed_date: ret, updated_at: now },
+    { employee_id: rec.id, leave_type: 'Personal Leave', seed_balance: pStart, seed_date: ret, updated_at: now }
+  ], { onConflict: 'employee_id,leave_type' });
+  if(b.error){ alert(rec.name + ' is Active again, but the leave balances could not be reset: ' + b.error.message + '\nPlease set them in Employee 203.'); }
+  Object.assign(rec, { status: 'Active', exit_date: null, start_date: ret, leave_payout: null });
+  render(); renderKpis();
+  await loadLeaveEntries();
+  alert(rec.name + ' is back as Active from ' + ret + '. Leave starts again from that date.');
 }
 
 async function addEmployee(){
@@ -5589,7 +5641,7 @@ function render(){
       <td><div style="display:flex;gap:4px;align-items:center">${currencySelect(rec)}${moneyField(rec,'basic_pay_rate','Rate')}</div></td>
       <td>${(() => { const h = latestHistoryFor(rec.name); return h ? fmtMoney(h.total_payout) : '\u2014'; })()}</td>
       <td>${(() => { const h = latestHistoryFor(rec.name); return h ? fmtDate(h.pay_date) : '\u2014'; })()}</td>
-      <td><button class="del-btn" title="Remove" onclick="deleteEmployee('${rec.id}')">✕</button></td>
+      <td style="white-space:nowrap">${rec.exit_date && new Date(rec.exit_date + 'T00:00:00') <= new Date() ? `<button class="rehire-btn" title="Bring ${rec.name.replace(/"/g,'&quot;')} back: new start date, leave restarts" onclick="rehireEmployee('${rec.id}')">↺ Rehire</button>` : ''}<button class="del-btn" title="Remove" onclick="deleteEmployee('${rec.id}')">✕</button></td>
     </tr>
   `).join('');
 }
