@@ -782,6 +782,9 @@ body {
 .ovx-issue-s{ font-size:10.5px; color:var(--text-3); margin-top:3px; }
 .ovx-issue-a{ margin-left:auto; color:var(--text-3); font-size:17px; line-height:1; align-self:center; padding-left:4px; }
 .ovx-clear{ display:flex; align-items:center; gap:10px; font-size:13px; color:#1e7a35; font-weight:600; }
+/* Needs Attention turns green when there is nothing left to fix */
+.ovx-attn.ok{ background:linear-gradient(180deg,#eefaf2 0%,#f7fdf9 100%); border-color:#c9ecd4; }
+.ovx-attn.ok .ovx-title .ovx-dot{ background:#22a35a; }
 /* Tiles */
 .ovx-tiles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
 .ovx-tile{ border-radius:14px; padding:13px 14px 14px; border:1px solid var(--tb,#e6e9f2); background:var(--tbg,#f7f8fc); min-width:0; }
@@ -4675,8 +4678,8 @@ function renderOverview(){
 
   // Needs Attention
   var shown = ovShowAllIssues ? issues : issues.slice(0, 4);
-  var attn = '<div class="ovx-card ovx-attn" id="ovxAttn">'
-    + '<div class="ovx-card-h"><div class="ovx-title"><span class="ovx-dot">!</span>Needs Attention</div>'
+  var attn = '<div class="ovx-card ovx-attn' + (issues.length ? '' : ' ok') + '" id="ovxAttn">'
+    + '<div class="ovx-card-h"><div class="ovx-title"><span class="ovx-dot">' + (issues.length ? '!' : '\u2713') + '</span>' + (issues.length ? 'Needs Attention' : 'All Clear') + '</div>'
     + (issues.length > 4 ? '<button class="ovx-link red" onclick="ovxToggleIssues()">' + (ovShowAllIssues ? 'Show less' : 'View all (' + issues.length + ') →') + '</button>' : '')
     + '</div><div class="ovx-body">'
     + (issues.length ? '<div class="ovx-issues">' + shown.map(function(x){
