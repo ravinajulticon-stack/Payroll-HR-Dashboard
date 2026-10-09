@@ -1212,15 +1212,22 @@ async function loadMine(){
   if(rows.length){
     var order = { 'Annual Leave':0, 'Personal Leave':1 };
     rows.sort(function(a,b){ return (order[a.leave_type] != null ? order[a.leave_type] : 9) - (order[b.leave_type] != null ? order[b.leave_type] : 9); });
+    // Same rule as the dashboard (Employee 203) and the Leave Report: hours are credited on the 15th of each
+    // month after the opening balance date, accrual stops on the exit date, and only leave taken after the
+    // opening balance date (up to today) is deducted.
+    var asOf = today, exitRes = await sb.from('employees_201').select('exit_date').eq('id', myId);
+    var exitDate = exitRes.data && exitRes.data[0] && exitRes.data[0].exit_date;
+    if(exitDate && new Date(exitDate + 'T00:00:00') < asOf) asOf = new Date(exitDate + 'T00:00:00');
+    var asOfStr = isoOf(asOf);
     document.getElementById('balances').innerHTML = rows.map(function(r){
       var rate = ACCRUAL[r.leave_type] || 0;
-      var accrued = (parseFloat(r.seed_balance)||0) + monthsBetween(r.seed_date, today) * rate;
+      var accrued = (parseFloat(r.seed_balance)||0) + repAccrual(new Date(r.seed_date + 'T00:00:00'), asOf, rate);
       // only leave already taken reduces the balance; future bookings shown separately
-      var spent = used.filter(function(u){ return u.leave_type === r.leave_type && u.leave_date <= todayStr; })
+      var spent = used.filter(function(u){ return u.leave_type === r.leave_type && u.leave_date > r.seed_date && u.leave_date <= asOfStr; })
         .reduce(function(a,u){ return a + (parseFloat(u.hours)||0); }, 0);
       var booked = used.filter(function(u){ return u.leave_type === r.leave_type && u.leave_date > todayStr; })
         .reduce(function(a,u){ return a + (parseFloat(u.hours)||0); }, 0);
-      var bal = accrued - spent;
+      var bal = Math.round((accrued - spent) * 100) / 100;
       MY_BAL[r.leave_type] = bal;
       return '<div class="tile ' + typeCls(r.leave_type) + '">'
         + '<div class="tile-lbl">' + esc(r.leave_type) + '</div>'
