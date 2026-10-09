@@ -884,6 +884,8 @@ body {
 @media print{ .ps-zoom{ display:none !important; } #payslipSheets{ zoom:1 !important; } }
 .ps-sheet{ background:#fff; color:#1a1a1a; border-radius:10px; padding:30px 34px; margin:0 auto 18px; box-shadow:0 2px 16px rgba(0,0,0,0.10); max-width:860px; }
 .ps-top{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #006CE5; padding-bottom:12px; margin-bottom:16px; }
+.ps-brand{ display:flex; align-items:center; gap:16px; }
+.ps-logo{ height:50px; width:auto; display:block; padding-right:16px; border-right:1px solid #D7DCE6; }
 .ps-co{ font-size:24px; font-weight:800; color:#0A0031; letter-spacing:-0.5px; }
 .ps-addr{ font-size:10.5px; color:#006CE5; margin-top:3px; }
 .ps-title{ font-size:28px; font-weight:800; color:#0A0031; letter-spacing:-0.5px; }
@@ -3610,9 +3612,9 @@ function buildPayslip(r){
   var net = parseFloat(r.total_payout) || 0;
   return '<div class="ps-sheet">'
     + '<div class="ps-top">'
-    +   '<div><div class="ps-co">DDL Middle East - FZCO</div>'
+    +   '<div class="ps-brand"><img class="ps-logo" src="ddl-logo.png" alt="DDL"><div><div class="ps-co">DDL Middle East - FZCO</div>'
     +     '<div class="ps-addr">IFZA Property FZCO, Silicon Oasis, DDP, Building A2, Dubai</div>'
-    +     '<div class="ps-addr">Email: accounts@ddlme.ae</div></div>'
+    +     '<div class="ps-addr">Email: accounts@ddlme.ae</div></div></div>'
     +   '<div class="ps-title">PAYSLIP</div>'
     + '</div>'
     + '<div class="ps-meta">'
@@ -3918,6 +3920,7 @@ async function downloadAllPayslips(){
   renderPayslipPanel();
   await new Promise(function(r){ setTimeout(r, 400); });
   var sheets = Array.prototype.slice.call(document.querySelectorAll('.ps-sheet'));
+  await Promise.all(Array.prototype.map.call(document.querySelectorAll('.ps-logo'), function(im){ return im.complete ? null : new Promise(function(r){ im.onload = im.onerror = r; }); }));
   var jsPDF = window.jspdf.jsPDF;
   var zip = new JSZip();
   for(var i = 0; i < sheets.length; i++){
