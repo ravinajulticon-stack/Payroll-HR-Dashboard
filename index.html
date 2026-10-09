@@ -608,7 +608,7 @@ body {
 .search-box:disabled{ background:var(--surface-3); color:var(--text-3); cursor:not-allowed; border-color:var(--border); }
 .pay202-input.pay202-note{ text-align:left; }
 .pay202-total-row td{ background:rgba(10,132,255,0.08) !important; font-weight:700; color:var(--teal) !important; border-top:1px solid var(--border-strong); }
-.pay202-total-row td:first-child{ background:rgba(10,132,255,0.10) !important; color:var(--teal) !important; font-style:italic; }
+.pay202-total-row td:first-child{ background:#e7f2ff !important; color:var(--teal) !important; font-style:italic; }
 .pay202-entry-dot{ display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--blue-light); margin-left:5px; vertical-align:middle; }
 .pay202-table{ table-layout:fixed; width:max-content; }
 .pay202-table th, .pay202-table td{ box-sizing:border-box; }
@@ -5305,8 +5305,47 @@ function renderPrevRun(){
       + '</tr>';
   }
 
-  var foot = '<tr class="pay202-total-row"><td>Period Total</td>'
-    + '<td colspan="21" class="prev-newnote">Full period total shown in the card header</td></tr>';
+  // Totals cover the whole pay run (same as the card header), including anyone no longer on the roster.
+  var F = ['standard_pay','home_office','double_pay','others_usd','overtime_pay','vacation_pay','bank_fees','maxicare_php','sss_php','thirteenth_php','loan_php','others_php'];
+  var S = {}; F.forEach(function(f){ S[f] = 0; });
+  var sUsd = 0, sEbury = 0, sPhp = 0, sPayout = 0, sAud = 0, sUsdEq = 0;
+  PREV_RUN.forEach(function(r){
+    F.forEach(function(f){ S[f] += parseFloat(r[f]) || 0; });
+    var rate = parseFloat(r.ebury_rate) || 0;
+    var u = (parseFloat(r.standard_pay)||0) + (parseFloat(r.overtime_pay)||0) + (parseFloat(r.double_pay)||0)
+          + (parseFloat(r.vacation_pay)||0) + (parseFloat(r.home_office)||0) + (parseFloat(r.others_usd)||0) + (parseFloat(r.bank_fees)||0);
+    var pay = parseFloat(r.total_payout) || 0;
+    sUsd += u; sEbury += rate ? u * rate : 0;
+    sPhp += (parseFloat(r.maxicare_php)||0) + (parseFloat(r.sss_php)||0) + (parseFloat(r.thirteenth_php)||0) + (parseFloat(r.loan_php)||0) + (parseFloat(r.others_php)||0);
+    sPayout += pay;
+    if(pay && PREV_AUD_RATE) sAud += pay / PREV_AUD_RATE;
+    if(pay && rate) sUsdEq += pay / rate;
+  });
+  var shownRows = roster.filter(function(e){ return PREV_RUN.some(function(x){ return x.employee_name === e.name; }); }).length;
+  var hidden = PREV_RUN.length - shownRows;
+  var footLbl = 'Period Total' + (hidden ? '<div style="font-size:9.5px;font-weight:500;font-style:normal;color:var(--text-3);margin-top:2px">incl. ' + hidden + ' not listed above</div>' : '');
+  var foot = '<tr class="pay202-total-row"><td>' + footLbl + '</td>'
+    + '<td>' + m(S.standard_pay) + '</td>'
+    + '<td>' + m(S.home_office) + '</td>'
+    + '<td>' + m(S.double_pay) + '</td>'
+    + '<td>' + m(S.others_usd) + '</td>'
+    + '<td></td>'
+    + '<td>' + m(S.overtime_pay) + '</td>'
+    + '<td>' + m(S.vacation_pay) + '</td>'
+    + '<td>' + m(S.bank_fees) + '</td>'
+    + '<td>' + m(sUsd) + '</td>'
+    + '<td>' + m(sEbury) + '</td>'
+    + '<td>' + m(S.maxicare_php) + '</td>'
+    + '<td>' + m(S.sss_php) + '</td>'
+    + '<td>' + m(S.thirteenth_php) + '</td>'
+    + '<td>' + m(S.loan_php) + '</td>'
+    + '<td>' + m(S.others_php) + '</td>'
+    + '<td></td>'
+    + '<td>' + m(sPhp) + '</td>'
+    + '<td>' + m(sPayout) + '</td>'
+    + '<td>' + m(sAud) + '</td>'
+    + '<td>' + m(sUsdEq) + '</td>'
+    + '<td></td></tr>';
 
   host.innerHTML = '<div class="card">'
     + '<div class="card-header"><span class="card-title">Previous Pay Run</span>'
