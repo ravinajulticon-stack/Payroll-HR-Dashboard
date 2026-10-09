@@ -1100,6 +1100,32 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 .ovx-hero .ovx-bell b{ border-color:#0f1b3d; }
 .ovx-hero + .ovx-layout{ margin-top:-44px; position:relative; }
 @media print{ .toolbar.nav-dark{ display:none !important; } }
+/* Overview: muted palette — one blue accent, everything else neutral (status colours kept) */
+#overviewView .t-blue, #overviewView .t-green, #overviewView .t-orange, #overviewView .t-purple, #overviewView .t-teal, #overviewView .t-indigo, #overviewView .t-violet, #overviewView .t-plain{ --tbg:#ffffff; --tb:#e8ebf3; --tc:#2f6bff; }
+#overviewView .ovx-tile-ic, #overviewView .ovx-li-ic{ background:#eef3ff; color:#2f6bff; box-shadow:none; }
+#overviewView .ovx-tile.fill:not(.f-blue){ background:#fff; border:1px solid #e8ebf3; color:var(--text); box-shadow:0 1px 3px rgba(20,33,61,0.05); }
+#overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-ic{ background:#eef3ff; color:#2f6bff; }
+#overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-l{ color:var(--text-3); }
+#overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-v{ color:#14213d; }
+#overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-s, #overviewView .ovx-tile.fill:not(.f-blue) .ovx-cmp{ color:var(--text-2); }
+#overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-chev{ color:#b4bacb; }
+#overviewView .ovx-tile.fill:not(.f-blue) .ovx-prog{ background:#eef1f6; }
+#overviewView .ovx-tile.fill:not(.f-blue) .ovx-prog i{ background:#2f6bff; }
+#overviewView .ovx-tile.fill.f-blue{ background:linear-gradient(135deg,#1d2f6b 0%,#0f1b3d 100%); }
+#overviewView .ovx-tile.solid{ background:#fff; border:1px solid #e8ebf3; }
+#overviewView .ovx-tile.solid .ovx-tile-ic{ background:#eef3ff; color:#2f6bff; }
+#overviewView .ovx-tile.solid .ovx-tile-l, #overviewView .ovx-tile.solid .ovx-tile-s{ color:var(--text-2); }
+#overviewView .ovx-tile.solid .ovx-tile-v{ color:#14213d; }
+#overviewView .ovx-fc-v.c-purple, #overviewView .ovx-fc-v.c-green, #overviewView .ovx-fc-v.c-orange{ color:#14213d; }
+#overviewView .ovx-tile-v.ok{ color:#14213d; }
+#overviewView .ovx-bars rect{ fill:#2f6bff; }
+#overviewView .ovx-bars polygon:nth-child(1){ fill:#1d4ed8; }
+#overviewView .ovx-bars polygon:nth-child(2){ fill:#7ea2ff; }
+#overviewView .ovx-bars g[opacity="0.32"]{ opacity:0.22; }
+#overviewView .ovx-trend .ov-panel:nth-child(n){ background:#fff; }
+#overviewView .ov-spark rect{ fill:#2f6bff; }
+#overviewView .ov-spark polygon:nth-of-type(1){ fill:#1d4ed8; }
+#overviewView .ov-spark polygon:nth-of-type(2){ fill:#7ea2ff; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
