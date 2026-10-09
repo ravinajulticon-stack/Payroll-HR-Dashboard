@@ -1126,6 +1126,8 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 #overviewView .ov-spark rect{ fill:#2f6bff; }
 #overviewView .ov-spark polygon:nth-of-type(1){ fill:#1d4ed8; }
 #overviewView .ov-spark polygon:nth-of-type(2){ fill:#7ea2ff; }
+/* Room for the date picker under the last rows of a scrolling table (it was being cut off) */
+.tbl-scroll.picking{ padding-bottom:320px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -5616,6 +5618,30 @@ setTimeout(function(){ if(!ovLoaded) loadOverviewData(); }, 1200);
 watchDatePickers();
 setTimeout(syncMonthPickerLabels, 800);
 
+
+// Date pickers in the bottom rows of a scrolling table were clipped by the table edge.
+// While a date box is focused, give that table extra space below and scroll so the picker fits.
+function datePickRoom(e){
+  var el = e.target;
+  if(!el || el.tagName !== 'INPUT' || el.type !== 'date') return;
+  var box = el.closest('.tbl-scroll'); if(!box) return;
+  box.classList.add('picking');
+  var need = el.getBoundingClientRect().bottom + 300 - box.getBoundingClientRect().bottom;
+  if(need > 0) box.scrollTop += need;
+}
+document.addEventListener('focusin', datePickRoom);
+document.addEventListener('click', datePickRoom);
+// picker closes once a date is chosen, so drop the extra space again
+document.addEventListener('change', function(e){
+  var el = e.target;
+  if(el && el.tagName === 'INPUT' && el.type === 'date'){ var box = el.closest('.tbl-scroll'); if(box) box.classList.remove('picking'); }
+});
+document.addEventListener('focusout', function(e){
+  var el = e.target;
+  if(!el || el.tagName !== 'INPUT' || el.type !== 'date') return;
+  var box = el.closest('.tbl-scroll'); if(!box) return;
+  setTimeout(function(){ if(!box.contains(document.activeElement) || document.activeElement.type !== 'date') box.classList.remove('picking'); }, 150);
+});
 </script>
 </body>
 </html>
