@@ -920,6 +920,8 @@ body {
   body{ background:#fff !important; }
   .titlebar, #payslipBody > .card{ display:none !important; }
   .ps-sheet{ box-shadow:none; margin:0; padding:16px 0; page-break-after:always; border-radius:0; }
+  .ps-sheet, .ps-sheet *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  body.ps-printing .ps-sheet{ padding:14mm 14mm 10mm; max-width:none; }
   .ps-sheet:last-child{ page-break-after:auto; }
 }
 .pay202-table th:nth-child(2), .pay202-table td:nth-child(2){ width:100px; }
@@ -3905,7 +3907,16 @@ function psSetZoom(z){
 function psZoomIn(){ psSetZoom(psZoom + 10); }
 function psZoomOut(){ psSetZoom(psZoom - 10); }
 function psZoomReset(){ psSetZoom(100); }
-function printPayslips(){ window.print(); }
+function printPayslips(){
+  var st = document.createElement('style');
+  st.id = 'psPageStyle';
+  st.textContent = '@page{ size:A4; margin:0; }';
+  document.head.appendChild(st);
+  document.body.classList.add('ps-printing');
+  var done = function(){ var x = document.getElementById('psPageStyle'); if(x) x.remove(); document.body.classList.remove('ps-printing'); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  window.print();
+}
 
 function psFileName(row){
   var safe = String(row.employee_name).replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
