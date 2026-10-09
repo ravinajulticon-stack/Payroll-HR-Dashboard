@@ -5663,16 +5663,16 @@ function renderPay202(){
     <td>${runTotals.overtime ? fmtMoney(runTotals.overtime) : "\u2014"}</td>
     <td>${runTotals.leavePayout ? fmtMoney(runTotals.leavePayout) : "\u2014"}</td>
     <td>${runTotals.bankFees ? fmtMoney(runTotals.bankFees) : "\u2014"}</td>
-    <td>${fmtMoney(runTotals.totalUSD)}</td>
-    <td>${fmtMoney(runTotals.eburyPHP)}</td>
+    <td>${runTotals.totalUSD ? fmtMoney(runTotals.totalUSD) : "\u2014"}</td>
+    <td>${runTotals.eburyPHP ? fmtMoney(runTotals.eburyPHP) : "\u2014"}</td>
     <td>${runTotals.maxicare ? fmtMoney(runTotals.maxicare) : "\u2014"}</td>
     <td>${runTotals.sss ? fmtMoney(runTotals.sss) : "\u2014"}</td>
     <td>${runTotals.thirteenth ? fmtMoney(runTotals.thirteenth) : "\u2014"}</td>
     <td>${runTotals.loan ? fmtMoney(runTotals.loan) : "\u2014"}</td>
     <td>${runTotals.otherPHP ? fmtMoney(runTotals.otherPHP) : "\u2014"}</td>
     <td></td>
-    <td>${fmtMoney(runTotals.totalPHP)}</td>
-    <td>${fmtMoney(runTotals.totalPayout)}</td>
+    <td>${runTotals.totalPHP ? fmtMoney(runTotals.totalPHP) : "\u2014"}</td>
+    <td>${runTotals.totalPayout ? fmtMoney(runTotals.totalPayout) : "\u2014"}</td>
     <td>${runTotals.payoutAUD ? fmtMoney(runTotals.payoutAUD) : "\u2014"}</td>
     <td>${runTotals.payoutUSD ? fmtMoney(runTotals.payoutUSD) : "\u2014"}</td>
     <td></td>
