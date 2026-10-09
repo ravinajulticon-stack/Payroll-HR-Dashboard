@@ -1128,8 +1128,6 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 #overviewView .ov-spark rect{ fill:#2f6bff; }
 #overviewView .ov-spark polygon:nth-of-type(1){ fill:#1d4ed8; }
 #overviewView .ov-spark polygon:nth-of-type(2){ fill:#7ea2ff; }
-/* Room for the date picker under the last rows of a scrolling table (it was being cut off) */
-.tbl-scroll.picking{ padding-bottom:320px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -3218,7 +3216,16 @@ function attachDatePicker(input){
     e.stopPropagation();
     if(panel.classList.contains('open')){ panel.classList.remove('open'); return; }
     document.querySelectorAll('.dp-panel.open, .mp-panel.open').forEach(function(p){ p.classList.remove('open'); });
-    resetView(); draw(); panel.classList.add('open');
+    resetView(); draw();
+    // Float the calendar above the page (not inside the table), so table edges can't cut it off.
+    if(panel.parentNode !== document.body) document.body.appendChild(panel);
+    panel.style.position = 'fixed';
+    panel.classList.add('open');
+    var r = field.getBoundingClientRect(), ph = panel.offsetHeight, pw = panel.offsetWidth;
+    var top = r.bottom + 6;
+    if(top + ph > window.innerHeight - 8 && r.top - ph - 6 > 8) top = r.top - ph - 6;   // not enough room below: open upwards
+    panel.style.top = Math.max(8, Math.min(top, window.innerHeight - ph - 8)) + 'px';   // always fully on screen
+    panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - pw - 8)) + 'px';
   });
 
   panel.addEventListener('click', function(e){
@@ -3244,6 +3251,8 @@ function attachDatePicker(input){
   });
 
   document.addEventListener('click', function(){ panel.classList.remove('open'); });
+  // the calendar floats in place, so close it if the page or a table scrolls underneath it
+  window.addEventListener('scroll', function(e){ if(panel.classList.contains('open') && !panel.contains(e.target)) panel.classList.remove('open'); }, true);
 }
 
 function initDatePickers(root){
@@ -5671,29 +5680,6 @@ watchDatePickers();
 setTimeout(syncMonthPickerLabels, 800);
 
 
-// Date pickers in the bottom rows of a scrolling table were clipped by the table edge.
-// While a date box is focused, give that table extra space below and scroll so the picker fits.
-function datePickRoom(e){
-  var el = e.target;
-  if(!el || el.tagName !== 'INPUT' || el.type !== 'date') return;
-  var box = el.closest('.tbl-scroll'); if(!box) return;
-  box.classList.add('picking');
-  var need = el.getBoundingClientRect().bottom + 300 - box.getBoundingClientRect().bottom;
-  if(need > 0) box.scrollTop += need;
-}
-document.addEventListener('focusin', datePickRoom);
-document.addEventListener('click', datePickRoom);
-// picker closes once a date is chosen, so drop the extra space again
-document.addEventListener('change', function(e){
-  var el = e.target;
-  if(el && el.tagName === 'INPUT' && el.type === 'date'){ var box = el.closest('.tbl-scroll'); if(box) box.classList.remove('picking'); }
-});
-document.addEventListener('focusout', function(e){
-  var el = e.target;
-  if(!el || el.tagName !== 'INPUT' || el.type !== 'date') return;
-  var box = el.closest('.tbl-scroll'); if(!box) return;
-  setTimeout(function(){ if(!box.contains(document.activeElement) || document.activeElement.type !== 'date') box.classList.remove('picking'); }, 150);
-});
 </script>
 </body>
 </html>
