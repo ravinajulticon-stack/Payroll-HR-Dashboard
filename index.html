@@ -1143,6 +1143,93 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 #overviewView .ov-spark rect{ fill:#2f6bff; }
 #overviewView .ov-spark polygon:nth-of-type(1){ fill:#1d4ed8; }
 #overviewView .ov-spark polygon:nth-of-type(2){ fill:#7ea2ff; }
+/* ===== Overview: Dark Glass theme (body.ovdark is set only while the Overview tab is open) ===== */
+body.ovdark{ background:#0a1230; }
+body.ovdark::before, body.ovdark::after{ content:""; position:fixed; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
+body.ovdark::before{ width:620px; height:620px; left:-160px; top:-120px; background:#2f5be0; opacity:.45; }
+body.ovdark::after{ width:520px; height:520px; right:-120px; bottom:-160px; background:#f27a00; opacity:.22; }
+body.ovdark .main{ position:relative; z-index:1; background:radial-gradient(600px 420px at 55% 60%, rgba(123,92,255,.18), transparent 70%); }
+body.ovdark .titlebar.nav-dark, body.ovdark .toolbar.nav-dark{ position:relative; z-index:2; background:rgba(10,18,48,.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+body.ovdark #overviewView{ --g-bg:rgba(255,255,255,.06); --g-bd:rgba(255,255,255,.12); --g-hi:rgba(255,255,255,.08); --g-tx:#eef2ff; --g-sub:rgba(238,242,255,.62); --g-mute:rgba(238,242,255,.45); --g-ac:#8fb0ff; color:var(--g-tx); }
+
+/* hero band: let the glow show through */
+body.ovdark #overviewView .ovx-hero{ background:transparent; }
+body.ovdark #overviewView .ovx-hero .ovx-period .mp-field{ background:rgba(255,255,255,.14); color:#fff; }
+
+/* glass cards */
+body.ovdark #overviewView .ovx-card,
+body.ovdark #overviewView .ovx-attn,
+body.ovdark #overviewView .ovx-attn.ok,
+body.ovdark #overviewView .ovx-track,
+body.ovdark #overviewView .ovx-track.warn{ background:var(--g-bg); border:1px solid var(--g-bd); box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 1px 0 var(--g-hi); backdrop-filter:blur(22px) saturate(150%); -webkit-backdrop-filter:blur(22px) saturate(150%); }
+body.ovdark #overviewView .ovx-attn{ background:linear-gradient(180deg,rgba(255,59,48,.10),rgba(255,255,255,.04)); border-color:rgba(255,99,88,.28); }
+body.ovdark #overviewView .ovx-attn.ok{ background:linear-gradient(180deg,rgba(52,199,89,.12),rgba(255,255,255,.04)); border-color:rgba(52,199,89,.30); }
+body.ovdark #overviewView .ovx-track.warn{ background:linear-gradient(135deg,rgba(242,122,0,.16),rgba(255,255,255,.04)); border-color:rgba(242,122,0,.32); }
+body.ovdark #overviewView .ovx-title, body.ovdark #overviewView .ovx-title svg,
+body.ovdark #overviewView .ovx-track-t{ color:var(--g-tx); }
+body.ovdark #overviewView .ovx-meta, body.ovdark #overviewView .ovx-track-s{ color:var(--g-mute); }
+body.ovdark #overviewView .ovx-link{ color:var(--g-ac); }
+body.ovdark #overviewView .ovx-link.red{ color:#ff8a80; }
+body.ovdark #overviewView .ovx-clear{ color:#7be3a0; }
+
+/* issues */
+body.ovdark #overviewView .ovx-issue{ background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.10); }
+body.ovdark #overviewView .ovx-issue:hover{ background:rgba(255,255,255,.09); box-shadow:0 6px 18px rgba(0,0,0,.3); }
+body.ovdark #overviewView .ovx-issue-t{ color:var(--g-tx); }
+body.ovdark #overviewView .ovx-issue-s, body.ovdark #overviewView .ovx-issue-a{ color:var(--g-mute); }
+
+/* tiles (all variants) */
+body.ovdark #overviewView .ovx-tile,
+body.ovdark #overviewView .ovx-tile.solid,
+body.ovdark #overviewView .ovx-tile.fill:not(.f-blue),
+body.ovdark #overviewView .ovx-fc-card,
+body.ovdark #overviewView .ovx-trend .ov-panel,
+body.ovdark #overviewView .ovx-trend .ov-panel:nth-child(n){ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10); box-shadow:inset 0 1px 0 rgba(255,255,255,.06); color:var(--g-tx); }
+body.ovdark #overviewView .ovx-tile.fill.f-blue{ background:linear-gradient(135deg,rgba(64,110,255,.55),rgba(29,47,107,.55)); border:1px solid rgba(143,176,255,.35); box-shadow:0 10px 30px rgba(47,91,224,.35), inset 0 1px 0 rgba(255,255,255,.15); }
+body.ovdark #overviewView .ovx-tile-ic, body.ovdark #overviewView .ovx-li-ic,
+body.ovdark #overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-ic,
+body.ovdark #overviewView .ovx-tile.solid .ovx-tile-ic{ background:rgba(143,176,255,.14); color:var(--g-ac); box-shadow:none; }
+body.ovdark #overviewView .ovx-tile.fill.f-blue .ovx-tile-ic{ background:rgba(255,255,255,.16); color:#fff; }
+body.ovdark #overviewView .ovx-tile-l, body.ovdark #overviewView .ovx-fc-l,
+body.ovdark #overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-l,
+body.ovdark #overviewView .ovx-tile.solid .ovx-tile-l,
+body.ovdark #overviewView .ov-panel-lbl, body.ovdark #overviewView .ov-mixlbl{ color:var(--g-sub); }
+body.ovdark #overviewView .ovx-tile-v, body.ovdark #overviewView .ovx-tile-v.ok,
+body.ovdark #overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-v,
+body.ovdark #overviewView .ovx-tile.solid .ovx-tile-v,
+body.ovdark #overviewView .ovx-fc-v, body.ovdark #overviewView .ovx-fc-v.c-purple, body.ovdark #overviewView .ovx-fc-v.c-green, body.ovdark #overviewView .ovx-fc-v.c-orange,
+body.ovdark #overviewView .ov-panel-val{ color:#fff; text-shadow:0 0 22px rgba(143,176,255,.30); }
+body.ovdark #overviewView .ovx-tile-v.warn{ color:#ffb36b; }
+body.ovdark #overviewView .ovx-tile-s, body.ovdark #overviewView .ovx-cmp, body.ovdark #overviewView .ovx-fc-s,
+body.ovdark #overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-s,
+body.ovdark #overviewView .ovx-tile.fill:not(.f-blue) .ovx-cmp,
+body.ovdark #overviewView .ovx-tile.solid .ovx-tile-s{ color:var(--g-mute); }
+body.ovdark #overviewView .ovx-cmp .up{ color:#ffb36b; } body.ovdark #overviewView .ovx-cmp .down{ color:#7be3a0; }
+body.ovdark #overviewView .ov-panel-delta.warn{ color:#ffb36b; } body.ovdark #overviewView .ov-panel-delta.ok{ color:#7be3a0; }
+body.ovdark #overviewView .ovx-tile.fill:not(.f-blue) .ovx-tile-chev{ color:var(--g-mute); }
+body.ovdark #overviewView .ovx-prog, body.ovdark #overviewView .ovx-tile.fill:not(.f-blue) .ovx-prog{ background:rgba(255,255,255,.10); }
+body.ovdark #overviewView .ovx-prog i, body.ovdark #overviewView .ovx-tile.fill:not(.f-blue) .ovx-prog i{ background:linear-gradient(90deg,#8fb0ff,#5b8cff); }
+body.ovdark #overviewView .ovx-tile.go:hover{ box-shadow:0 12px 28px rgba(0,0,0,.4); }
+
+/* mini charts */
+body.ovdark #overviewView .ovx-bars, body.ovdark #overviewView .ov-spark{ color:var(--g-mute); }
+body.ovdark #overviewView .ovx-bars rect, body.ovdark #overviewView .ov-spark rect{ fill:#7aa2ff; }
+body.ovdark #overviewView .ovx-bars polygon:nth-child(1), body.ovdark #overviewView .ov-spark polygon:nth-of-type(1){ fill:#4f7cf0; }
+body.ovdark #overviewView .ovx-bars polygon:nth-child(2), body.ovdark #overviewView .ov-spark polygon:nth-of-type(2){ fill:#b3c9ff; }
+body.ovdark #overviewView .ovx-bars text, body.ovdark #overviewView .ov-spark text{ fill:var(--g-mute); }
+body.ovdark #overviewView .ov-mixbar{ background:rgba(255,255,255,.08); }
+body.ovdark #overviewView .ov-mixseg + .ov-mixseg{ box-shadow:-1px 0 0 #0a1230; }
+body.ovdark #overviewView .ov-mixkey{ color:var(--g-sub); } body.ovdark #overviewView .ov-mixkey b{ color:#fff; } body.ovdark #overviewView .ov-mixamt{ color:var(--g-mute); }
+
+/* side lists + actions */
+body.ovdark #overviewView .ovx-li{ border-top-color:rgba(255,255,255,.07); }
+body.ovdark #overviewView .ovx-li.go:hover{ background:rgba(255,255,255,.06); }
+body.ovdark #overviewView .ovx-li-t{ color:var(--g-tx); }
+body.ovdark #overviewView .ovx-li-s, body.ovdark #overviewView .ovx-li-a{ color:var(--g-mute); }
+body.ovdark #overviewView .ovx-act{ background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.10); color:var(--g-tx); }
+body.ovdark #overviewView .ovx-act:hover{ background:rgba(255,255,255,.10); border-color:rgba(143,176,255,.35); }
+body.ovdark #overviewView .ovx-act.primary{ background:linear-gradient(135deg,#ffa23f,#f27a00); border-color:transparent; color:#fff; box-shadow:0 8px 22px rgba(242,122,0,.35); }
+body.ovdark #overviewView .ovx-act svg{ color:inherit; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1462,6 +1549,7 @@ const MIN_OPEN_PERIOD = '2026-09';
 
 /* ── view toggle ── */
 let currentView = 'overview';
+document.body.classList.add('ovdark');
 let historyLoaded = false;
 let timesheetEntriesLoaded = false;
 let pay202EburyRateLoaded = false;
@@ -1474,6 +1562,7 @@ function switchView(view, btn){
   document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('overviewView').style.display = view === 'overview' ? 'block' : 'none';
+  document.body.classList.toggle('ovdark', view === 'overview');
   document.getElementById('detailView').style.display = view === 'detail' ? 'block' : 'none';
   document.getElementById('historyView').style.display = view === 'history' ? 'block' : 'none';
   document.getElementById('leaveView').style.display = view === 'leave' ? 'block' : 'none';
