@@ -797,8 +797,7 @@ function renderPayTiles(){
   var ytdSum = ytd.reduce(function(a,r){ return a + (parseFloat(r.total_payout)||0); }, 0);
   document.getElementById('payAsOf').textContent = 'Latest: paid ' + MONS[p0.pd[1]-1] + ' ' + p0.pd[2] + ', ' + p0.pd[0];
   el.innerHTML = '<div class="tile pay-net"><div class="tile-lbl">Latest Net Pay</div><div class="tile-val money">₱ ' + psFmt(r0.total_payout) + '</div><div class="tile-unit">' + p0.month + ' pay</div><div class="tile-foot"><span>Period ' + p0.label + '</span></div></div>'
-    + '<div class="tile pay-ytd"><div class="tile-lbl">Net Pay ' + yr + ' To Date</div><div class="tile-val money">₱ ' + psFmt(ytdSum) + '</div><div class="tile-unit">' + ytd.length + ' pay run' + (ytd.length!==1?'s':'') + ' in ' + yr + '</div><div class="tile-foot"><span>Paid via Ebury Swift Transfer</span></div></div>'
-    + '<div class="tile pay-cnt"><div class="tile-lbl">Payslips Available</div><div class="tile-val">' + MY_PAYSLIPS.length + '</div><div class="tile-unit">View or download as PDF</div><div class="tile-foot"><span>Questions? jerald@digitaldoorlocks.com.au</span></div></div>';
+    + '<div class="tile pay-ytd"><div class="tile-lbl">Net Pay ' + yr + ' To Date</div><div class="tile-val money">₱ ' + psFmt(ytdSum) + '</div><div class="tile-unit">' + ytd.length + ' pay run' + (ytd.length!==1?'s':'') + ' in ' + yr + '</div><div class="tile-foot"><span>Paid via Ebury Swift Transfer</span></div></div>';
 }
 function viewPayslip(i){
   var r = MY_PAYSLIPS[i]; if(!r) return;
