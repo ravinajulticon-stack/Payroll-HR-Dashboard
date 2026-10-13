@@ -264,6 +264,14 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .tile.pay-ytd{ background:linear-gradient(135deg,#6b7cff 0%,#3f46d6 100%); }
 .tile.pay-cnt{ background:linear-gradient(135deg,#ffa23f 0%,#f27a00 100%); }
 .tile-val.money{ font-size:28px; }
+.tile-cmp{ display:inline-flex; align-items:center; gap:4px; font-weight:700; background:rgba(255,255,255,0.18); padding:2px 8px; border-radius:999px; }
+.ps-new{ display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; background:#ff9500; color:#fff; padding:2px 7px; border-radius:999px; margin-left:6px; vertical-align:2px; }
+.psl-latest .ps-new{ background:#ffb340; color:#0f1b3d; }
+.ps-unpaid{ display:inline-block; font-size:9.5px; font-weight:700; background:#fff1e3; color:#c25e00; padding:2px 7px; border-radius:999px; margin-left:6px; vertical-align:2px; }
+.psl-cmp{ font-size:11.5px; margin-top:6px; opacity:.9; }
+.pg-dot{ min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:#ff9500; color:#fff; font-size:10px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; }
+.pv-banner{ margin:14px 0 0; padding:10px 14px; border-radius:12px; background:rgba(255,179,64,0.16); border:1px solid rgba(255,179,64,0.45); color:#ffd89a; font-size:12.5px; }
+.pv-banner b{ color:#fff; }
 
 .rl-ic.c-indigo{ background:linear-gradient(135deg,#6b7cff,#3f46d6); box-shadow:0 4px 10px rgba(63,70,214,0.25); }
 .psl-latest{ margin:2px 18px 14px; padding:16px 18px; border-radius:14px; background:linear-gradient(135deg,#1d2f6b,#0f1b3d); color:#fff; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
@@ -326,6 +334,8 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .ps-net{ display:flex; justify-content:space-between; align-items:center; background:#0A0031; color:#fff; padding:12px 16px; font-size:19px; font-weight:800; border-radius:4px; }
 .ps-foot{ margin-top:14px; font-size:10.5px; text-align:center; color:#555; line-height:1.6; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -350,7 +360,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
         <div class="brand-mark ddl-icon" role="img" aria-label="DDL"></div>
         <div><div class="bar-title" id="barTitle">My Leave</div><div class="bar-sub">Digital Door Locks Pty Limited</div></div>
       </div>
-      <div class="pg-tabs" role="tablist"><button type="button" class="on" id="pgLeave" onclick="showPage('leave')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg>My Leave</button><button type="button" id="pgPay" onclick="showPage('pay')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/></svg>My Payslips</button></div>
+      <div class="pg-tabs" role="tablist"><button type="button" class="on" id="pgLeave" onclick="showPage('leave')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg>My Leave</button><button type="button" id="pgPay" onclick="showPage('pay')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/></svg>My Payslips<span class="pg-dot" id="pgPayDot" style="display:none"></span></button></div>
       <div class="user">
         <a href="index.html" id="adminLink" class="admin-link">Dashboard →</a>
         <div class="user-av" id="userAv" onclick="togglePhotoMenu(event)" title="Change your profile photo"></div><div class="photo-menu" id="photoMenu" onclick="event.stopPropagation()"><button type="button" onclick="pickPhoto()"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5a1 1 0 0 1 1-1h2l1-1.5h4l1 1.5h2a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><circle cx="8" cy="8.5" r="2.3"/></svg><span id="pmUpload">Upload Photo</span></button><button type="button" class="danger" id="pmRemove" onclick="removeMyPhoto()" style="display:none"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/></svg>Remove Photo</button><div class="pm-note" id="pmNote">JPG or PNG · it’s cropped to a circle</div></div><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="photoChosen(this)">
@@ -367,7 +377,8 @@ img.av{ object-fit:cover; background:#e6e9f2; }
     </div>
     <div class="hero-in" id="payHero" style="display:none">
       <div class="hello" id="helloPay"></div>
-      <div class="hello-sub">Your payslips from DDL Middle East - FZCO. Only payslips marked paid are shown.</div>
+      <div class="hello-sub" id="paySub">Your payslips from DDL Middle East - FZCO. Only payslips marked paid are shown.</div>
+      <div class="pv-banner" id="pvBanner" style="display:none"></div>
       <div class="hero-head"><span class="hero-lbl">Pay Summary</span><span class="as-of" id="payAsOf"></span></div>
       <div class="tiles" id="payTiles"><div class="empty">Loading…</div></div>
     </div>
@@ -659,8 +670,16 @@ async function start(){
   const { data: appr } = await sb.rpc('is_leave_approver');
   IS_APPROVER = !!appr;
   await loadMine();
-  loadMyPayslips();
-  if(location.hash === '#payslips') showPage('pay');
+  var qp = new URLSearchParams(location.search);
+  if(IS_ADMIN && qp.get('preview')){
+    PS_PREVIEW = { name: qp.get('preview'), pd: qp.get('pd') || null };
+    document.getElementById('pvBanner').innerHTML = '<b>Preview</b> \u2014 this is what <b>' + esc(PS_PREVIEW.name) + '</b> sees on My Payslips. A payslip marked \u201cNot Paid Yet\u201d only becomes visible to them once you mark it Paid.';
+    document.getElementById('pvBanner').style.display = '';
+    document.getElementById('paySub').textContent = 'Admin preview. Nothing here is saved or marked as seen.';
+  }
+  await loadMyPayslips();
+  if(location.hash === '#payslips' || PS_PREVIEW) showPage('pay');
+  if(PS_PREVIEW) document.getElementById('helloPay').textContent = 'Preview: ' + PS_PREVIEW.name;
 }
 
 var MONS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -678,7 +697,9 @@ function dateTile(dateStr, cls, title){
 
 
 /* ---- MY PAYSLIPS (own, Paid only — enforced by the my_payslips() database function) ---- */
-var MY_PAYSLIPS = [], MY_PS_EMP = {}, PS_SHOW_ALL = false;
+var MY_PAYSLIPS = [], MY_PS_EMP = {}, MY_PS_EMP_ID = null, MY_PS_SEEN = {}, PS_SHOW_ALL = false;
+// Admin preview (team.html?preview=<name>&pd=<pay date>): shows what that staff member sees
+var PS_PREVIEW = null;
 var PS_CSS = ".ps-sheet{ background:#fff; color:#1a1a1a; border-radius:10px; padding:30px 34px; margin:0 auto 18px; box-shadow:0 2px 16px rgba(0,0,0,0.10); max-width:860px; }\n.ps-top{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #006CE5; padding-bottom:12px; margin-bottom:16px; }\n.ps-brand{ display:flex; align-items:center; gap:16px; }\n.ps-logo{ height:50px; width:auto; display:block; padding-right:16px; border-right:1px solid #D7DCE6; }\n.ps-co{ font-size:24px; font-weight:800; color:#0A0031; letter-spacing:-0.5px; }\n.ps-addr{ font-size:10.5px; color:#006CE5; margin-top:3px; }\n.ps-title{ font-size:28px; font-weight:800; color:#0A0031; letter-spacing:-0.5px; }\n.ps-meta{ display:flex; gap:18px; margin-bottom:18px; flex-wrap:wrap; }\n.ps-empbox{ flex:1; min-width:230px; }\n.ps-lbl{ background:#006CE5; color:#fff; font-size:9px; font-weight:700; letter-spacing:0.6px; padding:4px 8px; text-transform:uppercase; }\n.ps-name{ font-size:16px; font-weight:700; background:#E8EAF6; padding:5px 8px; }\n.ps-loc{ font-size:10.5px; color:#6e6e73; padding:1px 8px 3px; }\n.ps-sub{ font-size:11px; color:#333; padding:1px 8px; }\n.ps-grid{ flex:1; min-width:320px; display:grid; grid-template-columns:repeat(3,1fr); gap:6px; align-content:start; }\n.ps-val{ font-size:11px; font-weight:600; text-align:center; border:1px solid #C5CAE9; padding:4px 6px; }\n.ps-tbl{ width:100%; border-collapse:collapse; margin-bottom:12px; }\n.ps-head th{ background:#006CE5; color:#fff; font-size:10px; font-weight:700; letter-spacing:0.4px; padding:6px 8px; text-align:left; text-transform:uppercase; }\n.ps-head th.ps-c{ text-align:center; }\n.ps-head th.ps-r{ text-align:right; }\n.ps-tbl{ table-layout:fixed; }\n.ps-tbl th:nth-child(1), .ps-tbl td:nth-child(1){ width:40%; }\n.ps-tbl th:nth-child(2), .ps-tbl td:nth-child(2){ width:9%; }\n.ps-tbl th:nth-child(3), .ps-tbl td:nth-child(3){ width:15%; }\n.ps-tbl th:nth-child(4), .ps-tbl td:nth-child(4){ width:18%; }\n.ps-tbl th:nth-child(5), .ps-tbl td:nth-child(5){ width:18%; }\n.ps-head.ps-ded th{ background:#5A6478; }\n.ps-tbl td{ font-size:11.5px; padding:6px 8px; border-bottom:1px solid #eee; color:#1a1a1a; }\n.ps-c{ text-align:center; }\n.ps-r{ text-align:right; }\n.ps-php{ background:#EEF2FB; }\n.ps-sub-total td{ font-weight:700; background:#f7f7f7; border-top:1.5px solid #ddd; }\n.ps-note{ display:block; font-size:9.5px; color:#777; font-weight:400; margin-top:2px; }\n.ps-net{ display:flex; justify-content:space-between; align-items:center; background:#0A0031; color:#fff; padding:12px 16px; font-size:19px; font-weight:800; border-radius:4px; }\n.ps-foot{ margin-top:14px; font-size:10.5px; text-align:center; color:#555; line-height:1.6; }";
 function psFmt(n){ var v = parseFloat(n); return isNaN(v) ? '' : v.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
 function psMoney(n, sym){ return n ? sym + ' ' + psFmt(n) : sym + ' —'; }
@@ -748,29 +769,68 @@ function buildMyPayslip(r){
 async function loadMyPayslips(){
   var box = document.getElementById('psList');
   if(!box) return;
-  var res = await sb.rpc('my_payslips');
+  var res = PS_PREVIEW ? await sb.rpc('preview_payslips', { p_name: PS_PREVIEW.name, p_pay_date: PS_PREVIEW.pd }) : await sb.rpc('my_payslips');
   if(res.error){ box.innerHTML = '<div class="empty">Could not load your payslips.</div>'; document.getElementById('payTiles').innerHTML = '<div class="empty">Could not load your payslips.</div>'; return; }
   MY_PS_EMP = (res.data && res.data.emp) || {};
+  MY_PS_EMP_ID = (res.data && res.data.emp_id) || null;
   MY_PAYSLIPS = (res.data && res.data.rows) || [];
+  MY_PS_SEEN = {}; ((res.data && res.data.seen) || []).forEach(function(d){ MY_PS_SEEN[d] = true; });
+  updatePayDot();
   renderMyPayslips();
   renderPayTiles();
 }
+function psIsNew(r){ return !PS_PREVIEW && r.status === 'Paid' && !MY_PS_SEEN[r.pay_date]; }
+function updatePayDot(){
+  var n = MY_PAYSLIPS.filter(psIsNew).length, d = document.getElementById('pgPayDot');
+  if(!d) return;
+  d.textContent = n; d.style.display = n ? 'inline-flex' : 'none';
+}
+function markSeen(r){
+  if(PS_PREVIEW || !r || MY_PS_SEEN[r.pay_date] || !MY_PS_EMP_ID || r.status !== 'Paid') return;
+  MY_PS_SEEN[r.pay_date] = true;
+  sb.from('payslip_seen').insert({ employee_id: MY_PS_EMP_ID, pay_date: r.pay_date }).then(function(){}, function(){});
+  renderMyPayslips(); updatePayDot();
+}
+// Explain the change in net pay vs the previous payslip, in PHP.
+var PS_USD_PARTS = [['standard_pay','Standard Pay'],['overtime_pay','Overtime'],['double_pay','Double Pay'],['vacation_pay','Leave Payout'],['home_office','Home Office'],['others_usd','Others (USD)'],['bank_fees','Bank Fees']];
+var PS_PHP_PARTS = [['thirteenth_php','13th Month'],['maxicare_php','Maxicare'],['sss_php','SSS'],['others_php','Others (PHP)'],['loan_php','Salary Loan']];
+function psCompare(cur, prev){
+  if(!cur || !prev) return null;
+  var n = function(v){ return parseFloat(v) || 0; };
+  var rc = n(cur.ebury_rate), rp = n(prev.ebury_rate) || rc;
+  var parts = [], usdCur = 0;
+  PS_USD_PARTS.forEach(function(k){ usdCur += n(cur[k[0]]); parts.push({ label:k[1], v:(n(cur[k[0]]) - n(prev[k[0]])) * rp }); });
+  PS_PHP_PARTS.forEach(function(k){ parts.push({ label:k[1], v:n(cur[k[0]]) - n(prev[k[0]]) }); });
+  if(rc && rp && Math.abs(rc - rp) > 0.00001) parts.push({ label:'Exchange Rate', v: usdCur * (rc - rp) });
+  var reasons = parts.filter(function(x){ return Math.abs(x.v) >= 1; }).sort(function(a,b){ return Math.abs(b.v) - Math.abs(a.v); }).slice(0, 3);
+  var pm = psPeriod(prev.pay_date);
+  return { delta: n(cur.total_payout) - n(prev.total_payout), prevMonth: MONF[pm.pd[1]-1], reasons: reasons };
+}
+function psCmpText(c){
+  if(!c) return '';
+  if(Math.abs(c.delta) < 0.5) return 'Same as ' + c.prevMonth;
+  var why = c.reasons.map(function(x){ return x.label + ' ' + (x.v >= 0 ? '+' : '−') + '₱' + psFmt(Math.abs(x.v)); }).join(' · ');
+  return (c.delta >= 0 ? '▲ ' : '▼ ') + '₱' + psFmt(Math.abs(c.delta)) + ' vs ' + c.prevMonth + (why ? ' — ' + why : '');
+}
 function renderMyPayslips(){
   var box = document.getElementById('psList'), cnt = document.getElementById('psCount');
-  cnt.textContent = MY_PAYSLIPS.length ? MY_PAYSLIPS.length + ' paid' : '';
+  var nPaid = MY_PAYSLIPS.filter(function(r){ return r.status === 'Paid'; }).length;
+  cnt.textContent = nPaid ? nPaid + ' paid' : '';
   if(!MY_PAYSLIPS.length){ box.innerHTML = '<div class="empty">No paid payslips yet. They appear here once payroll marks your pay as paid.</div>'; return; }
   var r0 = MY_PAYSLIPS[0], p0 = psPeriod(r0.pay_date);
-  var html = '<div class="psl-latest"><div><div class="l">Latest Payslip · ' + p0.month + '</div>'
+  var cmp0 = psCompare(r0, MY_PAYSLIPS[1]);
+  var html = '<div class="psl-latest"><div><div class="l">Latest Payslip \u00b7 ' + p0.month + (psIsNew(r0) ? '<span class="ps-new">New</span>' : '') + (r0.status !== 'Paid' ? '<span class="ps-unpaid">Not Paid Yet</span>' : '') + '</div>'
     + '<div class="v">₱ ' + psFmt(r0.total_payout) + '</div>'
-    + '<div class="s">Paid ' + MONS[p0.pd[1]-1] + ' ' + p0.pd[2] + ', ' + p0.pd[0] + ' · Period ' + p0.label + '</div></div>'
-    + '<div class="acts"><button class="btn ghost sm" onclick="downloadPayslip(0)">Download PDF</button><button class="btn sm" onclick="viewPayslip(0)">View</button></div></div>';
+    + '<div class="s">' + (r0.status === 'Paid' ? 'Paid ' : 'Pay date ') + MONS[p0.pd[1]-1] + ' ' + p0.pd[2] + ', ' + p0.pd[0] + ' \u00b7 Period ' + p0.label + '</div>'
+    + (cmp0 ? '<div class="psl-cmp">' + esc(psCmpText(cmp0)) + '</div>' : '') + '</div>'
+    + '<div class="acts"><button class="btn ghost sm" onclick="downloadPayslip(0)">Save PDF</button><button class="btn sm" onclick="viewPayslip(0)">View</button></div></div>';
   var rest = MY_PAYSLIPS.slice(1), shown = PS_SHOW_ALL ? rest : rest.slice(0, 5);
   html += shown.map(function(r, k){
     var i = k + 1, p = psPeriod(r.pay_date);
     return '<div class="psl-row"><div class="psl-date"><b>' + p.pd[2] + '</b><span>' + MONS[p.pd[1]-1] + '</span></div>'
-      + '<div class="psl-main"><div class="psl-t">' + p.month + ' Pay</div><div class="psl-s">Period ' + p.label + '</div></div>'
+      + '<div class="psl-main"><div class="psl-t">' + p.month + ' Pay' + (psIsNew(r) ? '<span class="ps-new">New</span>' : '') + (r.status !== 'Paid' ? '<span class="ps-unpaid">Not Paid Yet</span>' : '') + '</div><div class="psl-s">Period ' + p.label + '</div></div>'
       + '<div class="psl-amt">₱ ' + psFmt(r.total_payout) + '</div>'
-      + '<div class="psl-acts"><button class="btn ghost sm" onclick="viewPayslip(' + i + ')">View</button><button class="btn ghost sm" onclick="downloadPayslip(' + i + ')">PDF</button></div></div>';
+      + '<div class="psl-acts"><button class="btn ghost sm" onclick="viewPayslip(' + i + ')">View</button><button class="btn ghost sm" onclick="downloadPayslip(' + i + ')">Save PDF</button></div></div>';
   }).join('');
   if(rest.length > 5) html += '<button class="psl-more" onclick="PS_SHOW_ALL=!PS_SHOW_ALL;renderMyPayslips()">' + (PS_SHOW_ALL ? 'Show Less' : 'Show All ' + MY_PAYSLIPS.length + ' Payslips') + '</button>';
   box.innerHTML = html;
@@ -785,19 +845,22 @@ function showPage(pg){
   document.getElementById('pgPay').classList.toggle('on', pay);
   document.getElementById('barTitle').textContent = pay ? 'My Payslips' : 'My Leave';
   document.title = pay ? 'My Payslips' : 'My Leave';
-  document.getElementById('helloPay').textContent = document.getElementById('hello').textContent;
+  if(!PS_PREVIEW) document.getElementById('helloPay').textContent = document.getElementById('hello').textContent;
   try{ history.replaceState(null, '', pay ? '#payslips' : location.pathname + location.search); }catch(e){}
   window.scrollTo(0, 0);
 }
 function renderPayTiles(){
   var el = document.getElementById('payTiles');
   if(!MY_PAYSLIPS.length){ el.innerHTML = '<div class="empty">No paid payslips yet.</div>'; document.getElementById('payAsOf').textContent = ''; return; }
-  var r0 = MY_PAYSLIPS[0], p0 = psPeriod(r0.pay_date), yr = r0.pay_date.slice(0,4);
-  var ytd = MY_PAYSLIPS.filter(function(r){ return r.pay_date.slice(0,4) === yr; });
-  var ytdSum = ytd.reduce(function(a,r){ return a + (parseFloat(r.total_payout)||0); }, 0);
-  document.getElementById('payAsOf').textContent = 'Latest: paid ' + MONS[p0.pd[1]-1] + ' ' + p0.pd[2] + ', ' + p0.pd[0];
-  el.innerHTML = '<div class="tile pay-net"><div class="tile-lbl">Latest Net Pay</div><div class="tile-val money">₱ ' + psFmt(r0.total_payout) + '</div><div class="tile-unit">' + p0.month + ' pay</div><div class="tile-foot"><span>Period ' + p0.label + '</span></div></div>'
-    + '<div class="tile pay-ytd"><div class="tile-lbl">Net Pay ' + yr + ' To Date</div><div class="tile-val money">₱ ' + psFmt(ytdSum) + '</div><div class="tile-unit">' + ytd.length + ' pay run' + (ytd.length!==1?'s':'') + ' in ' + yr + '</div><div class="tile-foot"><span>Paid via Ebury Swift Transfer</span></div></div>';
+  var r0 = MY_PAYSLIPS[0], p0 = psPeriod(r0.pay_date);
+  var oldest = psPeriod(MY_PAYSLIPS[MY_PAYSLIPS.length-1].pay_date);
+  var paid = MY_PAYSLIPS.filter(function(r){ return r.status === 'Paid'; });
+  var sum = paid.reduce(function(a,r){ return a + (parseFloat(r.total_payout)||0); }, 0);
+  var cmp = psCompare(r0, MY_PAYSLIPS[1]);
+  var cmpChip = cmp && Math.abs(cmp.delta) >= 0.5 ? '<span class="tile-cmp">' + (cmp.delta >= 0 ? '▲' : '▼') + ' ₱' + psFmt(Math.abs(cmp.delta)) + ' vs ' + cmp.prevMonth.slice(0,3) + '</span>' : '';
+  document.getElementById('payAsOf').textContent = (r0.status === 'Paid' ? 'Latest: paid ' : 'Latest: pay date ') + MONS[p0.pd[1]-1] + ' ' + p0.pd[2] + ', ' + p0.pd[0];
+  el.innerHTML = '<div class="tile pay-net"><div class="tile-lbl">Latest Net Pay</div><div class="tile-val money">₱ ' + psFmt(r0.total_payout) + '</div><div class="tile-unit">' + p0.month + ' pay</div><div class="tile-foot"><span>Period ' + p0.label + '</span>' + cmpChip + '</div></div>'
+    + '<div class="tile pay-ytd"><div class="tile-lbl">Net Pay Since ' + MONS[oldest.pd[1]-1] + ' ' + oldest.pd[0] + '</div><div class="tile-val money">₱ ' + psFmt(sum) + '</div><div class="tile-unit">' + paid.length + ' paid pay run' + (paid.length!==1?'s':'') + '</div><div class="tile-foot"><span>Paid via Ebury Swift Transfer</span></div></div>';
 }
 function viewPayslip(i){
   var r = MY_PAYSLIPS[i]; if(!r) return;
@@ -805,14 +868,39 @@ function viewPayslip(i){
   document.getElementById('psDlBtn').onclick = function(){ downloadPayslip(i); };
   document.getElementById('psModal').classList.add('open');
   document.body.style.overflow = 'hidden';
+  markSeen(r);
 }
 function closePayslip(){
   document.getElementById('psModal').classList.remove('open');
   document.body.style.overflow = '';
 }
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && document.getElementById('psModal').classList.contains('open')) closePayslip(); });
-function downloadPayslip(i){
+async function downloadPayslip(i){
   var r = MY_PAYSLIPS[i]; if(!r) return;
+  var fname = 'Payslip_' + r.pay_date + '_' + String(r.employee_name).replace(/[^A-Za-z0-9]+/g, '_') + '.pdf';
+  if(typeof html2canvas !== 'undefined' && window.jspdf){
+    var host = document.createElement('div');
+    host.style.cssText = 'position:fixed;left:-10000px;top:0;width:860px;background:#fff;';
+    host.innerHTML = buildMyPayslip(r);
+    document.body.appendChild(host);
+    var sheet = host.firstChild;
+    sheet.style.boxShadow = 'none'; sheet.style.borderRadius = '0'; sheet.style.margin = '0';
+    try{
+      await Promise.all(Array.prototype.map.call(host.querySelectorAll('img'), function(im){ return im.complete ? null : new Promise(function(res){ im.onload = im.onerror = res; }); }));
+      var canvas = await html2canvas(sheet, { scale: 2, backgroundColor: '#ffffff', logging: false });
+      var pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+      var pw = pdf.internal.pageSize.getWidth(), m = 8, w = pw - m * 2, h = canvas.height * w / canvas.width;
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', m, m, w, h);
+      pdf.save(fname);
+      markSeen(r);
+      return;
+    }catch(e){ /* fall back to the print window below */ }
+    finally{ host.remove(); }
+  }
+  markSeen(r);
+  printPayslipWindow(r);
+}
+function printPayslipWindow(r){
   var w = window.open('', '_blank');
   if(!w){ alert('Please allow pop-ups for this site to download your payslip.'); return; }
   var title = 'Payslip_' + r.pay_date + '_' + String(r.employee_name).replace(/[^A-Za-z0-9]+/g, '_');
@@ -1523,7 +1611,7 @@ start();
 </script>
 <div class="psl-modal" id="psModal" onclick="if(event.target===this) closePayslip()">
   <div class="psl-box">
-    <div class="psl-bar"><button class="btn ghost sm" id="psDlBtn">Download PDF</button><button class="btn sm" onclick="closePayslip()">Close</button></div>
+    <div class="psl-bar"><button class="btn ghost sm" id="psDlBtn">Save PDF</button><button class="btn sm" onclick="closePayslip()">Close</button></div>
     <div id="psView"></div>
   </div>
 </div>
