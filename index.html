@@ -875,6 +875,7 @@ body {
 .ov-cmp.down .ov-cmp-arrow{ color:var(--green); }
 .ov-cmp-txt{ font-size:12px; color:var(--text-2); }
 .ov-cmp-why{ font-size:10.5px; color:var(--text-3); }
+.io-btn:disabled{ opacity:.45; cursor:not-allowed; }
 .ps-zoom{ display:inline-flex; align-items:center; gap:2px; background:var(--surface-3); border-radius:999px; padding:3px; margin-right:8px; }
 .ps-zoom .io-btn{ width:26px; height:26px; padding:0; border-radius:50%; font-size:14px; font-weight:700; line-height:1; display:flex; align-items:center; justify-content:center; }
 #psZoomLabel{ font-size:11.5px; font-weight:700; color:var(--text-2); min-width:42px; text-align:center; cursor:pointer; user-select:none; }
@@ -3948,6 +3949,7 @@ function renderPayslipPanel(){
     +   '</div>'
     +   '<button class="io-btn primary" onclick="printPayslips()">Print / Save PDF</button>'
     +     '<button class="io-btn" id="psBulkBtn" onclick="downloadAllPayslips()" title="Saves one PDF per employee">Download All (ZIP)</button>'
+    +     '<button class="io-btn" onclick="previewAsStaff()"' + (payslipEmp ? ' title="Open My Payslips exactly as ' + payslipEmp + ' sees it"' : ' disabled title="Choose an employee first"') + '>Preview As Staff</button>'
     +   '</div>'
     + '</div>'
     + '<div id="payslipSheets">' + (slips || empty) + '</div>';
@@ -3976,6 +3978,12 @@ function psSetZoom(z){
 function psZoomIn(){ psSetZoom(psZoom + 10); }
 function psZoomOut(){ psSetZoom(psZoom - 10); }
 function psZoomReset(){ psSetZoom(100); }
+// Opens My Leave → My Payslips as the selected employee would see it (admin-only preview; nothing is saved)
+function previewAsStaff(){
+  if(!payslipEmp){ alert('Choose an employee first.'); return; }
+  window.open('team.html?preview=' + encodeURIComponent(payslipEmp) + '&pd=' + payslipPayDate(payslipPeriod) + '#payslips', '_blank');
+}
+
 function printPayslips(){
   var st = document.createElement('style');
   st.id = 'psPageStyle';
