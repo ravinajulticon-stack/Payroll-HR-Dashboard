@@ -255,11 +255,17 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .msg{ font-size:11.5px; color:#c9271d; margin-top:10px; min-height:14px; text-align:center; }
 
 /* ---- My Payslips ---- */
+.bar-left{ display:flex; align-items:center; gap:22px; flex:1; min-width:0; }
+.bar-left .pg-tabs{ padding-left:4px; position:relative; }
+.bar-left .brand{ padding-right:22px; border-right:1px solid rgba(255,255,255,0.14); flex-shrink:0; }
+.pg-tabs{ overflow-x:auto; scrollbar-width:none; max-width:100%; }
+.pg-tabs::-webkit-scrollbar{ display:none; }
+.pg-tabs button{ white-space:nowrap; flex-shrink:0; min-width:150px; justify-content:center; }
 .pg-tabs{ display:flex; gap:4px; padding:4px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); }
 .pg-tabs button{ display:flex; align-items:center; gap:7px; border:none; background:none; color:rgba(255,255,255,0.72); font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:9px; cursor:pointer; }
 .pg-tabs button:hover{ color:#fff; background:rgba(255,255,255,0.08); }
 .pg-tabs button.on{ background:#fff; color:#0f1b3d; box-shadow:0 2px 8px rgba(0,0,0,0.18); }
-@media(max-width:700px){ .pg-tabs{ order:3; width:100%; } .pg-tabs button{ flex:1; justify-content:center; } }
+@media(max-width:700px){ .bar-left{ display:contents; } .bar-left .brand{ border-right:none; padding-right:0; } .pg-tabs{ order:3; width:100%; } .pg-tabs button{ flex:1; justify-content:center; } }
 .tile.pay-net{ background:linear-gradient(135deg,#3b82ff 0%,#1d4ed8 100%); }
 .tile.pay-ytd{ background:linear-gradient(135deg,#6b7cff 0%,#3f46d6 100%); }
 .tile.pay-cnt{ background:linear-gradient(135deg,#ffa23f 0%,#f27a00 100%); }
@@ -356,11 +362,13 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 <div id="app" style="display:none">
   <div class="hero">
     <div class="bar">
+      <div class="bar-left">
       <div class="brand">
         <div class="brand-mark ddl-icon" role="img" aria-label="DDL"></div>
         <div><div class="bar-title" id="barTitle">My Leave</div><div class="bar-sub">Digital Door Locks Pty Limited</div></div>
       </div>
       <div class="pg-tabs" role="tablist"><button type="button" class="on" id="pgLeave" onclick="showPage('leave')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg>My Leave</button><button type="button" id="pgPay" onclick="showPage('pay')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/></svg>My Payslips<span class="pg-dot" id="pgPayDot" style="display:none"></span></button></div>
+      </div>
       <div class="user">
         <a href="index.html" id="adminLink" class="admin-link">Dashboard →</a>
         <div class="user-av" id="userAv" onclick="togglePhotoMenu(event)" title="Change your profile photo"></div><div class="photo-menu" id="photoMenu" onclick="event.stopPropagation()"><button type="button" onclick="pickPhoto()"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5a1 1 0 0 1 1-1h2l1-1.5h4l1 1.5h2a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><circle cx="8" cy="8.5" r="2.3"/></svg><span id="pmUpload">Upload Photo</span></button><button type="button" class="danger" id="pmRemove" onclick="removeMyPhoto()" style="display:none"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/></svg>Remove Photo</button><div class="pm-note" id="pmNote">JPG or PNG · it’s cropped to a circle</div></div><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="photoChosen(this)">
