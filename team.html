@@ -253,6 +253,78 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .auth input{ width:100%; height:38px; border:1px solid var(--border); border-radius:10px; padding:0 11px; font-size:13px; font-family:inherit; }
 .auth button{ width:100%; height:40px; margin-top:20px; background:var(--blue); color:#fff; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; }
 .msg{ font-size:11.5px; color:#c9271d; margin-top:10px; min-height:14px; text-align:center; }
+
+/* ---- My Payslips ---- */
+.pg-tabs{ display:flex; gap:4px; padding:4px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); }
+.pg-tabs button{ display:flex; align-items:center; gap:7px; border:none; background:none; color:rgba(255,255,255,0.72); font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:9px; cursor:pointer; }
+.pg-tabs button:hover{ color:#fff; background:rgba(255,255,255,0.08); }
+.pg-tabs button.on{ background:#fff; color:#0f1b3d; box-shadow:0 2px 8px rgba(0,0,0,0.18); }
+@media(max-width:700px){ .pg-tabs{ order:3; width:100%; } .pg-tabs button{ flex:1; justify-content:center; } }
+.tile.pay-net{ background:linear-gradient(135deg,#3b82ff 0%,#1d4ed8 100%); }
+.tile.pay-ytd{ background:linear-gradient(135deg,#6b7cff 0%,#3f46d6 100%); }
+.tile.pay-cnt{ background:linear-gradient(135deg,#ffa23f 0%,#f27a00 100%); }
+.tile-val.money{ font-size:28px; }
+
+.rl-ic.c-indigo{ background:linear-gradient(135deg,#6b7cff,#3f46d6); box-shadow:0 4px 10px rgba(63,70,214,0.25); }
+.psl-latest{ margin:2px 18px 14px; padding:16px 18px; border-radius:14px; background:linear-gradient(135deg,#1d2f6b,#0f1b3d); color:#fff; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.psl-latest .l{ font-size:10.5px; opacity:.7; text-transform:uppercase; letter-spacing:.6px; font-weight:700; }
+.psl-latest .v{ font-size:26px; font-weight:800; letter-spacing:-.5px; margin-top:3px; font-variant-numeric:tabular-nums; }
+.psl-latest .s{ font-size:11.5px; opacity:.75; margin-top:3px; }
+.psl-latest .acts{ margin-left:auto; display:flex; gap:8px; }
+.psl-latest .btn.ghost{ background:rgba(255,255,255,.12); color:#fff; border-color:rgba(255,255,255,.22); }
+.psl-latest .btn.ghost:hover{ background:rgba(255,255,255,.2); }
+.psl-row{ display:flex; align-items:center; gap:14px; padding:11px 18px; border-top:1px solid #f0f2f7; }
+.psl-date{ width:44px; text-align:center; flex-shrink:0; }
+.psl-date b{ display:block; font-size:18px; font-weight:800; color:var(--blue); line-height:1; }
+.psl-date span{ font-size:9.5px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--text-3); }
+.psl-main{ flex:1; min-width:0; }
+.psl-t{ font-size:12.5px; font-weight:600; color:var(--text); }
+.psl-s{ font-size:11px; color:var(--text-3); margin-top:2px; }
+.psl-amt{ font-size:13.5px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.psl-acts{ display:flex; gap:6px; }
+.psl-more{ display:block; width:100%; padding:11px; border:none; border-top:1px solid #f0f2f7; background:none; color:var(--blue); font-weight:600; font-size:12px; cursor:pointer; }
+.psl-more:hover{ background:#f7f9fd; }
+@media(max-width:560px){ .psl-row{ flex-wrap:wrap; } .psl-acts{ width:100%; padding-left:58px; } .psl-latest .acts{ margin-left:0; } }
+.psl-modal{ position:fixed; inset:0; background:rgba(10,18,48,.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:1000; display:none; align-items:flex-start; justify-content:center; overflow:auto; padding:28px 16px; }
+.psl-modal.open{ display:flex; }
+.psl-box{ width:100%; max-width:900px; }
+.psl-bar{ display:flex; justify-content:flex-end; gap:8px; margin-bottom:10px; }
+.psl-bar .btn.ghost{ background:rgba(255,255,255,.95); }
+@media(max-width:760px){ .psl-box .ps-sheet{ zoom:.62; } }
+.ps-sheet{ background:#fff; color:#1a1a1a; border-radius:10px; padding:30px 34px; margin:0 auto 18px; box-shadow:0 2px 16px rgba(0,0,0,0.10); max-width:860px; }
+.ps-top{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #006CE5; padding-bottom:12px; margin-bottom:16px; }
+.ps-brand{ display:flex; align-items:center; gap:16px; }
+.ps-logo{ height:50px; width:auto; display:block; padding-right:16px; border-right:1px solid #D7DCE6; }
+.ps-co{ font-size:24px; font-weight:800; color:#0A0031; letter-spacing:-0.5px; }
+.ps-addr{ font-size:10.5px; color:#006CE5; margin-top:3px; }
+.ps-title{ font-size:28px; font-weight:800; color:#0A0031; letter-spacing:-0.5px; }
+.ps-meta{ display:flex; gap:18px; margin-bottom:18px; flex-wrap:wrap; }
+.ps-empbox{ flex:1; min-width:230px; }
+.ps-lbl{ background:#006CE5; color:#fff; font-size:9px; font-weight:700; letter-spacing:0.6px; padding:4px 8px; text-transform:uppercase; }
+.ps-name{ font-size:16px; font-weight:700; background:#E8EAF6; padding:5px 8px; }
+.ps-loc{ font-size:10.5px; color:#6e6e73; padding:1px 8px 3px; }
+.ps-sub{ font-size:11px; color:#333; padding:1px 8px; }
+.ps-grid{ flex:1; min-width:320px; display:grid; grid-template-columns:repeat(3,1fr); gap:6px; align-content:start; }
+.ps-val{ font-size:11px; font-weight:600; text-align:center; border:1px solid #C5CAE9; padding:4px 6px; }
+.ps-tbl{ width:100%; border-collapse:collapse; margin-bottom:12px; }
+.ps-head th{ background:#006CE5; color:#fff; font-size:10px; font-weight:700; letter-spacing:0.4px; padding:6px 8px; text-align:left; text-transform:uppercase; }
+.ps-head th.ps-c{ text-align:center; }
+.ps-head th.ps-r{ text-align:right; }
+.ps-tbl{ table-layout:fixed; }
+.ps-tbl th:nth-child(1), .ps-tbl td:nth-child(1){ width:40%; }
+.ps-tbl th:nth-child(2), .ps-tbl td:nth-child(2){ width:9%; }
+.ps-tbl th:nth-child(3), .ps-tbl td:nth-child(3){ width:15%; }
+.ps-tbl th:nth-child(4), .ps-tbl td:nth-child(4){ width:18%; }
+.ps-tbl th:nth-child(5), .ps-tbl td:nth-child(5){ width:18%; }
+.ps-head.ps-ded th{ background:#5A6478; }
+.ps-tbl td{ font-size:11.5px; padding:6px 8px; border-bottom:1px solid #eee; color:#1a1a1a; }
+.ps-c{ text-align:center; }
+.ps-r{ text-align:right; }
+.ps-php{ background:#EEF2FB; }
+.ps-sub-total td{ font-weight:700; background:#f7f7f7; border-top:1.5px solid #ddd; }
+.ps-note{ display:block; font-size:9.5px; color:#777; font-weight:400; margin-top:2px; }
+.ps-net{ display:flex; justify-content:space-between; align-items:center; background:#0A0031; color:#fff; padding:12px 16px; font-size:19px; font-weight:800; border-radius:4px; }
+.ps-foot{ margin-top:14px; font-size:10.5px; text-align:center; color:#555; line-height:1.6; }
 </style>
 </head>
 <body>
@@ -276,8 +348,9 @@ img.av{ object-fit:cover; background:#e6e9f2; }
     <div class="bar">
       <div class="brand">
         <div class="brand-mark ddl-icon" role="img" aria-label="DDL"></div>
-        <div><div class="bar-title">My Leave</div><div class="bar-sub">Digital Door Locks Pty Limited</div></div>
+        <div><div class="bar-title" id="barTitle">My Leave</div><div class="bar-sub">Digital Door Locks Pty Limited</div></div>
       </div>
+      <div class="pg-tabs" role="tablist"><button type="button" class="on" id="pgLeave" onclick="showPage('leave')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg>My Leave</button><button type="button" id="pgPay" onclick="showPage('pay')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/></svg>My Payslips</button></div>
       <div class="user">
         <a href="index.html" id="adminLink" class="admin-link">Dashboard →</a>
         <div class="user-av" id="userAv" onclick="togglePhotoMenu(event)" title="Change your profile photo"></div><div class="photo-menu" id="photoMenu" onclick="event.stopPropagation()"><button type="button" onclick="pickPhoto()"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5a1 1 0 0 1 1-1h2l1-1.5h4l1 1.5h2a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><circle cx="8" cy="8.5" r="2.3"/></svg><span id="pmUpload">Upload Photo</span></button><button type="button" class="danger" id="pmRemove" onclick="removeMyPhoto()" style="display:none"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/></svg>Remove Photo</button><div class="pm-note" id="pmNote">JPG or PNG · it’s cropped to a circle</div></div><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="photoChosen(this)">
@@ -286,15 +359,21 @@ img.av{ object-fit:cover; background:#e6e9f2; }
         <span class="ph-flag" title="Philippines team"><svg viewBox="0 0 24 16" width="19" height="13" aria-label="Philippine flag"><rect width="24" height="8" fill="#0038a8"/><rect y="8" width="24" height="8" fill="#ce1126"/><path d="M0 0 L12 8 L0 16 Z" fill="#ffffff"/><circle cx="3.6" cy="8" r="2" fill="#fcd116"/><path d="M3.6 4.1l.42 1.3h1.37l-1.1.8.42 1.3-1.11-.8-1.11.8.42-1.3-1.1-.8h1.37z" fill="#fcd116"/><path d="M3.6 11.9l.42-1.3h1.37l-1.1-.8.42-1.3-1.11.8-1.11-.8.42 1.3-1.1.8h1.37z" fill="#fcd116"/><circle cx="1.1" cy="1.2" r="0.62" fill="#fcd116"/><circle cx="1.1" cy="14.8" r="0.62" fill="#fcd116"/><circle cx="9.6" cy="8" r="0.62" fill="#fcd116"/></svg></span>
       </div>
     </div>
-    <div class="hero-in">
+    <div class="hero-in" id="leaveHero">
       <div class="hello" id="hello"></div>
       <div class="hello-sub">Here’s your leave balance and what’s coming up.</div>
       <div class="hero-head"><span class="hero-lbl">Leave Balance</span><span class="as-of" id="asOf"></span></div>
       <div class="tiles" id="balances"></div>
     </div>
+    <div class="hero-in" id="payHero" style="display:none">
+      <div class="hello" id="helloPay"></div>
+      <div class="hello-sub">Your payslips from DDL Middle East - FZCO. Only payslips marked paid are shown.</div>
+      <div class="hero-head"><span class="hero-lbl">Pay Summary</span><span class="as-of" id="payAsOf"></span></div>
+      <div class="tiles" id="payTiles"><div class="empty">Loading…</div></div>
+    </div>
   </div>
 
-  <div class="wrap">
+  <div class="wrap" id="leaveWrap">
     <div class="card">
       <div class="card-head"><div class="rl-hd"><span class="rl-ic c-navy"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1.8L3.5 9H8l-1 5.2L12.5 7H8z"/></svg></span><div><div class="card-title">Quick Actions</div><div class="rl-sub">Jump to what you use most</div></div></div></div>
       <div class="qa">
@@ -405,6 +484,13 @@ img.av{ object-fit:cover; background:#e6e9f2; }
         </div>
       </div>
       <div id="repMsg" class="reqmsg"></div>
+    </div>
+  </div>
+
+  <div class="wrap" id="payWrap" style="display:none">
+    <div class="card" id="psCard">
+      <div class="card-head"><div class="rl-hd"><span class="rl-ic c-indigo"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/></svg></span><div><div class="card-title">My Payslips</div><div class="rl-sub">View or download any of your paid payslips</div></div></div><span class="card-meta" id="psCount"></span></div>
+      <div id="psList"><div class="empty">Loading…</div></div>
     </div>
   </div>
 </div>
@@ -573,6 +659,8 @@ async function start(){
   const { data: appr } = await sb.rpc('is_leave_approver');
   IS_APPROVER = !!appr;
   await loadMine();
+  loadMyPayslips();
+  if(location.hash === '#payslips') showPage('pay');
 }
 
 var MONS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -588,6 +676,155 @@ function dateTile(dateStr, cls, title){
     + '</div>';
 }
 
+
+/* ---- MY PAYSLIPS (own, Paid only — enforced by the my_payslips() database function) ---- */
+var MY_PAYSLIPS = [], MY_PS_EMP = {}, PS_SHOW_ALL = false;
+var PS_CSS = ".ps-sheet{ background:#fff; color:#1a1a1a; border-radius:10px; padding:30px 34px; margin:0 auto 18px; box-shadow:0 2px 16px rgba(0,0,0,0.10); max-width:860px; }\n.ps-top{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #006CE5; padding-bottom:12px; margin-bottom:16px; }\n.ps-brand{ display:flex; align-items:center; gap:16px; }\n.ps-logo{ height:50px; width:auto; display:block; padding-right:16px; border-right:1px solid #D7DCE6; }\n.ps-co{ font-size:24px; font-weight:800; color:#0A0031; letter-spacing:-0.5px; }\n.ps-addr{ font-size:10.5px; color:#006CE5; margin-top:3px; }\n.ps-title{ font-size:28px; font-weight:800; color:#0A0031; letter-spacing:-0.5px; }\n.ps-meta{ display:flex; gap:18px; margin-bottom:18px; flex-wrap:wrap; }\n.ps-empbox{ flex:1; min-width:230px; }\n.ps-lbl{ background:#006CE5; color:#fff; font-size:9px; font-weight:700; letter-spacing:0.6px; padding:4px 8px; text-transform:uppercase; }\n.ps-name{ font-size:16px; font-weight:700; background:#E8EAF6; padding:5px 8px; }\n.ps-loc{ font-size:10.5px; color:#6e6e73; padding:1px 8px 3px; }\n.ps-sub{ font-size:11px; color:#333; padding:1px 8px; }\n.ps-grid{ flex:1; min-width:320px; display:grid; grid-template-columns:repeat(3,1fr); gap:6px; align-content:start; }\n.ps-val{ font-size:11px; font-weight:600; text-align:center; border:1px solid #C5CAE9; padding:4px 6px; }\n.ps-tbl{ width:100%; border-collapse:collapse; margin-bottom:12px; }\n.ps-head th{ background:#006CE5; color:#fff; font-size:10px; font-weight:700; letter-spacing:0.4px; padding:6px 8px; text-align:left; text-transform:uppercase; }\n.ps-head th.ps-c{ text-align:center; }\n.ps-head th.ps-r{ text-align:right; }\n.ps-tbl{ table-layout:fixed; }\n.ps-tbl th:nth-child(1), .ps-tbl td:nth-child(1){ width:40%; }\n.ps-tbl th:nth-child(2), .ps-tbl td:nth-child(2){ width:9%; }\n.ps-tbl th:nth-child(3), .ps-tbl td:nth-child(3){ width:15%; }\n.ps-tbl th:nth-child(4), .ps-tbl td:nth-child(4){ width:18%; }\n.ps-tbl th:nth-child(5), .ps-tbl td:nth-child(5){ width:18%; }\n.ps-head.ps-ded th{ background:#5A6478; }\n.ps-tbl td{ font-size:11.5px; padding:6px 8px; border-bottom:1px solid #eee; color:#1a1a1a; }\n.ps-c{ text-align:center; }\n.ps-r{ text-align:right; }\n.ps-php{ background:#EEF2FB; }\n.ps-sub-total td{ font-weight:700; background:#f7f7f7; border-top:1.5px solid #ddd; }\n.ps-note{ display:block; font-size:9.5px; color:#777; font-weight:400; margin-top:2px; }\n.ps-net{ display:flex; justify-content:space-between; align-items:center; background:#0A0031; color:#fff; padding:12px 16px; font-size:19px; font-weight:800; border-radius:4px; }\n.ps-foot{ margin-top:14px; font-size:10.5px; text-align:center; color:#555; line-height:1.6; }";
+function psFmt(n){ var v = parseFloat(n); return isNaN(v) ? '' : v.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function psMoney(n, sym){ return n ? sym + ' ' + psFmt(n) : sym + ' —'; }
+function psLine(label, units, rate, usd, php, rateSym){
+  if(!usd && !php) return '';
+  return '<tr><td class="ps-desc">' + label + '</td>'
+    + '<td class="ps-c">' + (units === null ? '' : units) + '</td>'
+    + '<td class="ps-r">' + (rate === null ? '' : psMoney(rate, rateSym || '$')) + '</td>'
+    + '<td class="ps-r">' + (usd === null ? '' : psMoney(usd, '$')) + '</td>'
+    + '<td class="ps-r ps-php">' + psMoney(php, '₱') + '</td></tr>';
+}
+function psPeriod(payDate){
+  var pd = payDate.split('-').map(Number), sm = pd[1] - 1, sy = pd[0]; if(sm <= 0){ sm = 12; sy -= 1; }
+  return { label: MONS[sm-1] + ' 11 – ' + MONS[pd[1]-1] + ' 10, ' + pd[0], month: MONF[pd[1]-1] + ' ' + pd[0], pd: pd };
+}
+function buildMyPayslip(r){
+  var emp = MY_PS_EMP || {};
+  var rate = parseFloat(r.ebury_rate) || 0;
+  var toPhp = function(usd){ return rate ? usd * rate : 0; };
+  var per = psPeriod(r.pay_date), pd = per.pd;
+  var monthly = parseFloat(emp.basic_pay_rate) || 0;
+  var stdPay = parseFloat(r.standard_pay) || 0;
+  var isFull = monthly && Math.abs(stdPay - monthly) < 0.01;
+  var rows = '';
+  rows += psLine(isFull ? 'Standard Pay (Monthly)' : 'Standard Pay (Pro-rated)', isFull ? 1 : (parseFloat(r.standard_hours) || 0), isFull ? monthly : (parseFloat(r.standard_pay_rate) || 0), stdPay, toPhp(stdPay));
+  rows += psLine('Overtime Pay', r.overtime_hours || 0, r.overtime_pay_rate, r.overtime_pay, toPhp(r.overtime_pay||0));
+  rows += psLine('Double Pay', null, null, r.double_pay, toPhp(r.double_pay||0));
+  rows += psLine('Leave Payout', null, null, r.vacation_pay, toPhp(r.vacation_pay||0));
+  rows += psLine('Home Office', 1, r.home_office, r.home_office, toPhp(r.home_office||0));
+  rows += psLine(r.note_usd ? 'Others (USD)<span class="ps-note">' + esc(r.note_usd) + '</span>' : 'Others (USD)', null, null, r.others_usd, toPhp(r.others_usd||0));
+  rows += psLine('Bank Fees', 1, r.bank_fees, r.bank_fees, toPhp(r.bank_fees||0));
+  var totalUSD = ['standard_pay','overtime_pay','double_pay','vacation_pay','home_office','others_usd','bank_fees'].reduce(function(a,k){ return a + (parseFloat(r[k])||0); }, 0);
+  var addRows = '';
+  addRows += psLine('Maxicare', null, null, null, r.maxicare_php);
+  addRows += psLine('SSS', null, null, null, r.sss_php);
+  var qLabel = MONS[((pd[1]-3)+12)%12] + ' – ' + MONS[pd[1]-1];
+  addRows += psLine('13th Month<span class="ps-note">' + qLabel + ' quarter · one quarter of monthly basic, pro-rated by months active</span>', null, null, null, r.thirteenth_php);
+  addRows += psLine(r.note ? 'Others (PHP)<span class="ps-note">' + esc(r.note) + '</span>' : 'Others (PHP)', null, null, null, r.others_php);
+  var addTotal = ['maxicare_php','sss_php','thirteenth_php','others_php'].reduce(function(a,k){ return a + (parseFloat(r[k])||0); }, 0);
+  var loan = parseFloat(r.loan_php) || 0;
+  var P = '₱';
+  return '<div class="ps-sheet">'
+    + '<div class="ps-top"><div class="ps-brand"><img class="ps-logo" src="ddl-logo.png" alt="DDL"><div><div class="ps-co">DDL Middle East - FZCO</div>'
+    +   '<div class="ps-addr">IFZA Property FZCO, Silicon Oasis, DDP, Building A2, Dubai</div><div class="ps-addr">Email: accounts@ddlme.ae</div></div></div>'
+    +   '<div class="ps-title">PAYSLIP</div></div>'
+    + '<div class="ps-meta"><div class="ps-empbox"><div class="ps-lbl">Employee Information</div>'
+    +   '<div class="ps-name">' + esc(r.employee_name) + '</div>'
+    +   (emp.city ? '<div class="ps-loc">' + esc(emp.city) + (emp.province ? ', ' + esc(emp.province) : '') + '</div>' : '')
+    +   '<div class="ps-sub">' + esc(emp.role || '') + '</div><div class="ps-sub">' + esc(emp.department || '') + '</div>'
+    +   '<div class="ps-sub">' + esc(emp.employee_id || '') + '</div><div class="ps-sub">' + esc(emp.work_email || '') + '</div></div>'
+    +   '<div class="ps-grid">'
+    +     '<div><div class="ps-lbl">Pay Date</div><div class="ps-val">' + r.pay_date + '</div></div>'
+    +     '<div><div class="ps-lbl">Pay Type</div><div class="ps-val">Monthly</div></div>'
+    +     '<div><div class="ps-lbl">Payroll #</div><div class="ps-val">' + (r.period || '') + '</div></div>'
+    +     '<div style="grid-column:span 2"><div class="ps-lbl">Period Covered</div><div class="ps-val">' + per.label + '</div></div>'
+    +     '<div><div class="ps-lbl">USD → PHP</div><div class="ps-val">' + (rate ? rate.toFixed(4) : '') + '</div></div>'
+    +     '<div style="grid-column:span 3"><div class="ps-lbl">Payment Method</div><div class="ps-val">Ebury Swift Transfer</div></div>'
+    +   '</div></div>'
+    + '<table class="ps-tbl"><thead><tr class="ps-head"><th>Earnings</th><th class="ps-c">Units</th><th class="ps-r">Rate</th><th class="ps-r">Current ($)</th><th class="ps-r">Current (' + P + ')</th></tr></thead><tbody>'
+    +   rows + '<tr class="ps-sub-total"><td colspan="3">Sub-total</td><td class="ps-r">' + psMoney(totalUSD, '$') + '</td><td class="ps-r ps-php">' + psMoney(toPhp(totalUSD), P) + '</td></tr></tbody></table>'
+    + (addRows ? '<table class="ps-tbl"><thead><tr class="ps-head"><th>Additions (PHP)</th><th class="ps-c"></th><th class="ps-r"></th><th class="ps-r"></th><th class="ps-r">Current (' + P + ')</th></tr></thead><tbody>' + addRows + '<tr class="ps-sub-total"><td colspan="4">Sub-total</td><td class="ps-r ps-php">' + psMoney(addTotal, P) + '</td></tr></tbody></table>' : '')
+    + (loan ? '<table class="ps-tbl"><thead><tr class="ps-head ps-ded"><th>Deductions</th><th class="ps-c"></th><th class="ps-r"></th><th class="ps-r"></th><th class="ps-r">Current (' + P + ')</th></tr></thead><tbody>' + psLine('Salary Loan', null, null, null, loan) + '<tr class="ps-sub-total"><td colspan="4">Total deductions</td><td class="ps-r ps-php">' + psMoney(loan, P) + '</td></tr></tbody></table>' : '')
+    + '<div class="ps-net"><span>NET PAY</span><span>' + psMoney(parseFloat(r.total_payout) || 0, P) + '</span></div>'
+    + '<div class="ps-foot">If you have any questions about this payslip, please contact:<br>Jerald Ravina &middot; jerald@digitaldoorlocks.com.au</div>'
+    + '</div>';
+}
+async function loadMyPayslips(){
+  var box = document.getElementById('psList');
+  if(!box) return;
+  var res = await sb.rpc('my_payslips');
+  if(res.error){ box.innerHTML = '<div class="empty">Could not load your payslips.</div>'; document.getElementById('payTiles').innerHTML = '<div class="empty">Could not load your payslips.</div>'; return; }
+  MY_PS_EMP = (res.data && res.data.emp) || {};
+  MY_PAYSLIPS = (res.data && res.data.rows) || [];
+  renderMyPayslips();
+  renderPayTiles();
+}
+function renderMyPayslips(){
+  var box = document.getElementById('psList'), cnt = document.getElementById('psCount');
+  cnt.textContent = MY_PAYSLIPS.length ? MY_PAYSLIPS.length + ' paid' : '';
+  if(!MY_PAYSLIPS.length){ box.innerHTML = '<div class="empty">No paid payslips yet. They appear here once payroll marks your pay as paid.</div>'; return; }
+  var r0 = MY_PAYSLIPS[0], p0 = psPeriod(r0.pay_date);
+  var html = '<div class="psl-latest"><div><div class="l">Latest Payslip · ' + p0.month + '</div>'
+    + '<div class="v">₱ ' + psFmt(r0.total_payout) + '</div>'
+    + '<div class="s">Paid ' + MONS[p0.pd[1]-1] + ' ' + p0.pd[2] + ', ' + p0.pd[0] + ' · Period ' + p0.label + '</div></div>'
+    + '<div class="acts"><button class="btn ghost sm" onclick="downloadPayslip(0)">Download PDF</button><button class="btn sm" onclick="viewPayslip(0)">View</button></div></div>';
+  var rest = MY_PAYSLIPS.slice(1), shown = PS_SHOW_ALL ? rest : rest.slice(0, 5);
+  html += shown.map(function(r, k){
+    var i = k + 1, p = psPeriod(r.pay_date);
+    return '<div class="psl-row"><div class="psl-date"><b>' + p.pd[2] + '</b><span>' + MONS[p.pd[1]-1] + '</span></div>'
+      + '<div class="psl-main"><div class="psl-t">' + p.month + ' Pay</div><div class="psl-s">Period ' + p.label + '</div></div>'
+      + '<div class="psl-amt">₱ ' + psFmt(r.total_payout) + '</div>'
+      + '<div class="psl-acts"><button class="btn ghost sm" onclick="viewPayslip(' + i + ')">View</button><button class="btn ghost sm" onclick="downloadPayslip(' + i + ')">PDF</button></div></div>';
+  }).join('');
+  if(rest.length > 5) html += '<button class="psl-more" onclick="PS_SHOW_ALL=!PS_SHOW_ALL;renderMyPayslips()">' + (PS_SHOW_ALL ? 'Show Less' : 'Show All ' + MY_PAYSLIPS.length + ' Payslips') + '</button>';
+  box.innerHTML = html;
+}
+function showPage(pg){
+  var pay = pg === 'pay';
+  document.getElementById('leaveHero').style.display = pay ? 'none' : '';
+  document.getElementById('leaveWrap').style.display = pay ? 'none' : '';
+  document.getElementById('payHero').style.display = pay ? '' : 'none';
+  document.getElementById('payWrap').style.display = pay ? '' : 'none';
+  document.getElementById('pgLeave').classList.toggle('on', !pay);
+  document.getElementById('pgPay').classList.toggle('on', pay);
+  document.getElementById('barTitle').textContent = pay ? 'My Payslips' : 'My Leave';
+  document.title = pay ? 'My Payslips' : 'My Leave';
+  document.getElementById('helloPay').textContent = document.getElementById('hello').textContent;
+  try{ history.replaceState(null, '', pay ? '#payslips' : location.pathname + location.search); }catch(e){}
+  window.scrollTo(0, 0);
+}
+function renderPayTiles(){
+  var el = document.getElementById('payTiles');
+  if(!MY_PAYSLIPS.length){ el.innerHTML = '<div class="empty">No paid payslips yet.</div>'; document.getElementById('payAsOf').textContent = ''; return; }
+  var r0 = MY_PAYSLIPS[0], p0 = psPeriod(r0.pay_date), yr = r0.pay_date.slice(0,4);
+  var ytd = MY_PAYSLIPS.filter(function(r){ return r.pay_date.slice(0,4) === yr; });
+  var ytdSum = ytd.reduce(function(a,r){ return a + (parseFloat(r.total_payout)||0); }, 0);
+  document.getElementById('payAsOf').textContent = 'Latest: paid ' + MONS[p0.pd[1]-1] + ' ' + p0.pd[2] + ', ' + p0.pd[0];
+  el.innerHTML = '<div class="tile pay-net"><div class="tile-lbl">Latest Net Pay</div><div class="tile-val money">₱ ' + psFmt(r0.total_payout) + '</div><div class="tile-unit">' + p0.month + ' pay</div><div class="tile-foot"><span>Period ' + p0.label + '</span></div></div>'
+    + '<div class="tile pay-ytd"><div class="tile-lbl">Net Pay ' + yr + ' To Date</div><div class="tile-val money">₱ ' + psFmt(ytdSum) + '</div><div class="tile-unit">' + ytd.length + ' pay run' + (ytd.length!==1?'s':'') + ' in ' + yr + '</div><div class="tile-foot"><span>Paid via Ebury Swift Transfer</span></div></div>'
+    + '<div class="tile pay-cnt"><div class="tile-lbl">Payslips Available</div><div class="tile-val">' + MY_PAYSLIPS.length + '</div><div class="tile-unit">View or download as PDF</div><div class="tile-foot"><span>Questions? jerald@digitaldoorlocks.com.au</span></div></div>';
+}
+function viewPayslip(i){
+  var r = MY_PAYSLIPS[i]; if(!r) return;
+  document.getElementById('psView').innerHTML = buildMyPayslip(r);
+  document.getElementById('psDlBtn').onclick = function(){ downloadPayslip(i); };
+  document.getElementById('psModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePayslip(){
+  document.getElementById('psModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && document.getElementById('psModal').classList.contains('open')) closePayslip(); });
+function downloadPayslip(i){
+  var r = MY_PAYSLIPS[i]; if(!r) return;
+  var w = window.open('', '_blank');
+  if(!w){ alert('Please allow pop-ups for this site to download your payslip.'); return; }
+  var title = 'Payslip_' + r.pay_date + '_' + String(r.employee_name).replace(/[^A-Za-z0-9]+/g, '_');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + title + '</title><base href="' + location.href.split('#')[0] + '">'
+    + '<style>' + PS_CSS + ' body{ margin:0; background:#fff; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }'
+    + ' .ps-sheet{ box-shadow:none; border-radius:0; max-width:none; margin:0; padding:14mm 14mm 10mm; }'
+    + ' *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; } @page{ size:A4; margin:0; }</style></head><body>'
+    + buildMyPayslip(r)
+    + '<scr' + 'ipt>window.onload=function(){ setTimeout(function(){ window.print(); }, 300); };</scr' + 'ipt></body></html>');
+  w.document.close();
+}
 
 /* ---- LEAVE REQUESTS ---- */
 let MY_ID = null;
@@ -1285,5 +1522,11 @@ async function loadMine(){
 
 start();
 </script>
+<div class="psl-modal" id="psModal" onclick="if(event.target===this) closePayslip()">
+  <div class="psl-box">
+    <div class="psl-bar"><button class="btn ghost sm" id="psDlBtn">Download PDF</button><button class="btn sm" onclick="closePayslip()">Close</button></div>
+    <div id="psView"></div>
+  </div>
+</div>
 </body>
 </html>
