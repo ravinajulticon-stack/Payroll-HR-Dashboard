@@ -298,6 +298,41 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .ts-filt{ display:flex; gap:4px; background:#f4f6fb; border-radius:10px; padding:3px; }
 .ts-filt button{ border:none; background:none; font-family:inherit; font-size:11.5px; font-weight:600; color:var(--text-2); padding:6px 12px; border-radius:8px; cursor:pointer; }
 .ts-filt button.on{ background:#fff; color:var(--text); box-shadow:0 1px 4px rgba(20,33,61,.08); }
+/* My Timesheet — admin Team view */
+.tm-seg{ display:inline-flex; gap:3px; padding:3px; border-radius:10px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); margin-left:10px; }
+.tm-seg button{ border:none; background:none; font-family:inherit; font-size:12px; font-weight:600; color:rgba(255,255,255,.75); padding:6px 14px; border-radius:8px; cursor:pointer; }
+.tm-seg button.on{ background:#fff; color:#0f1b3d; }
+.tile.t-green{ background:linear-gradient(135deg,#34c759,#1e7a35); } .tile.t-amber{ background:linear-gradient(135deg,#ffb340,#e07b00); } .tile.t-purple{ background:linear-gradient(135deg,#8e5cff,#5b2fd0); } .tile.t-red{ background:linear-gradient(135deg,#ff6b5e,#d92d23); } .tile.t-grey{ background:linear-gradient(135deg,#8a94ad,#5d6680); }
+.tile.click{ cursor:pointer; } .tile.click:hover{ filter:brightness(1.05); }
+.tm-filt{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; padding:0 18px 14px; }
+.tm-filt label{ display:flex; flex-direction:column; gap:4px; font-size:10.5px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; }
+.tm-filt select, .tm-filt input{ height:34px; border:1px solid #e3e7ef; border-radius:10px; padding:0 10px; font-family:inherit; font-size:12.5px; font-weight:600; color:var(--text); background:#fff; min-width:150px; }
+.tm-scroll{ overflow-x:auto; }
+.tm-row{ display:grid; grid-template-columns:minmax(170px,1.3fr) 96px minmax(120px,1fr) 100px 64px 54px 132px 70px; gap:10px; align-items:center; padding:10px 18px; border-top:1px solid #f0f2f7; font-size:12.5px; min-width:900px; }
+.tm-row.h{ font-size:10px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.05em; background:#fafbfe; padding-top:8px; padding-bottom:8px; }
+.tm-row .r{ text-align:right; font-variant-numeric:tabular-nums; } .tm-row.miss{ background:#fffaf3; }
+.ot-row{ grid-template-columns:minmax(170px,1.2fr) 100px minmax(140px,1fr) 64px 54px minmax(120px,1fr) 170px; }
+.tm-emp{ display:flex; align-items:center; gap:8px; font-weight:600; min-width:0; }
+.tm-av{ width:28px; height:28px; border-radius:50%; flex:none; background:linear-gradient(135deg,#5b8cff,#2f5be0); color:#fff; font-size:10.5px; font-weight:700; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.tm-av img{ width:100%; height:100%; object-fit:cover; }
+.tm-sub{ font-size:11px; color:var(--text-3); font-weight:500; }
+.tm-acts{ display:flex; gap:6px; justify-content:flex-end; flex-wrap:wrap; }
+.mb{ height:28px; padding:0 12px; border-radius:8px; font-size:11.5px; font-weight:700; border:1px solid #e3e7ef; background:#fff; color:var(--text-2); font-family:inherit; cursor:pointer; white-space:nowrap; }
+.mb:hover{ background:#f4f6fb; } .mb:disabled{ opacity:.5; cursor:default; }
+.mb.ok{ background:#22a35a; border-color:#22a35a; color:#fff; } .mb.no{ color:#d92d23; border-color:#ffd2ce; } .mb.fix{ background:#fff4e5; color:#c25e00; border-color:#ffe0b8; } .mb.pri{ background:var(--blue); border-color:var(--blue); color:#fff; } .mb.gr{ background:#e9f7ee; color:#1e7a35; border-color:#cfe9d8; } .mb.tall{ height:32px; }
+.s-lun{ background:#fff8e1; color:#a86400; border-color:#ffe39a; } .s-fix{ background:#f3efff; color:#5b2fd0; border-color:#ddd0ff; }
+.fx-ov{ position:fixed; inset:0; background:rgba(15,27,61,.4); display:none; align-items:center; justify-content:center; z-index:200; padding:16px; }
+.fx{ width:540px; max-width:100%; max-height:calc(100vh - 32px); overflow:auto; background:#fff; border-radius:18px; box-shadow:0 24px 70px rgba(0,0,0,.3); }
+.fx-h{ padding:16px 20px; border-bottom:1px solid #f0f2f7; }
+.fx-b{ padding:16px 20px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.fx-b label{ display:flex; flex-direction:column; gap:4px; font-size:10.5px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; }
+.fx-b input, .fx-b select, .fx-b textarea{ height:36px; border:1px solid #e3e7ef; border-radius:10px; padding:0 10px; font-family:inherit; font-size:13px; font-weight:600; color:var(--text); background:#fff; min-width:0; }
+.fx-b textarea{ height:60px; padding:8px 10px; font-weight:500; resize:vertical; }
+.fx-b .full{ grid-column:1 / -1; }
+.fx-calc{ grid-column:1 / -1; background:#eef3ff; border:1px solid #d6e2ff; border-radius:10px; padding:10px 12px; font-size:12px; color:#2f5be0; display:flex; justify-content:space-between; gap:10px; }
+.fx-err{ grid-column:1 / -1; color:#d92d23; font-size:12px; font-weight:600; min-height:0; }
+.fx-f{ padding:14px 20px; border-top:1px solid #f0f2f7; background:#fafbfe; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+@media(max-width:520px){ .fx-b{ grid-template-columns:1fr; } }
 /* My Timesheet report */
 .ts-rep{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)) auto; gap:10px; align-items:stretch; padding:12px 18px 14px; border-top:1px solid #f0f2f7; background:#fafbfe; }
 .ts-rep .rs{ background:#fff; border:1px solid #edf0f6; border-radius:12px; padding:9px 12px; min-width:0; }
@@ -451,9 +486,9 @@ html{ scrollbar-gutter:stable; }
     </div>
     <div class="hero-in" id="timeHero" style="display:none">
       <div class="hello" id="helloTime"></div>
-      <div class="hello-sub">Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.</div>
+      <div class="hello-sub" id="tsHelloSub">Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.</div>
       <div class="pv-banner" id="tsBanner" style="display:none"></div>
-      <div class="hero-head"><span class="hero-lbl">Hours Summary</span><span class="as-of" id="tsAsOf"></span></div>
+      <div class="hero-head"><span class="hero-lbl" id="tsHeroLbl">Hours Summary</span><span style="display:flex;align-items:center"><span class="as-of" id="tsAsOf"></span><span class="tm-seg" id="tsModeSeg" style="display:none"><button type="button" class="on" data-m="me" onclick="tsSetMode('me')">My Time</button><button type="button" data-m="team" onclick="tsSetMode('team')">Team</button></span></span></div>
       <div class="tiles" id="tsTiles"><div class="empty">Loading…</div></div>
     </div>
   </div>
@@ -589,6 +624,37 @@ html{ scrollbar-gutter:stable; }
       </div>
     </div>
   </div>
+  <div class="wrap" id="teamWrap" style="display:none">
+    <div class="card" id="tmOtCard">
+      <div class="card-head"><div class="rl-hd"><span class="rl-ic c-purple"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.3 1.4"/></svg></span><div><div class="card-title">Overtime Approvals</div><div class="rl-sub">Shifts over 8 hrs after the unpaid lunch · approved OT counts towards pay</div></div></div><button type="button" class="mb ok tall" id="tmApproveAll" onclick="tmReviewAll()" style="display:none"></button></div>
+      <div id="tmOt"><div class="empty">Loading…</div></div>
+    </div>
+    <div class="card" id="tmRecCard">
+      <div class="card-head"><div class="rl-hd"><span class="rl-ic c-green"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3" width="11" height="10.5" rx="1.5"/><path d="M2.5 6.5h11M5.5 1.8v2.4M10.5 1.8v2.4"/></svg></span><div><div class="card-title">Team Clock Records</div><div class="rl-sub" id="tmSub">Every clock-in · Philippines time · lunch is unpaid</div></div></div><div class="tm-acts"><button type="button" class="mb gr tall" onclick="tmCsv()">Download CSV</button><button type="button" class="mb pri tall" onclick="tmOpen(null)">+ Add Manual Entry</button></div></div>
+      <div class="tm-filt">
+        <label>Pay Period<select id="tmPeriod" onchange="tmRender()"><option value="cur">This Period</option><option value="last">Last Period</option><option value="all">All Since Sep 11</option></select></label>
+        <label>Date<input type="date" id="tmDate" onchange="tmRender()"></label>
+        <label>Employee<select id="tmEmp" onchange="tmRender()"><option value="">All Staff</option></select></label>
+        <label>Status<select id="tmStatus" onchange="tmRender()"><option value="">All Records</option><option value="fix">Needs Fix</option><option value="shift">On Shift</option><option value="lunch">On Lunch</option><option value="otp">OT Pending</option><option value="ota">OT Approved</option><option value="otr">OT Not Approved</option><option value="edited">Edited by Admin</option></select></label>
+      </div>
+      <div class="tm-scroll" id="tmList"><div class="empty">Loading…</div></div>
+    </div>
+  </div>
+  <div class="fx-ov" id="tmModal" onclick="if(event.target===this)tmClose()"><div class="fx">
+    <div class="fx-h"><div class="card-title" id="fxTitle">Fix Clock Record</div><div class="rl-sub" id="fxSub"></div></div>
+    <div class="fx-b">
+      <label class="full" id="fxEmpWrap">Employee<select id="fxEmp"></select></label>
+      <label class="full">Date<input type="date" id="fxDate" oninput="tmCalc()"></label>
+      <label>Clock In<input type="time" id="fxIn" oninput="tmCalc()"></label>
+      <label>Clock Out<input type="time" id="fxOut" oninput="tmCalc()"></label>
+      <label>Lunch Start<input type="time" id="fxLin" oninput="tmCalc()"></label>
+      <label>Lunch End<input type="time" id="fxLout" oninput="tmCalc()"></label>
+      <div class="fx-calc" id="fxCalc"></div>
+      <label class="full">Reason (Required)<textarea id="fxReason" maxlength="300" placeholder="e.g. Forgot to clock out — confirmed finish time on Teams"></textarea></label>
+      <div class="fx-err" id="fxErr"></div>
+    </div>
+    <div class="fx-f"><span class="tm-sub">Saved as “Edited by Admin” with your name and the reason</span><div class="tm-acts"><button type="button" class="mb tall" onclick="tmClose()">Cancel</button><button type="button" class="mb pri tall" id="fxSave" onclick="tmSave()">Save</button></div></div>
+  </div></div>
 </div>
 
 <script>
@@ -936,7 +1002,8 @@ function showPage(pg){
   if(!PS_PREVIEW) document.getElementById('helloPay').textContent = hello;
   document.getElementById('helloTime').textContent = hello;
   try{ history.replaceState(null, '', pages[pg][4] || (location.pathname + location.search)); }catch(e){}
-  if(pg === 'time') tsRender(); 
+  document.getElementById('teamWrap').style.display = 'none';
+  if(pg === 'time'){ if(TS_MODE === 'team') tsSetMode('team'); else tsRender(); }
   window.scrollTo(0, 0);
 }
 /* ---- MY TIMESHEET (clock in/out). Times come from the server; shown in Philippines time. ---- */
@@ -977,6 +1044,7 @@ async function tsInit(){
     var b = document.getElementById('tsBanner');
     b.innerHTML = '<b>Admin preview</b> — My Timesheet is only visible to admins until it goes live for everyone on <b>11 Nov 2026</b>. Clocking in here records real hours for you.';
     b.style.display = '';
+    document.getElementById('tsModeSeg').style.display = '';
   }
   await tsLoad();
 }
@@ -1088,6 +1156,189 @@ function tsRenderTiles(){
     + '<div class="tile-unit">' + tsHrs(ps.covered) + ' of ' + ps.std + ' hrs covered incl. leave &amp; holidays</div>'
     + '<div class="tile-foot"><span>' + tsFmtRange(p.from, p.to) + '</span>' + (ps.missing ? '<span class="tile-days">' + ps.missing + ' missing day' + (ps.missing !== 1 ? 's' : '') + '</span>' : '') + '</div></div>';
 }
+var TS_MODE = 'me', TM_ROWS = [], TM_EMPS = [], TM_EDIT = null;
+function tsSetMode(m){
+  if(m === 'team' && !IS_ADMIN) m = 'me';
+  TS_MODE = m;
+  document.querySelectorAll('#tsModeSeg button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-m') === m); });
+  var team = m === 'team';
+  document.getElementById('timeWrap').style.display = team ? 'none' : '';
+  document.getElementById('teamWrap').style.display = team ? '' : 'none';
+  document.getElementById('tsAsOf').style.display = team ? 'none' : '';
+  document.getElementById('tsBanner').style.display = team ? 'none' : (IS_ADMIN ? '' : 'none');
+  document.getElementById('tsHelloSub').textContent = team ? 'Admin view — see everyone’s clock-ins, approve overtime and fix records. Times are in Philippines time.' : 'Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.';
+  if(team){ clearInterval(TS_TICK); tmLoad(); } else { tsRender(); }
+}
+async function tmLoad(){
+  if(!TM_EMPS.length){
+    var e = await sb.from('employees_201').select('id,name,exit_date').order('name');
+    TM_EMPS = e.data || [];
+    document.getElementById('tmEmp').innerHTML = '<option value="">All Staff</option>' + TM_EMPS.map(function(x){ return '<option value="' + esc(x.id) + '">' + esc(x.name) + (x.exit_date ? ' (Exited)' : '') + '</option>'; }).join('');
+  }
+  var r = await sb.from('time_clock').select('*').gte('work_date', TS_MIN).order('clock_in', { ascending: false });
+  if(r.error){ document.getElementById('tmList').innerHTML = '<div class="empty">' + esc(r.error.message) + '</div>'; return; }
+  TM_ROWS = r.data || [];
+  tmRender();
+}
+function tmEmp(id){ return TM_EMPS.find(function(e){ return e.id === id; }) || { name: 'Unknown' }; }
+function tmInit(n){ return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function(w){ return w.charAt(0).toUpperCase(); }).join(''); }
+function tmAv(id, sub){
+  var e = tmEmp(id), ph = photoFor(id, e.name);
+  return '<div class="tm-emp"><span class="tm-av">' + (ph ? '<img src="' + esc(ph) + '" alt="">' : esc(tmInit(e.name))) + '</span><div style="min-width:0"><div>' + esc(e.name) + '</div>' + (sub ? '<div class="tm-sub">' + sub + '</div>' : '') + '</div></div>';
+}
+function tmStatus(r){
+  var today = tsToday();
+  if(!r.clock_out) return r.work_date < today ? 'fix' : (r.lunch_in && !r.lunch_out ? 'lunch' : 'shift');
+  if(r.ot_status === 'pending') return 'otp';
+  if(r.ot_status === 'approved') return 'ota';
+  if(r.ot_status === 'rejected') return 'otr';
+  if(r.edited_by) return 'edited';
+  return 'done';
+}
+var TM_CHIP = { fix:'<span class="sc s-pend">Needs Fix</span>', lunch:'<span class="sc s-lun">On Lunch</span>', shift:'<span class="sc s-live">● On Shift</span>', otp:'<span class="sc s-pend">OT Pending</span>', ota:'<span class="sc s-ok">OT Approved</span>', otr:'<span class="sc s-no">OT Not Approved</span>', edited:'<span class="sc s-fix">Edited by Admin</span>', done:'<span class="sc s-done">Completed</span>' };
+function tmDayLbl(iso){ var d = tsD(iso); return DOWS[d.getDay()] + ', ' + MONS[d.getMonth()] + ' ' + d.getDate(); }
+function tmFiltered(){
+  var today = tsToday(), per = document.getElementById('tmPeriod').value, dt = document.getElementById('tmDate').value, emp = document.getElementById('tmEmp').value, st = document.getElementById('tmStatus').value, rg = null;
+  if(per === 'cur') rg = tsPeriodOf(today); else if(per === 'last') rg = tsPeriodOf(tsAdd(tsPeriodOf(today).from, -1));
+  return TM_ROWS.filter(function(r){
+    var s0 = tmStatus(r);
+    if(st !== 'fix' && st !== 'shift' && st !== 'lunch' && rg && (r.work_date < rg.from || r.work_date > rg.to) && s0 !== 'fix') return false;
+    if(dt && r.work_date !== dt) return false;
+    if(emp && r.employee_id !== emp) return false;
+    if(st === 'edited' ? !r.edited_by : (st && s0 !== st)) return false;
+    return true;
+  }).sort(function(a, b){ return (tmStatus(b) === 'fix') - (tmStatus(a) === 'fix'); });
+}
+function tmRenderTiles(){
+  var today = tsToday(), active = TM_EMPS.filter(function(e){ return !e.exit_date || e.exit_date >= today; }).length;
+  var open = TM_ROWS.filter(function(r){ return !r.clock_out && r.work_date === today; });
+  var lunch = open.filter(function(r){ return r.lunch_in && !r.lunch_out; });
+  var pend = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; });
+  var pendHrs = pend.reduce(function(a, r){ return a + (parseFloat(r.ot_hours) || 0); }, 0);
+  var pendStaff = {}; pend.forEach(function(r){ pendStaff[r.employee_id] = 1; });
+  var miss = TM_ROWS.filter(function(r){ return !r.clock_out && r.work_date < today; });
+  var first = function(id){ return esc(tmEmp(id).name.split(' ')[0]); };
+  var T = function(cls, lbl, val, unit, foot, chip, click){ return '<div class="tile ' + cls + (click ? ' click" onclick="' + click : '') + '"><div class="tile-lbl">' + lbl + '</div><div class="tile-val">' + val + '</div><div class="tile-unit">' + unit + '</div><div class="tile-foot"><span>' + foot + '</span>' + (chip ? '<span class="tile-days">' + chip + '</span>' : '') + '</div></div>'; };
+  var u = function(t){ return ' <span style="font-size:15px;opacity:.8;font-weight:700">' + t + '</span>'; };
+  document.getElementById('tsHeroLbl').textContent = 'Team Today · ' + tmDayLbl(today);
+  document.getElementById('tsTiles').innerHTML =
+      T('t-green', 'On Shift Now', open.length + u('/ ' + active + ' staff'), 'Clocked in today', (active - open.length) + ' not clocked in', '', "tmQuick('shift')")
+    + T(lunch.length ? 't-amber' : 't-grey', 'On Lunch Now', lunch.length, lunch.length ? lunch.map(function(r){ return first(r.employee_id); }).join(', ') : 'Nobody on lunch', lunch.length ? 'Since ' + tsTime(lunch.map(function(r){ return r.lunch_in; }).sort()[0]) : '—', '', lunch.length ? "tmQuick('lunch')" : '')
+    + T(pend.length ? 't-purple' : 't-grey', 'OT Pending Approval', tsHrs(pendHrs) + u('hrs'), pend.length + ' shift' + (pend.length !== 1 ? 's' : '') + ' · ' + Object.keys(pendStaff).length + ' staff', 'Waiting for you', pend.length ? 'Review' : '', pend.length ? "document.getElementById('tmOtCard').scrollIntoView({behavior:'smooth'})" : '')
+    + T(miss.length ? 't-red' : 't-grey', 'Missing Clock-Out', miss.length, miss.length ? first(miss[0].employee_id) + ' · ' + tmDayLbl(miss[0].work_date) + (miss.length > 1 ? ' +' + (miss.length - 1) + ' more' : '') : 'All shifts closed', miss.length ? 'Fix before payroll' : 'Nothing to fix', miss.length ? 'Fix' : '', miss.length ? "tmQuick('fix')" : '');
+}
+function tmQuick(st){
+  document.getElementById('tmStatus').value = st; document.getElementById('tmDate').value = '';
+  tmRender(); document.getElementById('tmRecCard').scrollIntoView({ behavior: 'smooth' });
+}
+function tmRender(){
+  tmRenderTiles();
+  var pend = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; }).sort(function(a, b){ return a.clock_in < b.clock_in ? -1 : 1; });
+  var aa = document.getElementById('tmApproveAll');
+  aa.style.display = pend.length > 1 ? '' : 'none'; aa.textContent = 'Approve All (' + pend.length + ')';
+  document.getElementById('tmOt').innerHTML = pend.length
+    ? '<div class="tm-scroll"><div class="tm-row ot-row h"><div>Employee</div><div>Date</div><div>Shift</div><div class="r">Worked</div><div class="r">OT</div><div>Note</div><div></div></div>'
+      + pend.map(function(r){ return '<div class="tm-row ot-row">' + tmAv(r.employee_id) + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + ' → ' + tsTime(r.clock_out) + '</div><div class="r">' + tsHrs(r.total_hours) + '</div><div class="r"><b>' + tsHrs(r.ot_hours) + '</b></div><div class="tm-sub">' + (r.note ? esc(r.note) : '—') + '</div><div class="tm-acts"><button type="button" class="mb ok" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button><button type="button" class="mb no" onclick="tmReview([\'' + r.id + '\'],\'rejected\',this)">Reject</button></div></div>'; }).join('') + '</div>'
+    : '<div class="empty">No overtime waiting for approval.</div>';
+  var rows = tmFiltered();
+  document.getElementById('tmSub').textContent = rows.length + ' record' + (rows.length !== 1 ? 's' : '') + ' · Philippines time · lunch is unpaid';
+  document.getElementById('tmList').innerHTML = rows.length
+    ? '<div class="tm-row h"><div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div class="r">Hours</div><div class="r">OT</div><div>Status</div><div></div></div>'
+      + rows.map(function(r){
+          var st = tmStatus(r), lun = r.lunch_in ? 'Lunch ' + tsTime(r.lunch_in) + ' – ' + (r.lunch_out ? tsTime(r.lunch_out) : 'now') : '';
+          var tip = r.edited_by ? ' title="Edited by ' + esc(r.edited_by) + (r.edit_reason ? ' · ' + esc(r.edit_reason) : '') + '"' : '';
+          var out = r.clock_out ? tsTime(r.clock_out) : (st === 'fix' ? '<span class="sc s-no">Forgot to clock out</span>' : '—');
+          var hrs = r.clock_out ? tsHrs(r.total_hours) : (st === 'fix' ? '—' : tsHrs(tsWorkedSoFar(r)));
+          return '<div class="tm-row' + (st === 'fix' ? ' miss' : '') + '"' + tip + '>' + tmAv(r.employee_id, r.note ? '✎ ' + esc(r.note) : '') + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + (lun ? '<div class="tm-sub">' + lun + '</div>' : '') + '</div><div>' + out + '</div><div class="r">' + hrs + '</div><div class="r">' + (parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '—') + '</div><div>' + TM_CHIP[st] + '</div><div class="tm-acts"><button type="button" class="mb' + (st === 'fix' ? ' fix' : '') + '" onclick="tmOpen(\'' + r.id + '\')">' + (st === 'fix' ? 'Fix' : 'Edit') + '</button></div></div>';
+        }).join('')
+    : '<div class="empty">No clock records match these filters.</div>';
+}
+async function tmReview(ids, status, btn){
+  if(status === 'rejected' && !confirm('Mark this overtime as not approved?')) return;
+  if(btn) btn.disabled = true;
+  var r = await sb.rpc('admin_ot_review', { p_ids: ids, p_status: status });
+  if(r.error){ alert(r.error.message); if(btn) btn.disabled = false; return; }
+  await tmLoad();
+}
+function tmReviewAll(){
+  var ids = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; }).map(function(r){ return r.id; });
+  if(!ids.length || !confirm('Approve all ' + ids.length + ' overtime shifts?')) return;
+  tmReview(ids, 'approved', document.getElementById('tmApproveAll'));
+}
+function tmHm(ts){ return ts ? new Date(ts).toLocaleTimeString('en-GB', { timeZone: TS_TZ, hour:'2-digit', minute:'2-digit', hour12:false }) : ''; }
+function tmTs(date, hm, after){
+  if(!date || !hm) return null;
+  var t = new Date(date + 'T' + hm + ':00+08:00');
+  if(after && t <= after) t = new Date(t.getTime() + 86400000);
+  return t;
+}
+function tmOpen(id){
+  var r = id ? TM_ROWS.find(function(x){ return x.id === id; }) : null;
+  TM_EDIT = r;
+  var st = r ? tmStatus(r) : null;
+  document.getElementById('fxTitle').textContent = !r ? 'Add Manual Entry' : (st === 'fix' ? 'Fix Clock Record' : 'Edit Clock Record');
+  document.getElementById('fxSub').textContent = r ? tmEmp(r.employee_id).name + ' · ' + tsD(r.work_date).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' }) + ' · Philippines time' : 'For a day someone couldn’t clock in · Philippines time';
+  document.getElementById('fxEmpWrap').style.display = r ? 'none' : '';
+  document.getElementById('fxEmp').innerHTML = '<option value="">Choose employee…</option>' + TM_EMPS.filter(function(e){ return !e.exit_date || e.exit_date >= TS_MIN; }).map(function(e){ return '<option value="' + esc(e.id) + '">' + esc(e.name) + '</option>'; }).join('');
+  document.getElementById('fxDate').value = r ? r.work_date : tsToday();
+  document.getElementById('fxDate').max = tsToday(); document.getElementById('fxDate').min = TS_MIN;
+  document.getElementById('fxIn').value = r ? tmHm(r.clock_in) : '';
+  document.getElementById('fxOut').value = r ? tmHm(r.clock_out) : '';
+  document.getElementById('fxLin').value = r ? tmHm(r.lunch_in) : '';
+  document.getElementById('fxLout').value = r ? tmHm(r.lunch_out) : '';
+  document.getElementById('fxReason').value = '';
+  document.getElementById('fxErr').textContent = '';
+  document.getElementById('fxSave').textContent = st === 'fix' ? 'Save Fix' : 'Save';
+  document.getElementById('fxSave').disabled = false;
+  document.getElementById('tmModal').style.display = 'flex';
+  tmCalc();
+  setTimeout(function(){ document.getElementById(st === 'fix' ? 'fxOut' : (r ? 'fxReason' : 'fxEmp')).focus(); }, 50);
+}
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && document.getElementById('tmModal').style.display === 'flex') tmClose(); });
+function tmClose(){ document.getElementById('tmModal').style.display = 'none'; TM_EDIT = null; }
+function tmTimes(){
+  var d = document.getElementById('fxDate').value;
+  var cin = tmTs(d, document.getElementById('fxIn').value);
+  var lin = tmTs(d, document.getElementById('fxLin').value, cin);
+  var lout = tmTs(d, document.getElementById('fxLout').value, lin || cin);
+  var cout = tmTs(d, document.getElementById('fxOut').value, lout || lin || cin);
+  return { d: d, cin: cin, lin: lin, lout: lout, cout: cout };
+}
+function tmCalc(){
+  var t = tmTimes(), el = document.getElementById('fxCalc');
+  if(!t.cin || !t.cout){ el.innerHTML = '<span>' + (t.cin ? 'No clock out — the shift stays open' : 'Enter clock in and clock out') + '</span><span></span>'; return; }
+  var lunch = (t.lin && t.lout) ? (t.lout - t.lin) / 3600000 : 0;
+  var w = Math.max(0, (t.cout - t.cin) / 3600000 - lunch), ot = Math.max(0, w - 8);
+  el.innerHTML = '<span>Worked: <b>' + tsHrs(w) + ' hrs</b>' + (lunch ? ' · lunch ' + tsHrs(lunch) + ' hr' + (lunch !== 1 ? 's' : '') + ' unpaid' : ' · no lunch') + '</span><span>OT: <b>' + tsHrs(ot) + '</b>' + (ot > 0 ? ' (needs approval)' : '') + '</span>';
+}
+async function tmSave(){
+  var t = tmTimes(), err = document.getElementById('fxErr'), emp = TM_EDIT ? TM_EDIT.employee_id : document.getElementById('fxEmp').value;
+  var reason = document.getElementById('fxReason').value.trim();
+  err.textContent = '';
+  if(!emp){ err.textContent = 'Please choose an employee.'; return; }
+  if(!t.d || !t.cin){ err.textContent = 'Date and clock in are required.'; return; }
+  if(!TM_EDIT && !t.cout){ err.textContent = 'Please enter the clock out time.'; return; }
+  if(document.getElementById('fxLout').value && !t.lin){ err.textContent = 'Lunch end needs a lunch start.'; return; }
+  if(reason.length < 3){ err.textContent = 'Please enter a reason for the change.'; return; }
+  var btn = document.getElementById('fxSave'); btn.disabled = true;
+  var iso = function(x){ return x ? x.toISOString() : null; };
+  var r = await sb.rpc('admin_time_save', { p_id: TM_EDIT ? TM_EDIT.id : null, p_employee_id: emp, p_work_date: t.d, p_clock_in: iso(t.cin), p_lunch_in: iso(t.lin), p_lunch_out: iso(t.lout), p_clock_out: iso(t.cout), p_reason: reason });
+  if(r.error){ err.textContent = r.error.message; btn.disabled = false; return; }
+  tmClose();
+  await tmLoad();
+  if(emp === MY_ID){ await tsLoad(); }
+}
+function tmCsv(){
+  var rows = tmFiltered().slice().reverse();
+  var head = ['Employee','Date','Clock In','Lunch Start','Lunch End','Clock Out','Hours','OT Hrs','OT Status','Status','Note','Edited By','Edit Reason'];
+  var q = function(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  var lab = { fix:'Needs Fix', lunch:'On Lunch', shift:'On Shift', otp:'OT Pending', ota:'OT Approved', otr:'OT Not Approved', edited:'Edited by Admin', done:'Completed' };
+  var lines = [head].concat(rows.map(function(r){ return [tmEmp(r.employee_id).name, r.work_date, tsTime(r.clock_in), r.lunch_in ? tsTime(r.lunch_in) : '', r.lunch_out ? tsTime(r.lunch_out) : '', r.clock_out ? tsTime(r.clock_out) : '', r.clock_out ? tsHrs(r.total_hours) : '', parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '', r.ot_status !== 'none' ? r.ot_status : '', lab[tmStatus(r)], r.note || '', r.edited_by || '', r.edit_reason || '']; })).map(function(a){ return a.map(q).join(','); });
+  var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'Team-Clock-Records_' + tsToday() + '.csv';
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
 var TS_CUR = null, TS_REP = { mode: 'period', from: null, to: null }, TS_MIN = '2026-09-11';
 function tsRepRange(){
   var today = tsToday(), m = TS_REP.mode;
@@ -1172,6 +1423,7 @@ function tsRenderShifts(){
         : st.indexOf('rejected') > -1 ? '<span class="sc s-no">OT Not Approved</span>'
         : '<span class="sc s-done">Completed</span>';
       hrs = tsHrs(info.worked) + '<small> hrs</small>';
+      if(info.rows.some(function(x){ return x.edited_by; })) sub += ' · Adjusted by payroll';
       if(info.leave.length) sub += ' · ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
     } else if(info.dash != null && info.dash > 0){
       chip = '<span class="sc s-done">Recorded</span>'; sub = 'From the payroll timesheet';
