@@ -436,6 +436,93 @@ html{ scrollbar-gutter:stable; }
 .ps-note{ display:block; font-size:9.5px; color:#777; font-weight:400; margin-top:2px; }
 .ps-net{ display:flex; justify-content:space-between; align-items:center; background:#0A0031; color:#fff; padding:12px 16px; font-size:19px; font-weight:800; border-radius:4px; }
 .ps-foot{ margin-top:14px; font-size:10.5px; text-align:center; color:#555; line-height:1.6; }
+
+/* ===================== V2 THEME — light canvas, lime / orange / peach accents (colours + interactions only) ===================== */
+:root{ --bg:#eceef1; --surface:#fff; --border:#e9ebef; --text:#141418; --text-2:#5f636e; --text-3:#9a9ea9; --blue:#141418; --green:#9fd61c; --navy:#141418; --radius:22px;
+  --lime:#d3f25c; --lime2:#c2e83c; --lime-ink:#3d5200; --orange:#ff7438; --orange2:#ff9a5c; --peach:#fde3d4; --peach2:#ffd0b5; }
+body{ background:var(--bg); }
+/* header + hero become part of the light canvas */
+.hero{ background:var(--bg); color:var(--text); }
+.bar-sub, .as-of, .who, .hello-sub{ color:var(--text-2); }
+.hero .empty{ color:var(--text-2); background:#fff; }
+.pg-tabs{ background:#fff !important; border:none !important; box-shadow:0 1px 2px rgba(0,0,0,.05); border-radius:999px !important; padding:4px !important; }
+.pg-tabs button{ color:var(--text-2) !important; border-radius:999px !important; transition:background .2s, color .2s, transform .15s; }
+.pg-tabs button:hover{ background:#f1f2f5 !important; color:var(--text) !important; }
+.pg-tabs button.on{ background:#141418 !important; color:#fff !important; box-shadow:0 4px 12px rgba(0,0,0,.18) !important; }
+.pg-dot{ background:var(--orange) !important; color:#fff !important; }
+.admin-link, .out{ background:#fff; color:var(--text); box-shadow:0 1px 2px rgba(0,0,0,.05); }
+.admin-link:hover, .out:hover{ background:#141418; color:#fff; }
+.user-av{ background:linear-gradient(135deg,var(--orange2),var(--orange)); color:#fff; }
+.user-av:hover{ box-shadow:0 0 0 3px rgba(255,116,56,.25); }
+.bar-left .brand{ border-right-color:rgba(0,0,0,.08) !important; }
+.pv-banner{ background:#fff3c4; border-color:#ffe08a; color:#6b4e00; }
+/* tiles: lime / peach / orange cards with organic blob */
+.tile{ border-radius:24px; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; color:var(--text); }
+.tile:hover{ transform:translateY(-4px); box-shadow:0 14px 30px rgba(20,20,24,.10); }
+.tile::after{ right:-34px; top:-38px; width:150px; height:150px; border-radius:44% 56% 62% 38%/45% 40% 60% 55%; background:rgba(255,255,255,.45); }
+.tile-days{ background:rgba(20,20,24,.08); }
+.tile.annual, .tile.ts-week, .tile.pay-net, .tile.t-green{ background:linear-gradient(150deg,#e6fb8f 0%,var(--lime2) 100%); color:#141418; }
+.tile.personal, .tile.pay-ytd, .tile.t-purple{ background:linear-gradient(150deg,var(--orange2) 0%,var(--orange) 100%); color:#fff; }
+.tile.personal .tile-days, .tile.pay-ytd .tile-days, .tile.t-purple .tile-days, .tile.t-red .tile-days{ background:rgba(255,255,255,.25); }
+.tile.other, .tile.ts-per, .tile.pay-cnt, .tile.t-amber{ background:linear-gradient(160deg,#fff1e8 0%,var(--peach2) 100%); color:#141418; }
+.tile.t-red{ background:linear-gradient(150deg,#ff8a6b 0%,#f2542d 100%); color:#fff; }
+.tile.t-grey{ background:#fff; color:#141418; }
+.tile.t-grey::after{ background:#f1f2f5; }
+.tile-prog{ background:rgba(20,20,24,.12) !important; } .tile-prog i{ background:#141418 !important; }
+.tm-seg{ background:#fff !important; border:none !important; box-shadow:0 1px 2px rgba(0,0,0,.05); border-radius:999px !important; }
+.tm-seg button{ color:var(--text-2) !important; border-radius:999px !important; }
+.tm-seg button.on{ background:var(--lime) !important; color:#141418 !important; }
+/* cards */
+.card{ border:none; border-radius:24px; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:box-shadow .25s; }
+.card:hover{ box-shadow:0 10px 28px rgba(20,20,24,.07); }
+.rl-ic{ background:#141418 !important; color:#fff !important; border-radius:12px !important; box-shadow:none !important; }
+.rl-ic.c-green{ background:var(--lime) !important; color:#141418 !important; }
+.rl-ic.c-orange, .rl-ic.c-red{ background:var(--orange) !important; color:#fff !important; }
+/* buttons — pill shapes, lift on hover, press on click */
+.btn, .mb, .ts-btn, .qa-btn, .ts-csv, .ts-filt button{ transition:transform .15s, box-shadow .2s, background .2s, filter .2s; }
+.btn{ background:#141418; border-radius:999px; }
+.btn:hover{ transform:translateY(-1px); box-shadow:0 8px 18px rgba(20,20,24,.2); }
+.btn:active, .mb:active, .ts-btn:active{ transform:scale(.97); }
+.btn.ok{ background:var(--lime); color:#141418; } .btn.ok:hover{ background:var(--lime2); }
+.btn.ghost{ background:#fff; color:var(--text); border-color:var(--border); }
+.btn.ghost:hover{ background:#f1f2f5; }
+.ts-btn{ border-radius:999px; }
+.ts-btn:hover:not(:disabled){ transform:translateY(-2px); }
+.ts-in{ background:var(--lime) !important; color:#141418 !important; box-shadow:0 10px 24px rgba(160,210,30,.35) !important; }
+.ts-out{ background:linear-gradient(135deg,var(--orange2),var(--orange)) !important; color:#fff !important; box-shadow:0 10px 24px rgba(255,116,56,.3) !important; }
+.ts-lunch{ background:var(--peach) !important; color:#a8410c !important; box-shadow:none !important; }
+.ts-state.on{ background:#effbc9; color:var(--lime-ink); } .ts-state.lunch{ background:#ffe9dc; color:#c24d10; }
+.mb{ border-radius:999px; } .mb:hover{ transform:translateY(-1px); }
+.mb.ok{ background:var(--lime); border-color:var(--lime); color:#141418; }
+.mb.no{ color:#c24d10; border-color:var(--peach2); }
+.mb.fix{ background:var(--orange); border-color:var(--orange); color:#fff; }
+.mb.pri{ background:#141418; border-color:#141418; color:#fff; }
+.mb.gr{ background:var(--lime); border-color:var(--lime); color:#141418; }
+.ts-csv{ background:#141418 !important; border:none !important; color:#fff !important; border-radius:999px !important; }
+.ts-csv:hover{ transform:translateY(-1px); }
+.ts-filt, .seg{ background:#f1f2f5; border-radius:999px; } .ts-filt button{ border-radius:999px; } .ts-filt button.on{ background:#fff; color:#141418; }
+.qa-btn{ border-radius:16px; background:#fff; } .qa-btn:hover{ border-color:var(--lime2); background:#f9fde8; }
+.qa-ic.b{ background:#141418; color:#fff; } .qa-ic.g{ background:var(--lime); color:#141418; } .qa-ic.p{ background:var(--peach); color:#c24d10; } .qa-ic.o{ background:var(--orange); color:#fff; }
+/* status chips */
+.s-ok, .s-live{ background:#effbc9; color:var(--lime-ink); border-color:#dff39a; }
+.s-done{ background:#f1f2f5; color:#141418; border-color:#e6e8ec; }
+.s-pend{ background:#ffe9dc; color:#c24d10; border-color:#ffd0b5; }
+.s-no{ background:#fff0eb; color:#d23d12; border-color:#ffcdbd; }
+.s-lv{ background:#fde3d4; color:#a8410c; border-color:#ffd0b5; }
+.s-lun{ background:#fff3c4; color:#8a6100; border-color:#ffe08a; }
+.chip.annual{ background:#effbc9; color:var(--lime-ink); } .chip.personal{ background:#ffe9dc; color:#c24d10; }
+.ts-row.today{ background:#f9fde8; box-shadow:inset 3px 0 0 var(--lime2); }
+.psl-latest{ background:linear-gradient(150deg,#effbc9,#e2f6a0); border-color:#dff39a; }
+.tm-row.miss{ background:#fff6f1; }
+.fx{ border-radius:24px; } .fx-calc{ background:#f9fde8; border-color:#dff39a; color:var(--lime-ink); }
+.btn:hover{ background:#2a2a30; } .btn.ok:hover{ background:var(--lime2); }
+.btn.no{ background:var(--orange); color:#fff; } .btn.no:hover{ background:#f2622a; }
+.rep-ic{ background:#141418; } .rep-badge{ background:#effbc9; color:var(--lime-ink); } .rep-step b{ background:#141418; }
+.hi-bar.annual{ background:var(--lime2); } .hi-bar.personal{ background:var(--orange); } .hi-bar.other{ background:var(--peach2); }
+#reqCard select.fld.t-annual{ border-left-color:var(--lime2); } #reqCard select.fld.t-personal{ border-left-color:var(--orange); }
+.ts-rep .rs.tot b{ color:#141418; } .ts-rep .rs.ot b{ color:var(--orange); } .ts-rep .rs.lv b{ color:#c24d10; }
+.tm-av{ background:#141418; }
+input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !important; box-shadow:0 0 0 3px rgba(211,242,92,.6); }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -555,7 +642,7 @@ html{ scrollbar-gutter:stable; }
         </div>
       </div>
       <div id="awayCalWrap">
-        <div class="cal-legend"><span><i style="background:#2f6bff"></i>Annual Leave</span><span><i style="background:#22a35a"></i>Personal Leave</span><span><i style="background:#8e5cff"></i>Other</span><span><i style="background:#ff9500"></i>Public Holiday</span></div>
+        <div class="cal-legend"><span><i style="background:#c2e83c"></i>Annual Leave</span><span><i style="background:#ff7438"></i>Personal Leave</span><span><i style="background:#8e5cff"></i>Other</span><span><i style="background:#ff9500"></i>Public Holiday</span></div>
         <div id="teamCal"></div>
       </div>
       <div id="awayList" style="display:none"></div>
@@ -1093,7 +1180,7 @@ function tsRenderClock(tickOnly){
   if(tickOnly && box.getAttribute('data-ready')){
     box.querySelector('.ts-now').textContent = timeLbl;
     box.querySelector('.ts-ring b').textContent = hh + ':' + String(mm).padStart(2, '0');
-    box.querySelector('.ts-ring').style.background = 'conic-gradient(' + (onLunch ? '#ff9500' : '#22a35a') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)';
+    box.querySelector('.ts-ring').style.background = 'conic-gradient(' + (onLunch ? '#ff7438' : '#b4e61f') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)';
     return;
   }
   var state = open ? (onLunch ? '<span class="ts-state lunch"><i></i>On lunch since ' + tsTime(open.lunch_in) + '</span>' : '<span class="ts-state on"><i></i>Clocked in</span>') : '<span class="ts-state off"><i></i>' + (todays.length ? 'Shift complete' : 'Not clocked in') + '</span>';
@@ -1109,7 +1196,7 @@ function tsRenderClock(tickOnly){
     + '<div class="ts-ev' + (cur && cur.clock_out ? '' : ' dim') + '"><i style="background:#d92d23"></i>Clocked out<b>' + (cur && cur.clock_out ? tsTime(cur.clock_out) : '—') + '</b></div></div>';
   var note = open ? '<textarea class="ts-note" id="tsNote" maxlength="500" placeholder="✎ Add a note for this shift" onchange="tsSaveNote()">' + esc(open.note || '') + '</textarea>' : '';
   box.innerHTML = '<div class="ts-date">' + dateLbl + '</div><div class="ts-now">' + timeLbl + '</div>'
-    + '<div class="ts-ring" style="background:conic-gradient(' + (onLunch ? '#ff9500' : '#22a35a') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)"><div><b>' + hh + ':' + String(mm).padStart(2, '0') + '</b><span>worked today</span></div></div>'
+    + '<div class="ts-ring" style="background:conic-gradient(' + (onLunch ? '#ff7438' : '#b4e61f') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)"><div><b>' + hh + ':' + String(mm).padStart(2, '0') + '</b><span>worked today</span></div></div>'
     + state + acts + log + note + '<div class="ts-msg" id="tsMsg"></div>';
   box.setAttribute('data-ready', '1');
 }
