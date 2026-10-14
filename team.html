@@ -308,7 +308,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .tm-filt label{ display:flex; flex-direction:column; gap:4px; font-size:10.5px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; }
 .tm-filt select, .tm-filt input{ height:34px; border:1px solid #e3e7ef; border-radius:10px; padding:0 10px; font-family:inherit; font-size:12.5px; font-weight:600; color:var(--text); background:#fff; min-width:150px; }
 .tm-scroll{ overflow-x:auto; }
-.tm-row{ display:grid; grid-template-columns:minmax(170px,1.3fr) 96px minmax(120px,1fr) 100px 64px 54px 132px 70px; gap:10px; align-items:center; padding:10px 18px; border-top:1px solid #f0f2f7; font-size:12.5px; min-width:900px; }
+.tm-row{ display:grid; grid-template-columns:minmax(170px,1.3fr) 96px minmax(120px,1fr) 100px 64px 54px 170px 140px; gap:10px; align-items:center; padding:10px 18px; border-top:1px solid #f0f2f7; font-size:12.5px; min-width:900px; }
 .tm-row.h{ font-size:10px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.05em; background:#fafbfe; padding-top:8px; padding-bottom:8px; }
 .tm-row .r{ text-align:right; font-variant-numeric:tabular-nums; } .tm-row.miss{ background:#fffaf3; }
 .ot-row{ grid-template-columns:minmax(170px,1.2fr) 100px minmax(140px,1fr) 64px 54px minmax(120px,1fr) 170px; }
@@ -488,7 +488,7 @@ html{ scrollbar-gutter:stable; }
       <div class="hello" id="helloTime"></div>
       <div class="hello-sub" id="tsHelloSub">Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.</div>
       <div class="pv-banner" id="tsBanner" style="display:none"></div>
-      <div class="hero-head"><span class="hero-lbl" id="tsHeroLbl">Hours Summary</span><span style="display:flex;align-items:center"><span class="as-of" id="tsAsOf"></span><span class="tm-seg" id="tsModeSeg" style="display:none"><button type="button" class="on" data-m="me" onclick="tsSetMode('me')">My Time</button><button type="button" data-m="team" onclick="tsSetMode('team')">Team</button></span></span></div>
+      <div class="hero-head"><span class="hero-lbl" id="tsHeroLbl">Hours Summary</span><span style="display:flex;align-items:center"><span class="as-of" id="tsAsOf"></span><span class="tm-seg" id="tsModeSeg" style="display:none"><button type="button" class="on" data-m="me" onclick="tsSetMode('me')">My Time</button><button type="button" data-m="team" onclick="tsSetMode('team')">My Team</button></span></span></div>
       <div class="tiles" id="tsTiles"><div class="empty">Loading…</div></div>
     </div>
   </div>
@@ -635,7 +635,7 @@ html{ scrollbar-gutter:stable; }
         <label>Pay Period<select id="tmPeriod" onchange="tmRender()"><option value="cur">This Period</option><option value="last">Last Period</option><option value="all">All Since Sep 11</option></select></label>
         <label>Date<input type="date" id="tmDate" onchange="tmRender()"></label>
         <label>Employee<select id="tmEmp" onchange="tmRender()"><option value="">All Staff</option></select></label>
-        <label>Status<select id="tmStatus" onchange="tmRender()"><option value="">All Records</option><option value="fix">Needs Fix</option><option value="shift">On Shift</option><option value="lunch">On Lunch</option><option value="otp">OT Pending</option><option value="ota">OT Approved</option><option value="otr">OT Not Approved</option><option value="edited">Edited by Admin</option></select></label>
+        <label>Status<select id="tmStatus" onchange="tmRender()"><option value="">All Records</option><option value="fix">Needs Fix</option><option value="shift">On Shift</option><option value="lunch">On Lunch</option><option value="otp">OT Pending</option><option value="ota">OT Approved</option><option value="otr">OT Not Approved</option><option value="edited">Edited by Admin</option><option value="check">Needs Checking (All)</option><option value="nolunch">No Lunch</option><option value="longlunch">Long Lunch</option></select></label>
       </div>
       <div class="tm-scroll" id="tmList"><div class="empty">Loading…</div></div>
     </div>
@@ -1191,6 +1191,18 @@ function tmStatus(r){
   if(r.edited_by) return 'edited';
   return 'done';
 }
+function tmFlags(r){
+  var f = [];
+  if(r.clock_out){
+    var span = (new Date(r.clock_out) - new Date(r.clock_in)) / 3600000;
+    if(!r.lunch_in && span > 6) f.push('nolunch');
+    if(r.lunch_in && r.lunch_out && (new Date(r.lunch_out) - new Date(r.lunch_in)) / 3600000 > 1.5) f.push('longlunch');
+  }
+  return f;
+}
+function tmNeedsCheck(r){ return tmStatus(r) === 'fix' || tmFlags(r).length > 0; }
+var TM_FLAG = { nolunch:'<span class="sc s-no" title="Shift over 6 hrs with no lunch recorded">No Lunch</span>', longlunch:'<span class="sc s-lun" title="Lunch longer than 1.5 hrs — End Lunch may have been missed">Long Lunch</span>' };
+function tmFlagHtml(r){ return tmFlags(r).map(function(k){ return TM_FLAG[k]; }).join(' '); }
 var TM_CHIP = { fix:'<span class="sc s-pend">Needs Fix</span>', lunch:'<span class="sc s-lun">On Lunch</span>', shift:'<span class="sc s-live">● On Shift</span>', otp:'<span class="sc s-pend">OT Pending</span>', ota:'<span class="sc s-ok">OT Approved</span>', otr:'<span class="sc s-no">OT Not Approved</span>', edited:'<span class="sc s-fix">Edited by Admin</span>', done:'<span class="sc s-done">Completed</span>' };
 function tmDayLbl(iso){ var d = tsD(iso); return DOWS[d.getDay()] + ', ' + MONS[d.getMonth()] + ' ' + d.getDate(); }
 function tmFiltered(){
@@ -1199,6 +1211,7 @@ function tmFiltered(){
   return TM_ROWS.filter(function(r){
     var s0 = tmStatus(r);
     if(st !== 'fix' && st !== 'shift' && st !== 'lunch' && rg && (r.work_date < rg.from || r.work_date > rg.to) && s0 !== 'fix') return false;
+    if(st === 'check' || st === 'nolunch' || st === 'longlunch'){ if(dt && r.work_date !== dt) return false; if(emp && r.employee_id !== emp) return false; return st === 'check' ? tmNeedsCheck(r) : tmFlags(r).indexOf(st) > -1; }
     if(dt && r.work_date !== dt) return false;
     if(emp && r.employee_id !== emp) return false;
     if(st === 'edited' ? !r.edited_by : (st && s0 !== st)) return false;
@@ -1213,6 +1226,8 @@ function tmRenderTiles(){
   var pendHrs = pend.reduce(function(a, r){ return a + (parseFloat(r.ot_hours) || 0); }, 0);
   var pendStaff = {}; pend.forEach(function(r){ pendStaff[r.employee_id] = 1; });
   var miss = TM_ROWS.filter(function(r){ return !r.clock_out && r.work_date < today; });
+  var per = tsPeriodOf(today), inPer = TM_ROWS.filter(function(r){ return r.work_date >= per.from && r.work_date <= per.to; });
+  var noL = inPer.filter(function(r){ return tmFlags(r).indexOf('nolunch') > -1; }).length, lngL = inPer.filter(function(r){ return tmFlags(r).indexOf('longlunch') > -1; }).length, chk = miss.length + noL + lngL;
   var first = function(id){ return esc(tmEmp(id).name.split(' ')[0]); };
   var T = function(cls, lbl, val, unit, foot, chip, click){ return '<div class="tile ' + cls + (click ? ' click" onclick="' + click : '') + '"><div class="tile-lbl">' + lbl + '</div><div class="tile-val">' + val + '</div><div class="tile-unit">' + unit + '</div><div class="tile-foot"><span>' + foot + '</span>' + (chip ? '<span class="tile-days">' + chip + '</span>' : '') + '</div></div>'; };
   var u = function(t){ return ' <span style="font-size:15px;opacity:.8;font-weight:700">' + t + '</span>'; };
@@ -1221,10 +1236,11 @@ function tmRenderTiles(){
       T('t-green', 'On Shift Now', open.length + u('/ ' + active + ' staff'), 'Clocked in today', (active - open.length) + ' not clocked in', '', "tmQuick('shift')")
     + T(lunch.length ? 't-amber' : 't-grey', 'On Lunch Now', lunch.length, lunch.length ? lunch.map(function(r){ return first(r.employee_id); }).join(', ') : 'Nobody on lunch', lunch.length ? 'Since ' + tsTime(lunch.map(function(r){ return r.lunch_in; }).sort()[0]) : '—', '', lunch.length ? "tmQuick('lunch')" : '')
     + T(pend.length ? 't-purple' : 't-grey', 'OT Pending Approval', tsHrs(pendHrs) + u('hrs'), pend.length + ' shift' + (pend.length !== 1 ? 's' : '') + ' · ' + Object.keys(pendStaff).length + ' staff', 'Waiting for you', pend.length ? 'Review' : '', pend.length ? "document.getElementById('tmOtCard').scrollIntoView({behavior:'smooth'})" : '')
-    + T(miss.length ? 't-red' : 't-grey', 'Missing Clock-Out', miss.length, miss.length ? first(miss[0].employee_id) + ' · ' + tmDayLbl(miss[0].work_date) + (miss.length > 1 ? ' +' + (miss.length - 1) + ' more' : '') : 'All shifts closed', miss.length ? 'Fix before payroll' : 'Nothing to fix', miss.length ? 'Fix' : '', miss.length ? "tmQuick('fix')" : '');
+    + T(chk ? 't-red' : 't-grey', 'Needs Checking', chk, chk ? [miss.length ? miss.length + ' no clock-out' : '', noL ? noL + ' no lunch' : '', lngL ? lngL + ' long lunch' : ''].filter(Boolean).join(' · ') : 'Nothing to check', chk ? 'Fix before payroll' : 'All shifts look right', chk ? 'Check' : '', chk ? "tmQuick('check')" : '');
 }
 function tmQuick(st){
   document.getElementById('tmStatus').value = st; document.getElementById('tmDate').value = '';
+  if(st === 'check' || st === 'nolunch' || st === 'longlunch') document.getElementById('tmPeriod').value = 'cur';
   tmRender(); document.getElementById('tmRecCard').scrollIntoView({ behavior: 'smooth' });
 }
 function tmRender(){
@@ -1234,7 +1250,7 @@ function tmRender(){
   aa.style.display = pend.length > 1 ? '' : 'none'; aa.textContent = 'Approve All (' + pend.length + ')';
   document.getElementById('tmOt').innerHTML = pend.length
     ? '<div class="tm-scroll"><div class="tm-row ot-row h"><div>Employee</div><div>Date</div><div>Shift</div><div class="r">Worked</div><div class="r">OT</div><div>Note</div><div></div></div>'
-      + pend.map(function(r){ return '<div class="tm-row ot-row">' + tmAv(r.employee_id) + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + ' → ' + tsTime(r.clock_out) + '</div><div class="r">' + tsHrs(r.total_hours) + '</div><div class="r"><b>' + tsHrs(r.ot_hours) + '</b></div><div class="tm-sub">' + (r.note ? esc(r.note) : '—') + '</div><div class="tm-acts"><button type="button" class="mb ok" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button><button type="button" class="mb no" onclick="tmReview([\'' + r.id + '\'],\'rejected\',this)">Reject</button></div></div>'; }).join('') + '</div>'
+      + pend.map(function(r){ return '<div class="tm-row ot-row">' + tmAv(r.employee_id) + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + ' → ' + tsTime(r.clock_out) + '</div><div class="r">' + tsHrs(r.total_hours) + '</div><div class="r"><b>' + tsHrs(r.ot_hours) + '</b></div><div class="tm-sub">' + (tmFlags(r).length ? tmFlagHtml(r) + ' ' : '') + (r.note ? esc(r.note) : (tmFlags(r).length ? '' : '—')) + '</div><div class="tm-acts"><button type="button" class="mb ok" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button><button type="button" class="mb no" onclick="tmReview([\'' + r.id + '\'],\'rejected\',this)">Reject</button></div></div>'; }).join('') + '</div>'
     : '<div class="empty">No overtime waiting for approval.</div>';
   var rows = tmFiltered();
   document.getElementById('tmSub').textContent = rows.length + ' record' + (rows.length !== 1 ? 's' : '') + ' · Philippines time · lunch is unpaid';
@@ -1242,17 +1258,19 @@ function tmRender(){
     ? '<div class="tm-row h"><div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div class="r">Hours</div><div class="r">OT</div><div>Status</div><div></div></div>'
       + rows.map(function(r){
           var st = tmStatus(r), lun = r.lunch_in ? 'Lunch ' + tsTime(r.lunch_in) + ' – ' + (r.lunch_out ? tsTime(r.lunch_out) : 'now') : '';
-          var tip = r.edited_by ? ' title="Edited by ' + esc(r.edited_by) + (r.edit_reason ? ' · ' + esc(r.edit_reason) : '') + '"' : '';
+          var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' && r.ot_review_note ? 'OT not approved: ' + r.ot_review_note : ''].filter(Boolean).join(' | ');
+          var tip = tipT ? ' title="' + esc(tipT) + '"' : '';
           var out = r.clock_out ? tsTime(r.clock_out) : (st === 'fix' ? '<span class="sc s-no">Forgot to clock out</span>' : '—');
           var hrs = r.clock_out ? tsHrs(r.total_hours) : (st === 'fix' ? '—' : tsHrs(tsWorkedSoFar(r)));
-          return '<div class="tm-row' + (st === 'fix' ? ' miss' : '') + '"' + tip + '>' + tmAv(r.employee_id, r.note ? '✎ ' + esc(r.note) : '') + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + (lun ? '<div class="tm-sub">' + lun + '</div>' : '') + '</div><div>' + out + '</div><div class="r">' + hrs + '</div><div class="r">' + (parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '—') + '</div><div>' + TM_CHIP[st] + '</div><div class="tm-acts"><button type="button" class="mb' + (st === 'fix' ? ' fix' : '') + '" onclick="tmOpen(\'' + r.id + '\')">' + (st === 'fix' ? 'Fix' : 'Edit') + '</button></div></div>';
+          return '<div class="tm-row' + (st === 'fix' ? ' miss' : '') + '"' + tip + '>' + tmAv(r.employee_id, r.note ? '✎ ' + esc(r.note) : '') + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + (lun ? '<div class="tm-sub">' + lun + '</div>' : '') + '</div><div>' + out + '</div><div class="r">' + hrs + '</div><div class="r">' + (parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '—') + '</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + TM_CHIP[st] + (tmFlags(r).length ? ' ' + tmFlagHtml(r) : '') + '</div><div class="tm-acts">' + (st === 'otr' ? '<button type="button" class="mb ok" title="Reverse and approve this overtime" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button>' : '') + '<button type="button" class="mb' + (st === 'fix' || tmFlags(r).length ? ' fix' : '') + '" onclick="tmOpen(\'' + r.id + '\')">' + (st === 'fix' ? 'Fix' : 'Edit') + '</button></div></div>';
         }).join('')
     : '<div class="empty">No clock records match these filters.</div>';
 }
 async function tmReview(ids, status, btn){
-  if(status === 'rejected' && !confirm('Mark this overtime as not approved?')) return;
+  var note = null;
+  if(status === 'rejected'){ note = prompt('Reason for not approving this overtime (the staff member will see this):', ''); if(note === null) return; }
   if(btn) btn.disabled = true;
-  var r = await sb.rpc('admin_ot_review', { p_ids: ids, p_status: status });
+  var r = await sb.rpc('admin_ot_review', { p_ids: ids, p_status: status, p_note: note });
   if(r.error){ alert(r.error.message); if(btn) btn.disabled = false; return; }
   await tmLoad();
 }
@@ -1326,10 +1344,10 @@ async function tmSave(){
 }
 function tmCsv(){
   var rows = tmFiltered().slice().reverse();
-  var head = ['Employee','Date','Clock In','Lunch Start','Lunch End','Clock Out','Hours','OT Hrs','OT Status','Status','Note','Edited By','Edit Reason'];
+  var head = ['Employee','Date','Clock In','Lunch Start','Lunch End','Clock Out','Hours','OT Hrs','OT Status','Status','Flags','Note','Edited By','Edit Reason','OT Review Note'];
   var q = function(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
   var lab = { fix:'Needs Fix', lunch:'On Lunch', shift:'On Shift', otp:'OT Pending', ota:'OT Approved', otr:'OT Not Approved', edited:'Edited by Admin', done:'Completed' };
-  var lines = [head].concat(rows.map(function(r){ return [tmEmp(r.employee_id).name, r.work_date, tsTime(r.clock_in), r.lunch_in ? tsTime(r.lunch_in) : '', r.lunch_out ? tsTime(r.lunch_out) : '', r.clock_out ? tsTime(r.clock_out) : '', r.clock_out ? tsHrs(r.total_hours) : '', parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '', r.ot_status !== 'none' ? r.ot_status : '', lab[tmStatus(r)], r.note || '', r.edited_by || '', r.edit_reason || '']; })).map(function(a){ return a.map(q).join(','); });
+  var lines = [head].concat(rows.map(function(r){ return [tmEmp(r.employee_id).name, r.work_date, tsTime(r.clock_in), r.lunch_in ? tsTime(r.lunch_in) : '', r.lunch_out ? tsTime(r.lunch_out) : '', r.clock_out ? tsTime(r.clock_out) : '', r.clock_out ? tsHrs(r.total_hours) : '', parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '', r.ot_status !== 'none' ? r.ot_status : '', lab[tmStatus(r)], tmFlags(r).map(function(k){ return k === 'nolunch' ? 'No Lunch' : 'Long Lunch'; }).join('; '), r.note || '', r.edited_by || '', r.edit_reason || '', r.ot_review_note || '']; })).map(function(a){ return a.map(q).join(','); });
   var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
   var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'Team-Clock-Records_' + tsToday() + '.csv';
@@ -1420,6 +1438,7 @@ function tsRenderShifts(){
         : '<span class="sc s-done">Completed</span>';
       hrs = tsHrs(info.worked) + '<small> hrs</small>';
       if(info.rows.some(function(x){ return x.edited_by; })) sub += ' · Adjusted by payroll';
+      info.rows.forEach(function(x){ if(x.ot_status === 'rejected' && x.ot_review_note) sub += ' · OT not approved: ' + esc(x.ot_review_note); });
       if(info.leave.length) sub += ' · ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
     } else if(info.dash != null && info.dash > 0){
       chip = '<span class="sc s-done">Recorded</span>'; sub = 'From the payroll timesheet';
