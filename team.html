@@ -826,11 +826,10 @@ function renderMyPayslips(){
   cnt.textContent = nPaid ? nPaid + ' paid' : '';
   if(!MY_PAYSLIPS.length){ box.innerHTML = '<div class="empty">No paid payslips yet. They appear here once payroll marks your pay as paid.</div>'; return; }
   var r0 = MY_PAYSLIPS[0], p0 = psPeriod(r0.pay_date);
-  var cmp0 = psCompare(r0, MY_PAYSLIPS[1]);
   var html = '<div class="psl-latest"><div><div class="l">Latest Payslip \u00b7 ' + p0.month + (psIsNew(r0) ? '<span class="ps-new">New</span>' : '') + (r0.status !== 'Paid' ? '<span class="ps-unpaid">Not Paid Yet</span>' : '') + '</div>'
     + '<div class="v">₱ ' + psFmt(r0.total_payout) + '</div>'
     + '<div class="s">' + (r0.status === 'Paid' ? 'Paid ' : 'Pay date ') + MONS[p0.pd[1]-1] + ' ' + p0.pd[2] + ', ' + p0.pd[0] + ' \u00b7 Period ' + p0.label + '</div>'
-    + (cmp0 ? '<div class="psl-cmp">' + esc(psCmpText(cmp0)) + '</div>' : '') + '</div>'
+    + '</div>'
     + '<div class="acts"><button class="btn ghost sm" onclick="downloadPayslip(0)">Save PDF</button><button class="btn sm" onclick="viewPayslip(0)">View</button></div></div>';
   var rest = MY_PAYSLIPS.slice(1), shown = PS_SHOW_ALL ? rest : rest.slice(0, 5);
   html += shown.map(function(r, k){
