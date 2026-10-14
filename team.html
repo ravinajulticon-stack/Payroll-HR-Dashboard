@@ -806,7 +806,7 @@ function monthsBetween(from, to){
   var a = new Date(from + "T00:00:00"), b = new Date(to);
   var m = (b.getFullYear()-a.getFullYear())*12 + (b.getMonth()-a.getMonth());
   if(b.getDate() < a.getDate()) m -= 1;
-  // Employee 203 credits the first month on joining, so count inclusively
+  // Leave credits the first month on joining, so count inclusively
   return Math.max(0, m) + 1;
 }
 
@@ -944,7 +944,7 @@ async function start(){
   if(adm) document.getElementById('adminLink').style.display = 'inline-block';
   if(adm) initReport();
   // Leave Approvers (semi-admin): get the Leave Requests card here, but no Dashboard link
-  // record this visit so the admin dashboard (Employee 206) can show who has opened My Leave
+  // record this visit so the admin dashboard (Staff Locator) can show who has opened My Leave
   sb.rpc('touch_my_leave').then(function(){}, function(){});
   const { data: appr } = await sb.rpc('is_leave_approver');
   IS_APPROVER = !!appr;
@@ -1925,7 +1925,7 @@ function repUpdate(){
     + st(rq.length + (pend ? ' <span style="font-size:11px;color:#b86b00;font-weight:700">(' + pend + ' Pending)</span>' : ''), 'Requests');
 }
 
-// Same balance rule as the dashboard (Employee 203): seed + hours credited on the 15th of each month
+// Same balance rule as the dashboard (Leave): seed + hours credited on the 15th of each month
 // after the seed date, minus leave taken up to the date. Accrual stops on the exit date.
 function repAccrual(seedDate, asOf, rate){
   var total = 0, y = seedDate.getFullYear(), m = seedDate.getMonth() + 1;
@@ -2106,7 +2106,7 @@ async function generateReport(){
       + '<div class="bar"><span>Leave Report · use <b>Save as PDF</b> in the print dialog</span><span><button class="g" onclick="window.close()">Close</button><button onclick="window.print()">Print / Save as PDF</button></span></div>'
       + '<div class="page"><header><img src="' + logo + '" alt="DDL"><div><h1>Leave Report</h1><div class="co">Digital Door Locks Pty Limited</div></div></header>'
       + '<div class="filters">' + filt + '</div><div class="gen">Generated ' + fmtDay(isoOf(gen)) + ' ' + gen.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + '</div>'
-      + kpis + out + '<footer>Balances follow the same rule as the HR dashboard (Employee 203). ' + HOURS_PER_DAY + ' hours = 1 day.</footer></div>'
+      + kpis + out + '<footer>Balances follow the same rule as the HR dashboard (Leave). ' + HOURS_PER_DAY + ' hours = 1 day.</footer></div>'
       + '<script>window.onload=function(){setTimeout(function(){window.print();},350);};<\/script></body></html>';
     w.document.open(); w.document.write(doc); w.document.close();
     msg.className = 'reqmsg ok'; msg.textContent = 'Report opened in a new tab.';
@@ -2281,7 +2281,7 @@ async function loadMine(){
   if(rows.length){
     var order = { 'Annual Leave':0, 'Personal Leave':1 };
     rows.sort(function(a,b){ return (order[a.leave_type] != null ? order[a.leave_type] : 9) - (order[b.leave_type] != null ? order[b.leave_type] : 9); });
-    // Same rule as the dashboard (Employee 203) and the Leave Report: hours are credited on the 15th of each
+    // Same rule as the dashboard (Leave) and the Leave Report: hours are credited on the 15th of each
     // month after the opening balance date, accrual stops on the exit date, and only leave taken after the
     // opening balance date (up to today) is deducted.
     var asOf = today, exitRes = await sb.from('employees_201').select('exit_date').eq('id', myId);
