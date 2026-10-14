@@ -298,6 +298,24 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .ts-filt{ display:flex; gap:4px; background:#f4f6fb; border-radius:10px; padding:3px; }
 .ts-filt button{ border:none; background:none; font-family:inherit; font-size:11.5px; font-weight:600; color:var(--text-2); padding:6px 12px; border-radius:8px; cursor:pointer; }
 .ts-filt button.on{ background:#fff; color:var(--text); box-shadow:0 1px 4px rgba(20,33,61,.08); }
+/* My Timesheet report */
+.ts-rep{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)) auto; gap:10px; align-items:stretch; padding:12px 18px 14px; border-top:1px solid #f0f2f7; background:#fafbfe; }
+.ts-rep .rs{ background:#fff; border:1px solid #edf0f6; border-radius:12px; padding:9px 12px; min-width:0; }
+.ts-rep .rs span{ display:block; font-size:10.5px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; }
+.ts-rep .rs b{ display:block; font-size:19px; font-weight:800; color:var(--text); margin-top:2px; }
+.ts-rep .rs b small{ font-size:11px; font-weight:600; color:var(--text-3); }
+.ts-rep .rs em{ display:block; font-style:normal; font-size:10.5px; color:var(--text-3); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ts-rep .rs.tot b{ color:#2f5be0; } .ts-rep .rs.ot b{ color:#c25e00; } .ts-rep .rs.lv b{ color:#5b2fd0; }
+.ts-csv{ display:flex; align-items:center; justify-content:center; gap:7px; border:1px solid #cfe9d8; background:#e9f7ee; color:#1e7a35; font-family:inherit; font-size:12px; font-weight:700; border-radius:12px; padding:0 14px; cursor:pointer; white-space:nowrap; }
+.ts-csv:hover{ background:#dcf2e4; }
+.ts-repcard{ margin-top:16px; padding:16px 18px; }
+.ts-repcard .ts-rep{ grid-template-columns:1fr 1fr; padding:0; border:none; background:none; margin-top:12px; }
+.ts-repcard .ts-csv{ grid-column:1 / -1; padding:10px 14px; }
+.ts-dates{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+.ts-dates label{ display:flex; flex-direction:column; gap:3px; font-size:10.5px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; }
+.ts-dates input{ font-family:inherit; font-size:12.5px; font-weight:600; color:var(--text); padding:7px 8px; border:1px solid #e3e7ef; border-radius:10px; background:#fff; min-width:0; }
+.ts-repsel{ width:100%; margin-top:10px; font-family:inherit; font-size:12.5px; font-weight:600; padding:8px 10px; border:1px solid #e3e7ef; border-radius:10px; background:#fff; color:var(--text); }
+@media(max-width:700px){ .ts-rep{ grid-template-columns:1fr 1fr; } .ts-csv{ grid-column:1 / -1; padding:10px 14px; } }
 .ts-row{ display:grid; grid-template-columns:50px minmax(0,1fr) auto 90px; gap:12px; align-items:center; padding:11px 18px; border-top:1px solid #f0f2f7; }
 .ts-d b{ display:block; font-size:18px; font-weight:800; color:var(--blue); line-height:1; text-align:center; } .ts-d span{ display:block; text-align:center; font-size:9.5px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--text-3); margin-top:2px; }
 .ts-t{ font-size:12.5px; font-weight:600; } .ts-s{ font-size:11px; color:var(--text-3); margin-top:2px; }
@@ -563,7 +581,7 @@ html{ scrollbar-gutter:stable; }
 
   <div class="wrap" id="timeWrap" style="display:none">
     <div class="ts-split">
-      <div class="card ts-clock" id="tsClock"><div class="empty">Loading…</div></div>
+      <div class="ts-left"><div class="card ts-clock" id="tsClock"><div class="empty">Loading…</div></div><div class="card ts-repcard" id="tsRepCard"></div></div>
       <div class="card" id="tsShiftsCard">
         <div class="card-head"><div class="rl-hd"><span class="rl-ic c-purple"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.3 2.6v2.6h2.6M8 5v3l2 1.3"/></svg></span><div><div class="card-title">My Shifts</div><div class="rl-sub" id="tsRangeLbl"></div></div></div>
           <div class="ts-filt"><button type="button" class="on" data-r="period" onclick="tsSetRange('period')">This Period</button><button type="button" data-r="week" onclick="tsSetRange('week')">This Week</button><button type="button" data-r="last" onclick="tsSetRange('last')">Last Period</button></div></div>
@@ -963,7 +981,7 @@ async function tsInit(){
   await tsLoad();
 }
 async function tsLoad(){
-  var from = tsPeriodOf(tsAdd(tsPeriodOf(tsToday()).from, -1)).from;
+  var from = TS_MIN;
   var res = await sb.from('time_clock').select('*').eq('employee_id', MY_ID).gte('work_date', from).order('clock_in', { ascending: true });
   TS_ROWS = res.data || [];
   // Hours entered in the Dashboard Timesheet tab (used for days with no clock-in record)
@@ -976,7 +994,7 @@ function tsSetRange(r){
   tsRenderShifts();
 }
 function tsRender(){
-  tsRenderClock(); tsRenderTiles(); tsRenderShifts();
+  tsRenderClock(); tsRenderTiles(); tsRenderShifts(); tsRenderReport();
   clearInterval(TS_TICK);
   TS_TICK = setInterval(function(){
     if(document.getElementById('timeWrap').style.display === 'none'){ clearInterval(TS_TICK); return; }
@@ -1037,7 +1055,7 @@ async function tsAct(action, btn){
   var res = await sb.rpc('time_clock_action', { p_action: action, p_note: noteEl ? noteEl.value : null });
   if(res.error){ var m = document.getElementById('tsMsg'); if(m) m.textContent = res.error.message; if(btn) btn.disabled = false; return; }
   await tsLoad();
-  tsRenderClock(); tsRenderTiles(); tsRenderShifts();
+  tsRenderClock(); tsRenderTiles(); tsRenderShifts(); tsRenderReport();
 }
 async function tsSaveNote(){
   var el = document.getElementById('tsNote'); if(!el || !tsOpen()) return;
@@ -1069,6 +1087,70 @@ function tsRenderTiles(){
     + '<div class="tile ts-per"><div class="tile-lbl">This Pay Period</div><div class="tile-val">' + tsHrs(ps.worked) + ' <span style="font-size:15px;opacity:.8;font-weight:700">hrs worked</span></div>'
     + '<div class="tile-unit">' + tsHrs(ps.covered) + ' of ' + ps.std + ' hrs covered incl. leave &amp; holidays</div>'
     + '<div class="tile-foot"><span>' + tsFmtRange(p.from, p.to) + '</span>' + (ps.missing ? '<span class="tile-days">' + ps.missing + ' missing day' + (ps.missing !== 1 ? 's' : '') + '</span>' : '') + '</div></div>';
+}
+var TS_CUR = null, TS_REP = { mode: 'period', from: null, to: null }, TS_MIN = '2026-09-11';
+function tsRepRange(){
+  var today = tsToday(), m = TS_REP.mode;
+  if(m === 'week'){ var w = tsWeekOf(today); return { from: w.from, to: w.to }; }
+  if(m === 'last') return tsPeriodOf(tsAdd(tsPeriodOf(today).from, -1));
+  if(m === 'custom'){
+    var f = TS_REP.from || tsPeriodOf(today).from, t = TS_REP.to || today;
+    if(f < TS_MIN) f = TS_MIN; if(t < f) t = f;
+    return { from: f, to: t };
+  }
+  return tsPeriodOf(today);
+}
+function tsRepSet(mode){ TS_REP.mode = mode; tsRenderReport(); }
+function tsRepDate(which, v){ if(v) TS_REP[which] = v; tsRenderReport(); }
+function tsReportData(r){
+  var out = { total: 0, reg: 0, ot: 0, otPend: 0, leave: 0, hol: 0, days: 0, rows: [] };
+  for(var d = r.from; d <= r.to; d = tsAdd(d, 1)){
+    var info = tsDayInfo(d), dd = tsD(d), reg = 0, ot = 0, pend = 0, otSt = '';
+    if(info.rows.length){
+      info.rows.forEach(function(x){
+        var w = tsWorkedSoFar(x), o = x.clock_out ? (parseFloat(x.ot_hours) || 0) : Math.max(0, w - 8);
+        reg += w - o;
+        if(x.ot_status === 'approved') ot += o; else if(o > 0) pend += o;
+        if(x.ot_status && x.ot_status !== 'none') otSt = x.ot_status;
+      });
+    } else if(info.dash != null) reg = info.dash;
+    var lvH = info.leaveHrs, holH = (!info.rows.length && info.dash == null && info.hol) ? 8 : 0;
+    out.reg += reg; out.ot += ot; out.otPend += pend; out.leave += lvH; out.hol += holH;
+    if(reg + ot + pend > 0) out.days++;
+    var x0 = info.rows[0] || {}, xl = info.rows[info.rows.length - 1] || {};
+    out.rows.push([d, DOWS[dd.getDay()], tsTime(x0.clock_in).replace('—',''), x0.lunch_in ? tsTime(x0.lunch_in) : '', x0.lunch_out ? tsTime(x0.lunch_out) : '', xl.clock_out ? tsTime(xl.clock_out) : '',
+      reg ? tsHrs(reg) : '', (ot + pend) ? tsHrs(ot + pend) : '', otSt ? otSt.charAt(0).toUpperCase() + otSt.slice(1) : '',
+      info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join('; '), info.hol ? info.hol.name : '',
+      info.rows.length ? 'Clock In' : (info.dash != null ? 'Payroll Timesheet' : ''), info.rows.map(function(x){ return x.note || ''; }).filter(Boolean).join(' / ')]);
+  }
+  out.total = out.reg + out.ot;
+  return out;
+}
+function tsRenderReport(){
+  var r = tsRepRange(); TS_CUR = r;
+  var o = tsReportData(r);
+  var stats = '<div class="rs tot"><span>Total Hours</span><b>' + tsHrs(o.total) + '<small> hrs</small></b><em>' + o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked</em></div>'
+    + '<div class="rs"><span>Regular</span><b>' + tsHrs(o.reg) + '<small> hrs</small></b><em>Up to 8 hrs a day</em></div>'
+    + '<div class="rs ot"><span>Overtime</span><b>' + tsHrs(o.ot) + '<small> hrs</small></b><em>' + (o.otPend ? '+' + tsHrs(o.otPend) + ' hrs pending' : 'Approved only') + '</em></div>'
+    + '<div class="rs lv"><span>Leave &amp; Holidays</span><b>' + tsHrs(o.leave + o.hol) + '<small> hrs</small></b><em>Paid, not worked</em></div>'
+    + '<button type="button" class="ts-csv" onclick="tsDownloadCsv()"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v8M4.8 7.6 8 10.8l3.2-3.2M3 13.5h10"/></svg>Download CSV</button>';
+  var c = document.getElementById('tsRepCard'); if(!c) return;
+  c.innerHTML = '<div class="rl-hd"><span class="rl-ic c-green"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13.5V8M8 13.5V3M13 13.5V6"/></svg></span><div><div class="card-title">Time Report</div><div class="rl-sub">' + tsFmtRange(r.from, r.to) + '</div></div></div>'
+      + '<select class="ts-repsel" onchange="tsRepSet(this.value)">' + [['period','This Period'],['week','This Week'],['last','Last Period'],['custom','Custom Dates']].map(function(o){ return '<option value="' + o[0] + '"' + (TS_REP.mode === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'
+      + (TS_REP.mode === 'custom' ? '<div class="ts-dates"><label>From<input type="date" min="' + TS_MIN + '" max="' + tsToday() + '" value="' + r.from + '" onchange="tsRepDate(\'from\', this.value)"></label><label>To<input type="date" min="' + r.from + '" max="' + tsToday() + '" value="' + r.to + '" onchange="tsRepDate(\'to\', this.value)"></label></div>' : '')
+      + '<div class="ts-rep">' + stats + '</div>';
+}
+function tsDownloadCsv(){
+  var r = TS_CUR; if(!r) return;
+  var o = tsReportData(r);
+  var head = ['Date','Day','Clock In','Lunch Start','Lunch End','Clock Out','Regular Hrs','OT Hrs','OT Status','Leave','Public Holiday','Source','Note'];
+  var q = function(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  var lines = [head].concat(o.rows).map(function(a){ return a.map(q).join(','); });
+  lines.push('', ['Total Hours', tsHrs(o.total)].join(','), ['Regular', tsHrs(o.reg)].join(','), ['Overtime (Approved)', tsHrs(o.ot)].join(','), ['Overtime (Pending)', tsHrs(o.otPend)].join(','), ['Leave & Holidays', tsHrs(o.leave + o.hol)].join(','));
+  var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'My-Timesheet_' + r.from + '_to_' + r.to + '.csv';
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
 function tsRenderShifts(){
   var today = tsToday(), r;
