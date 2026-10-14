@@ -260,6 +260,8 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .bar-left .brand{ padding-right:16px; border-right:1px solid rgba(255,255,255,0.14); flex-shrink:0; }
 .pg-tabs{ overflow-x:auto; scrollbar-width:none; max-width:100%; }
 .pg-tabs::-webkit-scrollbar{ display:none; }
+.pg-tabs{ display:grid !important; grid-auto-flow:column; grid-auto-columns:1fr; }
+@media(max-width:520px){ .pg-tabs button svg{ display:none; } }
 .pg-tabs button{ white-space:nowrap; flex-shrink:0; min-width:120px; justify-content:center; padding-left:12px; padding-right:12px; }
 .pg-tabs{ display:flex; gap:4px; padding:4px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); }
 .pg-tabs button{ display:flex; align-items:center; gap:7px; border:none; background:none; color:rgba(255,255,255,0.72); font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:9px; cursor:pointer; }
@@ -273,7 +275,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 /* ---- My Timesheet ---- */
 .tile.ts-week{ background:linear-gradient(135deg,#3b82ff 0%,#1d4ed8 100%); }
 .tile.ts-per{ background:linear-gradient(135deg,#34c759 0%,#1e7a35 100%); }
-.tile-prog{ height:6px; border-radius:3px; background:rgba(255,255,255,0.25); margin-top:10px; overflow:hidden; } .tile-prog i{ display:block; height:100%; background:#fff; border-radius:3px; }
+.tile-prog{ height:6px; border-radius:3px; background:rgba(255,255,255,0.25); margin-top:6px; overflow:hidden; } .tile-prog i{ display:block; height:100%; background:#fff; border-radius:3px; }
 .ts-split{ display:grid; grid-template-columns:340px minmax(0,1fr); gap:16px; align-items:start; }
 @media(max-width:860px){ .ts-split{ grid-template-columns:1fr; } }
 .ts-clock{ padding:22px; text-align:center; }
@@ -299,7 +301,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .ts-filt button{ border:none; background:none; font-family:inherit; font-size:11.5px; font-weight:600; color:var(--text-2); padding:6px 12px; border-radius:8px; cursor:pointer; }
 .ts-filt button.on{ background:#fff; color:var(--text); box-shadow:0 1px 4px rgba(20,33,61,.08); }
 /* My Timesheet — admin Team view */
-.tm-seg{ display:inline-flex; gap:3px; padding:3px; border-radius:10px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); margin-left:10px; }
+.tm-seg{ display:inline-flex; gap:3px; padding:3px; border-radius:10px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); margin:-9px 0 -9px 10px; }
 .tm-seg button{ border:none; background:none; font-family:inherit; font-size:12px; font-weight:600; color:rgba(255,255,255,.75); padding:6px 14px; border-radius:8px; cursor:pointer; }
 .tm-seg button.on{ background:#fff; color:#0f1b3d; }
 .tile.t-green{ background:linear-gradient(135deg,#34c759,#1e7a35); } .tile.t-amber{ background:linear-gradient(135deg,#ffb340,#e07b00); } .tile.t-purple{ background:linear-gradient(135deg,#8e5cff,#5b2fd0); } .tile.t-red{ background:linear-gradient(135deg,#ff6b5e,#d92d23); } .tile.t-grey{ background:linear-gradient(135deg,#8a94ad,#5d6680); }
@@ -363,6 +365,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 html{ scrollbar-gutter:stable; }
 .hero .tiles .tile{ min-height:144px; display:flex; flex-direction:column; }
 .hero .tiles .tile .tile-foot{ margin-top:auto; padding-top:14px; }
+.hero .tiles .tile .tile-prog + .tile-foot{ padding-top:2px; }
 #payWrap, #timeWrap{ min-height:calc(100vh - 360px); }
 .tile-cmp{ display:inline-flex; align-items:center; gap:4px; font-weight:700; background:rgba(255,255,255,0.18); padding:2px 8px; border-radius:999px; }
 .ps-new{ display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; background:#ff9500; color:#fff; padding:2px 7px; border-radius:999px; margin-left:6px; vertical-align:2px; }
@@ -831,7 +834,7 @@ async function start(){
   await loadMyPayslips();
   await tsInit();
   if(location.hash === '#payslips' || PS_PREVIEW) showPage('pay');
-  else if(location.hash === '#timesheet' && TS_ENABLED) showPage('time');
+  else if(TS_ENABLED) showPage('time');
   if(PS_PREVIEW) document.getElementById('helloPay').textContent = 'Preview: ' + PS_PREVIEW.name;
 }
 
