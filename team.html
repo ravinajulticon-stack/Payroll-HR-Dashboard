@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Leave — Digital Door Locks</title>
+<title>Staff Portal — Digital Door Locks</title>
 <link rel="icon" type="image/png" href="ddl-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -553,6 +553,14 @@ html, body{ overflow-x:hidden; }
 .pg-tabs button svg{ flex:none; width:14px; height:14px; }
 @media(max-width:700px){ .pg-tabs{ grid-auto-columns:1fr !important; } }
 input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !important; box-shadow:0 0 0 3px rgba(211,242,92,.6); }
+/* sign-in screen — V2 */
+#gate{ background:radial-gradient(700px 420px at 15% 10%, rgba(211,242,92,.22), transparent 70%), radial-gradient(700px 460px at 90% 90%, rgba(255,116,56,.26), transparent 70%), #141418 !important; }
+.auth{ border-radius:28px !important; padding:34px 30px 30px !important; box-shadow:0 30px 80px rgba(0,0,0,.45) !important; }
+.auth h1{ font-size:20px !important; font-weight:800; letter-spacing:-.4px; margin-top:6px !important; color:#141418; }
+.auth label{ color:#6b6f7a !important; }
+.auth input{ border-radius:12px !important; border-color:#e3e6ec !important; height:42px !important; background:#f7f8fa; }
+.auth button{ background:#141418 !important; border-radius:999px !important; height:44px !important; transition:background .2s, color .2s, transform .15s; }
+.auth button:hover{ background:var(--lime) !important; color:#141418 !important; transform:translateY(-1px); }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -562,7 +570,7 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
 <div id="gate">
   <div class="auth">
     <span class="ddl-logo" role="img" aria-label="DDL"></span>
-    <h1>My Leave</h1>
+    <h1>Staff Portal</h1>
     <p>Digital Door Locks Pty Limited</p>
     <label>Email</label>
     <input type="email" id="email" autocomplete="username">
