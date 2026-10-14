@@ -1041,9 +1041,6 @@ async function tsInit(){
   if(!TS_ENABLED || !MY_ID) return;
   document.getElementById('pgTime').style.display = '';
   if(IS_ADMIN){
-    var b = document.getElementById('tsBanner');
-    b.innerHTML = '<b>Admin preview</b> — My Timesheet is only visible to admins until it goes live for everyone on <b>11 Nov 2026</b>. Clocking in here records real hours for you.';
-    b.style.display = '';
     document.getElementById('tsModeSeg').style.display = '';
   }
   await tsLoad();
@@ -1165,7 +1162,6 @@ function tsSetMode(m){
   document.getElementById('timeWrap').style.display = team ? 'none' : '';
   document.getElementById('teamWrap').style.display = team ? '' : 'none';
   document.getElementById('tsAsOf').style.display = team ? 'none' : '';
-  document.getElementById('tsBanner').style.display = team ? 'none' : (IS_ADMIN ? '' : 'none');
   document.getElementById('tsHelloSub').textContent = team ? 'Admin view — see everyone’s clock-ins, approve overtime and fix records. Times are in Philippines time.' : 'Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.';
   if(team){ clearInterval(TS_TICK); tmLoad(); } else { tsRender(); }
 }
