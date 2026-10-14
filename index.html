@@ -507,7 +507,7 @@ body {
 .prod-scroll::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 2px; }
 
 
-/* ── Employee 201 additions ── */
+/* ── Employees additions ── */
 .io-btn{ border:1px solid var(--border-strong); border-radius:6px; background:var(--surface-1); color:var(--text-2); font-size:11.5px; font-weight:600; padding:5px 12px; cursor:pointer; font-family:inherit; transition:all .15s; white-space:nowrap; }
 .io-btn:hover{ border-color:var(--blue); color:#fff; background:var(--blue); }
 .io-btn.primary{ background:var(--blue); color:#fff; border-color:var(--blue); }
@@ -565,7 +565,7 @@ body {
 .ts-grid-table th.ts-holiday{ background:rgba(90,200,250,0.28); box-shadow:inset 0 -3px 0 #2f9fd4; }
 .ts-hol-tag{ display:block; margin-top:1px; font-size:7.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:#1f86b8; }
 .rec-table tr.emp-row-inactive td{ background:rgba(142,142,147,0.10); color:var(--text-2); }
-/* Profile photos (Employee 201 name column + header) */
+/* Profile photos (Employees name column + header) */
 .nav-av img{ width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; }
 .e201-name{ display:flex; align-items:center; gap:8px; }
 .e201-name input{ flex:1; min-width:0; }
@@ -574,7 +574,7 @@ body {
 .e201-ph:hover{ box-shadow:0 0 0 3px rgba(0,122,255,0.25); }
 .e201-ph .x{ position:absolute; top:-5px; right:-5px; width:15px; height:15px; border-radius:50%; background:#ff3b30; color:#fff; font-size:10px; line-height:15px; text-align:center; display:none; }
 .e201-ph:hover .x{ display:block; }
-/* My Leave sign-in dot (Employee 201 name column) */
+/* My Leave sign-in dot (Employees name column) */
 .signin-dot{ flex:0 0 auto; width:8px; height:8px; border-radius:50%; display:inline-block; }
 .signin-dot.on{ background:#34c759; box-shadow:0 0 0 3px rgba(52,199,89,0.18); }
 .signin-dot.never{ background:transparent; border:1.5px solid #aeaeb2; width:8px; height:8px; box-sizing:border-box; }
@@ -662,7 +662,7 @@ body {
 .prev-delta{ font-size:10.5px; font-weight:700; }
 .prev-delta.up{ color:#a35b00; }
 .prev-delta.down{ color:#1e7a35; }
-/* previous pay run: read-only mirror of the Employee 202 table */
+/* previous pay run: read-only mirror of the Pay Run table */
 .pay202-table.prev-run td{ color:var(--text-2); height:38px; }
 .pay202-table.prev-run tbody tr{ height:38px; }
 .pay202-table.prev-run td.ptxt{ font-size:10.5px; color:var(--text-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -1036,7 +1036,7 @@ input:checked+.pay202-toggle-slider:before{ transform:translateX(16px); }
 .pay202-table th:nth-child(21), .pay202-table td:nth-child(21){ width:110px; }
 .pay202-table th:nth-child(22), .pay202-table td:nth-child(22){ width:110px; }
 .pay202-table th:nth-child(19), .pay202-table td:nth-child(19){ width:120px; font-weight:700; color:var(--blue-light); }
-/* Employee 202: numbers right-aligned (Name, Notes and Paid stay as they are) */
+/* Pay Run: numbers right-aligned (Name, Notes and Paid stay as they are) */
 .rec-table.pay202-table thead th, .rec-table.pay202-table tbody td{ text-align:right; padding-right:14px; font-variant-numeric:tabular-nums; }
 .rec-table.pay202-table thead th:nth-child(1), .rec-table.pay202-table tbody td:nth-child(1),
 .rec-table.pay202-table thead th:nth-child(6), .rec-table.pay202-table tbody td:nth-child(6),
@@ -1442,13 +1442,13 @@ html.v2 .auth-btn:hover{ background:#d3f25c !important; color:#141418 !important
   <div class="seg-ctrl">
     <button class="seg-btn active" onclick="switchView('overview',this)"><span class="seg-txt">Overview</span><span class="seg-ic" style="color:#007aff"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></span></button>
     <button class="seg-btn" onclick="switchView('timesheet',this)"><span class="seg-txt">Timesheet</span><span class="seg-ic" style="color:#5ac8fa"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5" stroke-linecap="round"/></svg></span></button>
-    <button class="seg-btn" onclick="switchView('detail',this)"><span class="seg-txt">Employee 201</span><span class="seg-ic" style="color:#5e5ce6"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5.5" r="2.6"/><path d="M3 13.2c0-2.3 2.2-3.7 5-3.7s5 1.4 5 3.7" stroke-linecap="round"/></svg></span></button>
-    <button class="seg-btn" onclick="switchView('pay202',this)"><span class="seg-txt">Employee 202</span><span class="seg-ic" style="color:#34c759"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><circle cx="8" cy="8" r="2"/></svg></span></button>
-    <button class="seg-btn" onclick="switchView('leave',this)"><span class="seg-txt">Employee 203</span><span class="seg-ic" style="color:#ff9500"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.2" y="3.2" width="11.6" height="10.6" rx="1.5"/><path d="M2.2 6.4h11.6M5.5 1.8v2.6M10.5 1.8v2.6" stroke-linecap="round"/></svg></span></button>
-        <button class="seg-btn" onclick="switchView('loans',this)"><span class="seg-txt">Employee 204</span><span class="seg-ic" style="color:#af52de"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.8" y="4" width="12.4" height="8.6" rx="1.5"/><path d="M1.8 7h12.4" stroke-linecap="round"/></svg></span></button>
-    <button class="seg-btn" onclick="switchView('history',this)"><span class="seg-txt">Employee 205</span><span class="seg-ic" style="color:#6b7c93"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 5.2h11v7.3a1.2 1.2 0 0 1-1.2 1.2H3.7a1.2 1.2 0 0 1-1.2-1.2z"/><rect x="1.6" y="2.3" width="12.8" height="2.9" rx="1"/><path d="M6.4 8.3h3.2" stroke-linecap="round"/></svg></span></button>
-        <button class="seg-btn" onclick="switchView('locator',this)"><span class="seg-txt">Employee 206</span><span class="seg-ic" style="color:#ff375f"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 14.5s5-4.6 5-8.2A5 5 0 0 0 3 6.3c0 3.6 5 8.2 5 8.2z"/><circle cx="8" cy="6.2" r="1.9"/></svg></span></button>
-        <button class="seg-btn" onclick="switchView('payslip',this)"><span class="seg-txt">Payslip</span><span class="seg-ic" style="color:#0aa2c0"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4" stroke-linecap="round"/></svg></span></button>
+    <button class="seg-btn" onclick="switchView('detail',this)"><span class="seg-txt">Employees</span><span class="seg-ic" style="color:#5e5ce6"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5.5" r="2.6"/><path d="M3 13.2c0-2.3 2.2-3.7 5-3.7s5 1.4 5 3.7" stroke-linecap="round"/></svg></span></button>
+    <button class="seg-btn" onclick="switchView('pay202',this)"><span class="seg-txt">Pay Run</span><span class="seg-ic" style="color:#34c759"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><circle cx="8" cy="8" r="2"/></svg></span></button>
+    <button class="seg-btn" onclick="switchView('leave',this)"><span class="seg-txt">Leave</span><span class="seg-ic" style="color:#ff9500"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.2" y="3.2" width="11.6" height="10.6" rx="1.5"/><path d="M2.2 6.4h11.6M5.5 1.8v2.6M10.5 1.8v2.6" stroke-linecap="round"/></svg></span></button>
+        <button class="seg-btn" onclick="switchView('loans',this)"><span class="seg-txt">Salary Loans</span><span class="seg-ic" style="color:#af52de"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.8" y="4" width="12.4" height="8.6" rx="1.5"/><path d="M1.8 7h12.4" stroke-linecap="round"/></svg></span></button>
+    <button class="seg-btn" onclick="switchView('history',this)"><span class="seg-txt">Payroll History</span><span class="seg-ic" style="color:#6b7c93"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 5.2h11v7.3a1.2 1.2 0 0 1-1.2 1.2H3.7a1.2 1.2 0 0 1-1.2-1.2z"/><rect x="1.6" y="2.3" width="12.8" height="2.9" rx="1"/><path d="M6.4 8.3h3.2" stroke-linecap="round"/></svg></span></button>
+        <button class="seg-btn" onclick="switchView('locator',this)"><span class="seg-txt">Staff Locator</span><span class="seg-ic" style="color:#ff375f"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 14.5s5-4.6 5-8.2A5 5 0 0 0 3 6.3c0 3.6 5 8.2 5 8.2z"/><circle cx="8" cy="6.2" r="1.9"/></svg></span></button>
+        <button class="seg-btn" onclick="switchView('payslip',this)"><span class="seg-txt">Payslips</span><span class="seg-ic" style="color:#0aa2c0"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4" stroke-linecap="round"/></svg></span></button>
   </div>
   <div class="toolbar-sep"></div>
   <input type="text" class="search-box" id="searchBox" placeholder="Search employees…" style="display:none">
@@ -1589,7 +1589,7 @@ html.v2 .auth-btn:hover{ background:#d3f25c !important; color:#141418 !important
     <div id="historyBody"></div>
   </div>
 
-  <!-- EMPLOYEE 203 (LEAVE: mark leave days, which feed into the Timesheet and Employee 202 payroll) -->
+  <!-- EMPLOYEE 203 (LEAVE: mark leave days, which feed into the Timesheet and Pay Run payroll) -->
   <div id="leaveView" style="display:none">
     <div class="card" style="margin-bottom:16px">
       <div class="card-body" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
@@ -1696,8 +1696,8 @@ const OT_MULTIPLIER = 2.0;
 const HOLIDAY_MULTIPLIER = 2.0;
 const VACATION_MULTIPLIER = 1.0;
 
-// Periods before this are closed — already paid out, no longer editable in Timesheet or Employee 202.
-// Employee 203's period picker stays fully open (for browsing history); instead, individual leave
+// Periods before this are closed — already paid out, no longer editable in Timesheet or Pay Run.
+// Leave's period picker stays fully open (for browsing history); instead, individual leave
 // entries dated before this period's start are separately protected from add/delete.
 const MIN_OPEN_PERIOD = '2026-09';
 
@@ -1987,7 +1987,7 @@ async function loadEmployees(){
   loadSignIns();
 }
 
-// My Leave visit status (admin-only Supabase function, shown in Employee 206).
+// My Leave visit status (admin-only Supabase function, shown in Staff Locator).
 // Green = has opened My Leave (recorded by My Leave itself), grey ring = has an account but hasn't opened it yet.
 async function loadSignIns(){
   const { data, error } = await sb.rpc('staff_sign_ins');
@@ -2114,12 +2114,12 @@ function insuranceSelect(rec){
   </select>`;
   return freq;
 }
-// Maxicare cycle column: only for Quarterly insurance: which months Employee 202 charges the quarterly insurance (1 = Jan/Apr/Jul/Oct, 2 = Feb/May/Aug/Nov, 3 = Mar/Jun/Sep/Dec)
+// Maxicare cycle column: only for Quarterly insurance: which months Pay Run charges the quarterly insurance (1 = Jan/Apr/Jul/Oct, 2 = Feb/May/Aug/Nov, 3 = Mar/Jun/Sep/Dec)
 function insuranceCycleSelect(rec){
   if(rec.insurance_frequency !== 'Quarterly') return '<span style="color:var(--text-3)">\u2014</span>';
   const q = parseInt(rec.maxicare_quarter) || 0;
   const cyc = { 0:'Cycle not set', 1:'Jan/Apr/Jul/Oct', 2:'Feb/May/Aug/Nov', 3:'Mar/Jun/Sep/Dec' };
-  const cycle = `<select title="Months the quarterly insurance is charged in Employee 202" onchange="setMaxicareCycle('${rec.id}',this.value)" style="${q ? '' : 'color:#c9271d;'}">
+  const cycle = `<select title="Months the quarterly insurance is charged in Pay Run" onchange="setMaxicareCycle('${rec.id}',this.value)" style="${q ? '' : 'color:#c9271d;'}">
     ${[0,1,2,3].map(c => `<option value="${c || ''}" ${q===c?'selected':''}>${cyc[c]}</option>`).join('')}
   </select>`;
   return cycle;
@@ -2145,7 +2145,7 @@ function fmtMoney(n){
   return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// Employee 205 only (except Total Payout, which always shows 2 decimals): whole numbers stay whole, but any number with a fraction always
+// Payroll History only (except Total Payout, which always shows 2 decimals): whole numbers stay whole, but any number with a fraction always
 // shows exactly 2 decimals (e.g. 47596.1 -> "47,596.10", not "47,596.1").
 function fmtMoneyHistory(n){
   if(n === '' || n === null || n === undefined) return '';
@@ -2250,7 +2250,7 @@ async function rehireEmployee(id){
     { employee_id: rec.id, leave_type: 'Annual Leave', seed_balance: aStart, seed_date: ret, updated_at: now },
     { employee_id: rec.id, leave_type: 'Personal Leave', seed_balance: pStart, seed_date: ret, updated_at: now }
   ], { onConflict: 'employee_id,leave_type' });
-  if(b.error){ alert(rec.name + ' is Active again, but the leave balances could not be reset: ' + b.error.message + '\nPlease set them in Employee 203.'); }
+  if(b.error){ alert(rec.name + ' is Active again, but the leave balances could not be reset: ' + b.error.message + '\nPlease set them in Leave.'); }
   Object.assign(rec, { status: 'Active', exit_date: null, start_date: ret, leave_payout: null });
   render(); renderKpis();
   await loadLeaveEntries();
@@ -2272,7 +2272,7 @@ async function addEmployee(){
 async function deleteEmployee(id){
   const rec = EMP201.find(r => r.id === id);
   if(!rec) return;
-  if(!confirm(`Remove ${rec.name} from Employee 201?`)) return;
+  if(!confirm(`Remove ${rec.name} from Employees?`)) return;
   const { error } = await sb.from('employees_201').delete().eq('id', id);
   if(error){ alert('Could not remove employee: ' + error.message); return; }
   EMP201 = EMP201.filter(r => r.id !== id);
@@ -2341,7 +2341,7 @@ function fmtDate(d){
 
 let HISTORY_LATEST_DATE = null;
 
-// Employee 205 cell formats: amounts always 2 decimals, Ebury rate 4 decimals, hours as entered;
+// Payroll History cell formats: amounts always 2 decimals, Ebury rate 4 decimals, hours as entered;
 // anything empty or zero shows a muted dash so blanks and 0s look the same everywhere.
 const H_DASH = '<span class="h-dash">—</span>';
 function hNum(n){ const v = (n === '' || n === null || n === undefined) ? NaN : (typeof n === 'number' ? n : parseFloat(n)); return isNaN(v) ? null : v; }
@@ -2479,7 +2479,7 @@ function renderHistory(){
 function empById(id){ return EMP201.find(e => e.id === id); }
 function empName(id){ const e = empById(id); return e ? e.name : '(unknown employee)'; }
 
-// Most recent Employee 205 record for a given employee name, or null if they have no history yet.
+// Most recent Payroll History record for a given employee name, or null if they have no history yet.
 function latestHistoryFor(employeeName){
   let latest = null;
   for(const r of HISTORY500){
@@ -2551,7 +2551,7 @@ function periodBounds(periodStr){
   return { start, end };
 }
 
-// So a resigned/terminated employee still appears in Employee 202 for their one final period
+// So a resigned/terminated employee still appears in Pay Run for their one final period
 // (where their leave payout lands), even though the default filter otherwise hides non-Active staff.
 function exitFallsInPeriod(emp, periodStr){
   if(!emp.exit_date) return false;
@@ -2793,7 +2793,7 @@ function renderTimesheetGrid(){
 
 /* ══════════════════════════════════════
    EMPLOYEE 203 (LEAVE: mark leave days here; they feed into Timesheet's badges and
-   Employee 202's Monthly Pay proration — paid types count as hours worked, Unpaid Leave doesn't)
+   Pay Run's Monthly Pay proration — paid types count as hours worked, Unpaid Leave doesn't)
 ══════════════════════════════════════ */
 const LEAVE_TYPES = [
   { name: 'Annual Leave', paid: true, tracksBalance: true },
@@ -2961,13 +2961,13 @@ function currentLeaveBalance(employeeId, leaveType){
 // null if never seeded (can't compute a payout without a known balance).
 function annualLeavePayoutNative(emp){
   if(!emp.exit_date) return 0;
-  // Manual override from Employee 201 takes precedence (historical / already-settled staff)
+  // Manual override from Employees takes precedence (historical / already-settled staff)
   if(emp.leave_payout != null) return parseFloat(emp.leave_payout) || 0;
   const bal = leaveBalanceAsOf(emp.id, 'Annual Leave', new Date(emp.exit_date + 'T00:00:00'));
   if(bal === null) return null;
   if(bal <= 0) return 0;
   const monthly = parseFloat(emp.basic_pay_rate) || 0;
-  const hourly = monthly * 12 / 52 / 40;   // same hourly basis as the rest of Employee 202
+  const hourly = monthly * 12 / 52 / 40;   // same hourly basis as the rest of Pay Run
   return Math.round(bal * hourly * 100) / 100;
 }
 
@@ -3637,7 +3637,7 @@ function loanInstallmentAmount(loan, idx){
   return base;
 }
 
-// Every (employee, period) that has been marked Paid in Employee 202 \u2014 across all periods.
+// Every (employee, period) that has been marked Paid in Pay Run \u2014 across all periods.
 let LOAN_PAID_PERIODS = [];
 async function loadLoanPaidPeriods(){
   const { data, error } = await sb.from('pay202_snapshots').select('employee_id,period_month').eq('is_paid', true);
@@ -3653,7 +3653,7 @@ function loanPeriodForIndex(loan, idx){
   return y + '-' + String(m).padStart(2, '0');
 }
 
-// An installment counts as paid only when that employee's Employee 202 row for that period is marked Paid.
+// An installment counts as paid only when that employee's Pay Run row for that period is marked Paid.
 function loanInstallmentIsPaid(loan, idx){
   var pm = loanPeriodForIndex(loan, idx);
   return LOAN_PAID_PERIODS.some(function(s){
@@ -3905,7 +3905,7 @@ function buildPayslip(r){
     + '</div>';
 }
 
-/* EMPLOYEE LOCATOR (Employee 206) */
+/* EMPLOYEE LOCATOR (Staff Locator) */
 // City-level coordinates only — no home addresses are stored.
 const PH_CITIES = {
   'Quezon City':[14.6760,121.0437,'Metro Manila'], 'Manila':[14.5995,120.9842,'Metro Manila'],
@@ -4117,7 +4117,7 @@ function renderPayslipPanel(){
   if(payslipEmp && names.indexOf(payslipEmp) === -1) payslipEmp = '';
   var shown = payslipEmp ? PAYSLIP_ROWS.filter(function(r){ return r.employee_name === payslipEmp; }) : PAYSLIP_ROWS;
   var slips = shown.map(buildPayslip).join('');
-  var empty = '<div style="padding:24px;text-align:center;color:var(--text-3);font-size:12px">No paid records for this period. Mark rows as Paid in Employee 202 first.</div>';
+  var empty = '<div style="padding:24px;text-align:center;color:var(--text-3);font-size:12px">No paid records for this period. Mark rows as Paid in Pay Run first.</div>';
   c.innerHTML = ''
     + '<div class="card" style="margin-bottom:16px">'
     +   '<div class="card-header"><span class="card-title">Payslip Generator</span>'
@@ -4544,7 +4544,7 @@ function ovForecast(periodStr){
 
 // Jump to the tab where an issue is fixed.
 function ovGoTo(view){
-  var labels = { detail:'Employee 201', timesheet:'Timesheet', pay202:'Employee 202', leave:'Employee 203', loans:'Employee 204' };
+  var labels = { detail:'Employees', timesheet:'Timesheet', pay202:'Pay Run', leave:'Leave', loans:'Salary Loans' };
   var want = labels[view];
   var btn = Array.prototype.slice.call(document.querySelectorAll('.seg-btn'))
     .find(function(b){ return b.textContent.trim() === want; });
@@ -4603,7 +4603,7 @@ function ovTile(label, value, sub, tone){
     + '</div>';
 }
 
-// Monthly payout trend from Employee 205, drawn as inline SVG bars.
+// Monthly payout trend from Payroll History, drawn as inline SVG bars.
 undefined
 
 
@@ -4883,18 +4883,18 @@ function ovxUpcoming(){
   // next pay run
   var p = ovPeriod;
   for(var i = 0; i < 3 && ovPeriodRange(p).payDate < today; i++) p = ovShiftPeriod(p, 1);
-  items.push({ date: ovPeriodRange(p).payDate, t:'Payroll run', s: MNF[parseInt(p.slice(5,7))-1] + ' ' + p.slice(0,4) + ' pay date', icon:'clock', tone:'t-blue', go:'Employee 202' });
+  items.push({ date: ovPeriodRange(p).payDate, t:'Payroll run', s: MNF[parseInt(p.slice(5,7))-1] + ' ' + p.slice(0,4) + ' pay date', icon:'clock', tone:'t-blue', go:'Pay Run' });
   // next VIC holiday
   var hol = ovNextHoliday();
-  if(hol) items.push({ date: hol.date, t: hol.name, s:'Public holiday (VIC)', icon:'holiday', tone:'t-orange', go:'Employee 203' });
+  if(hol) items.push({ date: hol.date, t: hol.name, s:'Public holiday (VIC)', icon:'holiday', tone:'t-orange', go:'Leave' });
   // next SSS and 13th month months
   for(var k = 0; k < 12; k++){
     var q = ovShiftPeriod(p, k), m = parseInt(q.slice(5,7)), pd = ovPeriodRange(q).payDate;
     if(pd < today) continue;
-    if([3,6,9,12].indexOf(m) > -1 && !items.some(function(x){ return x.kind==='13'; })) items.push({ kind:'13', date: pd, t:'13th month payout', s: MNF[m-1] + ' pay period', icon:'cal', tone:'t-violet', go:'Employee 202' });
-    if([1,4,7,10].indexOf(m) > -1 && !items.some(function(x){ return x.kind==='sss'; })) items.push({ kind:'sss', date: pd, t:'SSS remittance', s: MNF[m-1] + ' pay period', icon:'heart', tone:'t-teal', go:'Employee 202' });
+    if([3,6,9,12].indexOf(m) > -1 && !items.some(function(x){ return x.kind==='13'; })) items.push({ kind:'13', date: pd, t:'13th month payout', s: MNF[m-1] + ' pay period', icon:'cal', tone:'t-violet', go:'Pay Run' });
+    if([1,4,7,10].indexOf(m) > -1 && !items.some(function(x){ return x.kind==='sss'; })) items.push({ kind:'sss', date: pd, t:'SSS remittance', s: MNF[m-1] + ' pay period', icon:'heart', tone:'t-teal', go:'Pay Run' });
   }
-  ovUpcomingExits().forEach(function(e){ items.push({ date: e.exit_date, t: e.name + ' leaving', s:'Exit date', icon:'exit', tone:'t-orange', go:'Employee 201' }); });
+  ovUpcomingExits().forEach(function(e){ items.push({ date: e.exit_date, t: e.name + ' leaving', s:'Exit date', icon:'exit', tone:'t-orange', go:'Employees' }); });
   items.sort(function(a,b){ return a.date.localeCompare(b.date); });
   return items.slice(0, 5);
 }
@@ -4989,13 +4989,13 @@ function renderOverview(){
   }
   var fx = (rate ? '$' + fmtMoney(st.payout/rate) : '') + (arate ? ' · A$' + fmtMoney(st.payout/arate) : '');
   var periodTiles = ''
-    + ovxTile({ tone:'f-blue', cls:'big fill', go:'Employee 205', icon:'wallet', label:'Total Payout', value:'₱' + fmtMoney(st.payout), sub: (st.payout && fx ? fx : '') + cmpTxt })
-    + ovxTile({ tone:'f-green', cls:'fill', go:'Employee 202', icon:'check', label:'Payroll Marked Paid', value: st.paid + ' of ' + st.expected, sub:'<div class="ovx-prog"><i style="width:' + pct + '%"></i></div><div style="margin-top:6px">' + pct + '% complete</div>', vtone: (st.expected && st.paid >= st.expected) ? 'ok' : '' })
+    + ovxTile({ tone:'f-blue', cls:'big fill', go:'Payroll History', icon:'wallet', label:'Total Payout', value:'₱' + fmtMoney(st.payout), sub: (st.payout && fx ? fx : '') + cmpTxt })
+    + ovxTile({ tone:'f-green', cls:'fill', go:'Pay Run', icon:'check', label:'Payroll Marked Paid', value: st.paid + ' of ' + st.expected, sub:'<div class="ovx-prog"><i style="width:' + pct + '%"></i></div><div style="margin-top:6px">' + pct + '% complete</div>', vtone: (st.expected && st.paid >= st.expected) ? 'ok' : '' })
     + ovxTile({ tone:'f-orange', cls:'fill', go:'Timesheet', icon:'cal', label:'Timesheet Gaps', value: gaps.total ? gaps.total + ' days' : 'Complete', vtone: gaps.total ? 'warn' : 'ok', sub: gaps.staff.length ? gaps.staff.slice(0,3).map(function(s){ return s.name.split(' ')[0] + ' ' + s.miss + 'd'; }).join(' · ') : 'All weekdays recorded' })
-    + ovxTile({ tone:'f-slate', cls:'fill', go:'Employee 202', icon:'clock', label:'SSS to Remit', value: st.sss ? '₱' + fmtMoney(st.sss) : '—', sub:'Jan / Apr / Jul / Oct' })
-    + ovxTile({ tone:'f-slate', cls:'fill', go:'Employee 202', icon:'heart', label:'Maxicare to Remit', value: st.maxicare ? '₱' + fmtMoney(st.maxicare) : '—', sub:'Quarterly per employee' })
-    + ovxTile({ tone:'f-slate', cls:'fill', go:'Employee 202', icon:'cal', label:'13th Month Accrued', value: st.thirteenth ? '₱' + fmtMoney(st.thirteenth) : '—', sub:'Mar / Jun / Sep / Dec' })
-    + ovxTile({ tone:'f-slate', cls:'fill', go:'Employee 203', icon:'doc', label:'Leave Liability', value:'₱' + fmtMoney(liab.php + (bestRate.rate ? liab.usd * bestRate.rate : 0)), sub:'Annual Leave owed as at ' + r.end + (bestRate.estimated ? ' · est. rate ' + bestRate.rate.toFixed(4) : '') });
+    + ovxTile({ tone:'f-slate', cls:'fill', go:'Pay Run', icon:'clock', label:'SSS to Remit', value: st.sss ? '₱' + fmtMoney(st.sss) : '—', sub:'Jan / Apr / Jul / Oct' })
+    + ovxTile({ tone:'f-slate', cls:'fill', go:'Pay Run', icon:'heart', label:'Maxicare to Remit', value: st.maxicare ? '₱' + fmtMoney(st.maxicare) : '—', sub:'Quarterly per employee' })
+    + ovxTile({ tone:'f-slate', cls:'fill', go:'Pay Run', icon:'cal', label:'13th Month Accrued', value: st.thirteenth ? '₱' + fmtMoney(st.thirteenth) : '—', sub:'Mar / Jun / Sep / Dec' })
+    + ovxTile({ tone:'f-slate', cls:'fill', go:'Leave', icon:'doc', label:'Leave Liability', value:'₱' + fmtMoney(liab.php + (bestRate.rate ? liab.usd * bestRate.rate : 0)), sub:'Annual Leave owed as at ' + r.end + (bestRate.estimated ? ' · est. rate ' + bestRate.rate.toFixed(4) : '') });
 
   // Current position
   var run = ovRunRate();
@@ -5030,11 +5030,11 @@ function renderOverview(){
     +   '<div class="ovx-list">' + upc.map(function(x){ return ovxListItem(x, true); }).join('') + '</div></div>'
     + '<div class="ovx-card"><div class="ovx-card-h"><div class="ovx-title">' + ovxIcon('bolt', 17) + 'Quick Actions</div></div>'
     +   '<div class="ovx-actions">'
-    +     '<button class="ovx-act primary" onclick="ovxGo(\'Employee 202\')">' + ovxIcon('sheet', 15) + 'Run Payroll<span>→</span></button>'
-    +     '<button class="ovx-act" onclick="ovxGo(\'Employee 201\')">' + ovxIcon('users', 15) + 'View Employees</button>'
+    +     '<button class="ovx-act primary" onclick="ovxGo(\'Pay Run\')">' + ovxIcon('sheet', 15) + 'Run Payroll<span>→</span></button>'
+    +     '<button class="ovx-act" onclick="ovxGo(\'Employees\')">' + ovxIcon('users', 15) + 'View Employees</button>'
     +     '<button class="ovx-act" onclick="ovxGo(\'Timesheet\')">' + ovxIcon('clock', 15) + 'Timesheets</button>'
-    +     '<button class="ovx-act" onclick="ovxGo(\'Payslip\')">' + ovxIcon('doc', 15) + 'Payslips</button>'
-    +     '<button class="ovx-act" onclick="ovxGo(\'Employee 205\')">' + ovxIcon('trend', 15) + 'Payroll History</button>'
+    +     '<button class="ovx-act" onclick="ovxGo(\'Payslips\')">' + ovxIcon('doc', 15) + 'Payslips</button>'
+    +     '<button class="ovx-act" onclick="ovxGo(\'Payroll History\')">' + ovxIcon('trend', 15) + 'Payroll History</button>'
     +   '</div></div>'
     + (highs
         ? '<div class="ovx-card ovx-track warn"><div class="ovx-li-ic t-orange">' + ovxIcon('bell', 16) + '</div><div><div class="ovx-track-t">' + highs + ' urgent item' + (highs!==1?'s':'') + '</div><div class="ovx-track-s">Clear these before marking payroll paid. <button class="ovx-link" onclick="ovxScrollAttn()">Review</button></div></div></div>'
@@ -5197,7 +5197,7 @@ async function loadPay202Snapshots(){
   else PAY202_SNAPSHOTS = [];
 }
 
-// Write a finalised Employee 202 row into the permanent Employee 205 history.
+// Write a finalised Pay Run row into the permanent Payroll History history.
 async function syncToEmployee500(emp, d, periodStr){
   var parts = periodStr.split('-').map(Number);
   var payDate = parts[0] + '-' + String(parts[1]).padStart(2,'0') + '-15';
@@ -5230,11 +5230,11 @@ async function syncToEmployee500(emp, d, periodStr){
   };
   await sb.from('employee_500').delete().eq('employee_name', emp.name).eq('pay_date', payDate);
   const { error } = await sb.from('employee_500').insert(row);
-  if(error){ alert('Saved as paid, but could not write to Employee 205: ' + error.message); return; }
+  if(error){ alert('Saved as paid, but could not write to Payroll History: ' + error.message); return; }
   await loadHistory();
 }
 
-// Remove the Employee 205 record when a row is unlocked.
+// Remove the Payroll History record when a row is unlocked.
 async function removeFromEmployee500(emp, periodStr){
   var parts = periodStr.split('-').map(Number);
   var payDate = parts[0] + '-' + String(parts[1]).padStart(2,'0') + '-15';
@@ -5459,7 +5459,7 @@ function pay202NoteCell(employeeId, field){
     onkeydown="if(event.key==='Enter') this.blur()">`;
 }
 
-/* PREVIOUS PAY RUN SNAPSHOT (Employee 202) */
+/* PREVIOUS PAY RUN SNAPSHOT (Pay Run) */
 let PREV_RUN = [];
 let prevRunFor = null;
 let PREV_AUD_RATE = null;
@@ -5807,7 +5807,7 @@ function renderPay202(){
     }
     const leavePayoutUSD = currency === 'USD' ? leavePayoutNative : (rate ? leavePayoutNative / rate : null);
 
-    // Fixed per-employee amounts from Employee 201, applied only when the matching flag is ticked.
+    // Fixed per-employee amounts from Employees, applied only when the matching flag is ticked.
     const homeOfficeUSD = emp.home_office ? (parseFloat(emp.home_office_amount) || 0) : 0;
     // Quarterly schedule: SSS is always Jan/Apr/Jul/Oct (months 1,4,7,10).
     // Maxicare quarter: 1 = Jan/Apr/Jul/Oct, 2 = Feb/May/Aug/Nov, 3 = Mar/Jun/Sep/Dec.
