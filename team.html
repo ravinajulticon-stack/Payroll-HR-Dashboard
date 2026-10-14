@@ -270,6 +270,11 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .tile.pay-ytd{ background:linear-gradient(135deg,#34c759 0%,#1e7a35 100%); }
 .tile.pay-cnt{ background:linear-gradient(135deg,#ffa23f 0%,#f27a00 100%); }
 .tile-val.money{ font-size:28px; }
+/* Keep My Leave and My Payslips the same size so switching pages doesn't jump */
+html{ scrollbar-gutter:stable; }
+.hero .tiles .tile{ min-height:144px; display:flex; flex-direction:column; }
+.hero .tiles .tile .tile-foot{ margin-top:auto; padding-top:14px; }
+#payWrap{ min-height:calc(100vh - 360px); }
 .tile-cmp{ display:inline-flex; align-items:center; gap:4px; font-weight:700; background:rgba(255,255,255,0.18); padding:2px 8px; border-radius:999px; }
 .ps-new{ display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; background:#ff9500; color:#fff; padding:2px 7px; border-radius:999px; margin-left:6px; vertical-align:2px; }
 .psl-latest .ps-new{ background:#ff9500; color:#fff; }
