@@ -951,6 +951,7 @@ async function start(){
   await loadMyPayslips();
   await tsInit();
   if(location.hash === '#payslips' || PS_PREVIEW) showPage('pay');
+  else if(location.hash === '#leave') showPage('leave');
   else if(TS_ENABLED) showPage('time');
   if(PS_PREVIEW) document.getElementById('helloPay').textContent = 'Preview: ' + PS_PREVIEW.name;
 }
