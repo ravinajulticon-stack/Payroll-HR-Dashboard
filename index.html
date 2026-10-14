@@ -1340,6 +1340,8 @@ html.v2side #overviewView .ovx-period, html.v2side #overviewView .ovx-bell{ back
 html.v2side #overviewView .ovx-period-range, html.v2side #overviewView .ovx-period svg{ color:#fff !important; }
 @media print{ html.v2side .v2-band{ display:none !important; } }
 @media(max-width:900px){ html.v2side .v2-band{ left:96px; } }
+/* Timesheet cells filled from clock-ins (read-only) */
+.ts-clock-in{ background:#eefbc4 !important; border-color:#c2e83c !important; color:#3d5200 !important; font-weight:700; cursor:not-allowed; }
 /* sign-in screen — V2 */
 html.v2 #authGate{ background:#141418 !important; }
 html.v2 .auth-card{ border-radius:28px !important; padding:34px 30px 30px !important; box-shadow:0 30px 80px rgba(0,0,0,.45) !important; }
@@ -2588,6 +2590,7 @@ function fmtHrs(n){
 async function updateTimesheetHours(employeeId, workDate, hours){
   const trimmed = (hours || '').toString().trim();
   const existing = TIMESHEET_ENTRIES.find(t => t.employee_id === employeeId && t.work_date === workDate);
+  if(existing && existing.source === 'clock'){ alert('These hours come from the clock-in record. Edit the shift in My Timesheet \u2192 My Team instead.'); renderTimesheetGrid(); return; }
 
   if(trimmed === ''){
     if(existing){
@@ -2750,6 +2753,7 @@ function renderTimesheetGrid(){
         return `<div class="ts-leave-badge ${info.paid ? 'ts-leave-paid' : 'ts-leave-unpaid'}" title="${leave.leave_type} \u2014 ${fmtHrs(parseFloat(leave.hours)||0)}h${leave.note ? ': ' + leave.note.replace(/"/g,'&quot;') : ''}">${abbrev} ${fmtHrs(parseFloat(leave.hours)||0)}h</div>`;
       })() : '';
       const holCls = holidayName[d.date] ? ' class="ts-holiday"' : '';
+      if(entry && entry.source === 'clock') return `<td${holCls}><input class="ts-clock-in" type="number" value="${val}" readonly title="From clock-in (approved overtime only). To change, edit the shift in My Timesheet \u2192 My Team.">${badge}</td>`;
       return `<td${holCls}><input type="number" step="0.5" min="0" placeholder="\u2014" value="${val}" onchange="updateTimesheetHours('${emp.id}','${d.date}',this.value)">${badge}</td>`;
     }).join('');
     // A row counts as complete when every working day is accounted for:
