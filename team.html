@@ -522,6 +522,30 @@ body{ background:var(--bg); }
 #reqCard select.fld.t-annual{ border-left-color:var(--lime2); } #reqCard select.fld.t-personal{ border-left-color:var(--orange); }
 .ts-rep .rs.tot b{ color:#141418; } .ts-rep .rs.ot b{ color:var(--orange); } .ts-rep .rs.lv b{ color:#c24d10; }
 .tm-av{ background:#141418; }
+/* V2 dark header band (Option D) + tiles that pop */
+.hero{ background:radial-gradient(520px 260px at 12% 0%, rgba(211,242,92,.22), transparent 70%), radial-gradient(520px 300px at 92% 30%, rgba(255,116,56,.22), transparent 70%), #141418; color:#fff; border-radius:0 0 36px 36px; }
+.hero .bar-title, .hero .hello, .hero .hero-lbl, .hero .user-name{ color:#fff; }
+.hero .bar-sub, .hero .hello-sub, .hero .as-of, .hero .who{ color:rgba(255,255,255,.62); }
+.hero .empty{ color:rgba(255,255,255,.75); background:rgba(255,255,255,.06); }
+.hero .pg-tabs{ background:rgba(255,255,255,.08) !important; box-shadow:none; }
+.hero .pg-tabs button{ color:rgba(255,255,255,.72) !important; }
+.hero .pg-tabs button:hover{ background:rgba(255,255,255,.1) !important; color:#fff !important; }
+.hero .pg-tabs button.on{ background:#fff !important; color:#141418 !important; }
+.hero .tm-seg{ background:rgba(255,255,255,.08) !important; box-shadow:none; }
+.hero .tm-seg button{ color:rgba(255,255,255,.72) !important; }
+.hero .tm-seg button.on{ background:var(--lime) !important; color:#141418 !important; }
+.hero .admin-link, .hero .out{ background:rgba(255,255,255,.1); color:#fff; box-shadow:none; }
+.hero .admin-link:hover, .hero .out:hover{ background:#fff; color:#141418; }
+.hero .bar-left .brand{ border-right-color:rgba(255,255,255,.12) !important; }
+.hero .pv-banner{ background:rgba(255,179,64,.14); border-color:rgba(255,179,64,.4); color:#ffd89a; }
+.tile{ box-shadow:0 22px 44px -18px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.08); }
+.tile.annual, .tile.ts-week, .tile.pay-net, .tile.t-green{ box-shadow:0 24px 48px -16px rgba(150,200,20,.55), 0 2px 6px rgba(0,0,0,.08); }
+.tile.other, .tile.ts-per, .tile.pay-cnt, .tile.t-amber{ box-shadow:0 24px 48px -16px rgba(255,140,90,.5), 0 2px 6px rgba(0,0,0,.08); }
+.tile.personal, .tile.pay-ytd, .tile.t-purple, .tile.t-red{ box-shadow:0 24px 48px -16px rgba(255,100,40,.55), 0 2px 6px rgba(0,0,0,.08); }
+.tile:hover{ transform:translateY(-4px); }
+.tile-val{ font-size:38px; }
+html, body{ overflow-x:hidden; }
+.tm-seg button{ white-space:nowrap; }
 input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !important; box-shadow:0 0 0 3px rgba(211,242,92,.6); }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
