@@ -303,7 +303,8 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .ts-t{ font-size:12.5px; font-weight:600; } .ts-s{ font-size:11px; color:var(--text-3); margin-top:2px; }
 .ts-h{ text-align:right; font-size:14px; font-weight:800; font-variant-numeric:tabular-nums; } .ts-h small{ font-size:11px; color:var(--text-3); font-weight:600; }
 .sc{ font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; border:1px solid; display:inline-block; white-space:nowrap; }
-.s-ok{ background:#e6f6ec; color:#1e7a35; border-color:#c9ecd4; } .s-pend{ background:#fff4e5; color:#c25e00; border-color:#ffe0b8; } .s-no{ background:#fff1f0; color:#d92d23; border-color:#ffd2ce; } .s-lv{ background:#efe9ff; color:#5b2fd0; border-color:#ddd0ff; } .s-ph{ background:#e2f5fd; color:#0f86b8; border-color:#bde6f7; } .s-live{ background:#e6f6ec; color:#1e7a35; border-color:#9fe0b4; } .s-done{ background:#eef3ff; color:#2f5be0; border-color:#d6e2ff; }
+.s-ok{ background:#e6f6ec; color:#1e7a35; border-color:#c9ecd4; } .s-pend{ background:#fff4e5; color:#c25e00; border-color:#ffe0b8; } .s-no{ background:#fff1f0; color:#d92d23; border-color:#ffd2ce; } .s-lv{ background:#efe9ff; color:#5b2fd0; border-color:#ddd0ff; } .s-ph{ background:#e2f5fd; color:#0f86b8; border-color:#bde6f7; } .s-live{ background:#e6f6ec; color:#1e7a35; border-color:#9fe0b4; } .s-done{ background:#eef3ff; color:#2f5be0; border-color:#d6e2ff; } .s-wk{ background:#f4f6fa; color:#8a91a5; border-color:#e6e9f2; }
+.ts-row.today{ background:#f3fbf6; box-shadow:inset 3px 0 0 #22a35a; } .ts-row.future .ts-t, .ts-row.future .ts-d b{ color:#a8afc0; } .ts-row.wkend{ background:#fbfbfd; padding-top:7px; padding-bottom:7px; } .ts-row.wkend .ts-d b{ color:#b4bacb; font-size:15px; } .ts-row.wkend .ts-t{ color:#8a91a5; font-weight:500; }
 @media(max-width:560px){ .ts-row{ grid-template-columns:44px minmax(0,1fr) 70px; } .ts-row .ts-c{ grid-column:2; } }
 /* Keep My Leave and My Payslips the same size so switching pages doesn't jump */
 html{ scrollbar-gutter:stable; }
@@ -1070,10 +1071,9 @@ function tsRenderShifts(){
   else if(TS_RANGE === 'last'){ var cur = tsPeriodOf(today); r = tsPeriodOf(tsAdd(cur.from, -1)); }
   else r = tsPeriodOf(today);
   document.getElementById('tsRangeLbl').textContent = tsFmtRange(r.from, r.to);
-  var first = tsFirstDate(), end = r.to < today ? r.to : today, html = '';
-  for(var d = end; d >= r.from; d = tsAdd(d, -1)){
-    var dd = tsD(d), dow = dd.getDay(), info = tsDayInfo(d), isWk = dow === 0 || dow === 6;
-    if(isWk && !info.rows.length) continue;
+  var first = tsFirstDate(), html = '';
+  for(var d = r.from; d <= r.to; d = tsAdd(d, 1)){
+    var dd = tsD(d), dow = dd.getDay(), info = tsDayInfo(d), isWk = dow === 0 || dow === 6, rowCls = d === today ? ' today' : (d > today ? ' future' : '');
     var chip = '', sub = '', hrs = '—';
     if(info.rows.length){
       var open = info.rows.find(function(x){ return !x.clock_out; });
@@ -1090,12 +1090,18 @@ function tsRenderShifts(){
       chip = '<span class="sc s-lv">' + esc(info.leave[0].leave_type) + '</span>'; sub = tsHrs(info.leaveHrs) + 'h leave';
     } else if(info.hol){
       chip = '<span class="sc s-ph">Public Holiday</span>'; sub = esc(info.hol.name);
+    } else if(isWk){
+      chip = '<span class="sc s-wk">Weekend</span>'; rowCls += ' wkend';
     } else if(d === today){
       chip = '<span class="sc s-done">Today</span>'; sub = 'Not clocked in yet';
+    } else if(d > today){
+      chip = '<span class="sc s-wk">Upcoming</span>'; sub = '8 hrs standard';
     } else if(first && d >= first){
       chip = '<span class="sc s-no">No Hours</span>'; sub = 'Message payroll if you worked this day';
-    } else continue;
-    html += '<div class="ts-row"><div class="ts-d"><b>' + dd.getDate() + '</b><span>' + DOWS[dow] + '</span></div>'
+    } else {
+      chip = '<span class="sc s-wk">No Record</span>'; sub = 'Before you started using My Timesheet';
+    }
+    html += '<div class="ts-row' + rowCls + '"><div class="ts-d"><b>' + dd.getDate() + '</b><span>' + DOWS[dow] + '</span></div>'
       + '<div style="min-width:0"><div class="ts-t">' + dd.toLocaleDateString('en-US', { weekday:'long', day:'numeric', month:'long' }) + '</div><div class="ts-s">' + sub + '</div></div>'
       + '<div class="ts-c">' + chip + '</div><div class="ts-h">' + hrs + '</div></div>';
   }
