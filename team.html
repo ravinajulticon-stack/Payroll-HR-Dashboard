@@ -781,7 +781,7 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
       <label class="full">Reason (Required)<textarea id="fxReason" maxlength="300" placeholder="e.g. Forgot to clock out — confirmed finish time on Teams"></textarea></label>
       <div class="fx-err" id="fxErr"></div>
     </div>
-    <div class="fx-f"><span class="tm-sub">Saved as “Edited by Admin” with your name and the reason</span><div class="tm-acts"><button type="button" class="mb tall" onclick="tmClose()">Cancel</button><button type="button" class="mb pri tall" id="fxSave" onclick="tmSave()">Save</button></div></div>
+    <div class="fx-f"><span class="tm-sub">Saved as “Edited by Admin” with your name and the reason</span><div class="tm-acts"><button type="button" class="mb no tall" id="fxDel" onclick="tmDelete()" style="display:none">Delete Shift</button><button type="button" class="mb tall" onclick="tmClose()">Cancel</button><button type="button" class="mb pri tall" id="fxSave" onclick="tmSave()">Save</button></div></div>
   </div></div>
 </div>
 
@@ -1434,6 +1434,7 @@ function tmOpen(id){
   document.getElementById('fxErr').textContent = '';
   document.getElementById('fxSave').textContent = st === 'fix' ? 'Save Fix' : 'Save';
   document.getElementById('fxSave').disabled = false;
+  document.getElementById('fxDel').style.display = r ? '' : 'none'; document.getElementById('fxDel').disabled = false;
   document.getElementById('tmModal').style.display = 'flex';
   tmCalc();
   setTimeout(function(){ document.getElementById(st === 'fix' ? 'fxOut' : (r ? 'fxReason' : 'fxEmp')).focus(); }, 50);
@@ -1471,6 +1472,20 @@ async function tmSave(){
   tmClose();
   await tmLoad();
   if(emp === MY_ID){ await tsLoad(); }
+}
+async function tmDelete(){
+  if(!TM_EDIT) return;
+  var err = document.getElementById('fxErr'), reason = document.getElementById('fxReason').value.trim();
+  err.textContent = '';
+  if(reason.length < 3){ err.textContent = 'Please enter a reason for deleting this shift.'; document.getElementById('fxReason').focus(); return; }
+  var r0 = TM_EDIT, who = tmEmp(r0.employee_id).name, day = tsD(r0.work_date).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  if(!confirm('Delete ' + who + '’s shift on ' + day + '?\n\nIts hours will also be removed from the Dashboard Timesheet. A copy is kept for audit.')) return;
+  var btn = document.getElementById('fxDel'); btn.disabled = true;
+  var r = await sb.rpc('admin_time_delete', { p_id: r0.id, p_reason: reason });
+  if(r.error){ err.textContent = r.error.message; btn.disabled = false; return; }
+  tmClose();
+  await tmLoad();
+  if(r0.employee_id === MY_ID){ await tsLoad(); }
 }
 function tmCsv(){
   var rows = tmFiltered().slice().reverse();
