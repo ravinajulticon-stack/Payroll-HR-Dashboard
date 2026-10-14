@@ -546,7 +546,10 @@ body{ background:var(--bg); }
 .tile-val{ font-size:38px; }
 html, body{ overflow-x:hidden; }
 .tm-seg button{ white-space:nowrap; }
-.pg-tabs{ grid-auto-columns:minmax(150px,1fr) !important; }
+.pg-tabs{ flex-shrink:0 !important; grid-auto-columns:1fr !important; }
+.pg-tabs button{ min-width:0 !important; }
+.user .who{ max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hero .tiles .tile{ min-height:150px !important; }
 .pg-tabs button svg{ flex:none; width:14px; height:14px; }
 @media(max-width:700px){ .pg-tabs{ grid-auto-columns:1fr !important; } }
 input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !important; box-shadow:0 0 0 3px rgba(211,242,92,.6); }
