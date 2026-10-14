@@ -922,7 +922,7 @@ function showPage(pg){
   window.scrollTo(0, 0);
 }
 /* ---- MY TIMESHEET (clock in/out). Times come from the server; shown in Philippines time. ---- */
-var TS_ENABLED = false, TS_ROWS = [], TS_RANGE = 'period', TS_TICK = null, TS_LIVE_FROM = null;
+var TS_ENABLED = false, TS_ROWS = [], TS_DASH = {}, TS_RANGE = 'period', TS_TICK = null, TS_LIVE_FROM = null;
 var TS_TZ = 'Asia/Manila';
 function tsPhParts(d){
   var f = new Intl.DateTimeFormat('en-CA', { timeZone: TS_TZ, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).formatToParts(d || new Date());
@@ -966,6 +966,9 @@ async function tsLoad(){
   var from = tsPeriodOf(tsAdd(tsPeriodOf(tsToday()).from, -1)).from;
   var res = await sb.from('time_clock').select('*').eq('employee_id', MY_ID).gte('work_date', from).order('clock_in', { ascending: true });
   TS_ROWS = res.data || [];
+  // Hours entered in the Dashboard Timesheet tab (used for days with no clock-in record)
+  var ts = await sb.from('timesheet_entries').select('work_date,hours_worked').eq('employee_id', MY_ID).gte('work_date', from);
+  TS_DASH = {}; (ts.data || []).forEach(function(x){ TS_DASH[x.work_date] = parseFloat(x.hours_worked) || 0; });
 }
 function tsSetRange(r){
   TS_RANGE = r;
@@ -985,7 +988,9 @@ function tsDayInfo(iso){
   var lv = (MY_ENTRIES || []).filter(function(e){ return e.leave_date === iso; });
   var hol = (HOLIDAYS || []).find(function(h){ return h.date === iso; });
   var worked = rows.reduce(function(a, r){ return a + tsWorkedSoFar(r); }, 0);
-  return { rows: rows, leave: lv, hol: hol, worked: worked, leaveHrs: lv.reduce(function(a, e){ return a + (parseFloat(e.hours) || 0); }, 0) };
+  var dash = (!rows.length && TS_DASH[iso] != null) ? TS_DASH[iso] : null;
+  if(dash != null) worked = dash;
+  return { rows: rows, leave: lv, hol: hol, worked: worked, dash: dash, leaveHrs: lv.reduce(function(a, e){ return a + (parseFloat(e.hours) || 0); }, 0) };
 }
 function tsFirstDate(){ return TS_ROWS.length ? TS_ROWS[0].work_date : null; }
 function tsRenderClock(tickOnly){
@@ -1049,7 +1054,7 @@ function tsSum(from, to){
     worked += info.worked;
     info.rows.forEach(function(r){ if(r.ot_status === 'pending') ot += parseFloat(r.ot_hours) || 0; });
     covered += Math.min(8, info.worked + info.leaveHrs + (info.hol ? 8 : 0));
-    if(d < today && first && d >= first && !info.rows.length && !info.leave.length && !info.hol) missing++;
+    if(d < today && first && d >= first && !info.rows.length && info.dash == null && !info.leave.length && !info.hol) missing++;
   }
   return { worked: worked, covered: covered, std: std, ot: ot, missing: missing };
 }
@@ -1086,6 +1091,10 @@ function tsRenderShifts(){
         : '<span class="sc s-done">Completed</span>';
       hrs = tsHrs(info.worked) + '<small> hrs</small>';
       if(info.leave.length) sub += ' · ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
+    } else if(info.dash != null && info.dash > 0){
+      chip = '<span class="sc s-done">Recorded</span>'; sub = 'From the payroll timesheet';
+      hrs = tsHrs(info.dash) + '<small> hrs</small>';
+      if(info.leave.length) sub += ' \u00b7 ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
     } else if(info.leave.length){
       chip = '<span class="sc s-lv">' + esc(info.leave[0].leave_type) + '</span>'; sub = tsHrs(info.leaveHrs) + 'h leave';
     } else if(info.hol){
