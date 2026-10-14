@@ -462,9 +462,9 @@ body{ background:var(--bg); }
 .tile::after{ right:-34px; top:-38px; width:150px; height:150px; border-radius:44% 56% 62% 38%/45% 40% 60% 55%; background:rgba(255,255,255,.45); }
 .tile-days{ background:rgba(20,20,24,.08); }
 .tile.annual, .tile.ts-week, .tile.pay-net, .tile.t-green{ background:linear-gradient(150deg,#e6fb8f 0%,var(--lime2) 100%); color:#141418; }
-.tile.personal, .tile.pay-ytd, .tile.t-purple{ background:linear-gradient(150deg,var(--orange2) 0%,var(--orange) 100%); color:#fff; }
-.tile.personal .tile-days, .tile.pay-ytd .tile-days, .tile.t-purple .tile-days, .tile.t-red .tile-days{ background:rgba(255,255,255,.25); }
-.tile.other, .tile.ts-per, .tile.pay-cnt, .tile.t-amber{ background:linear-gradient(160deg,#fff1e8 0%,var(--peach2) 100%); color:#141418; }
+.tile.personal, .tile.pay-ytd, .tile.ts-per, .tile.t-purple{ background:linear-gradient(150deg,var(--orange2) 0%,var(--orange) 100%); color:#fff; }
+.tile.personal .tile-days, .tile.pay-ytd .tile-days, .tile.ts-per .tile-days, .tile.t-purple .tile-days, .tile.t-red .tile-days{ background:rgba(255,255,255,.25); }
+.tile.other, .tile.pay-cnt, .tile.t-amber{ background:linear-gradient(160deg,#fff1e8 0%,var(--peach2) 100%); color:#141418; }
 .tile.t-red{ background:linear-gradient(150deg,#ff8a6b 0%,#f2542d 100%); color:#fff; }
 .tile.t-grey{ background:#fff; color:#141418; }
 .tile.t-grey::after{ background:#f1f2f5; }
@@ -540,8 +540,8 @@ body{ background:var(--bg); }
 .hero .pv-banner{ background:rgba(255,179,64,.14); border-color:rgba(255,179,64,.4); color:#ffd89a; }
 .tile{ box-shadow:0 22px 44px -18px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.08); }
 .tile.annual, .tile.ts-week, .tile.pay-net, .tile.t-green{ box-shadow:0 24px 48px -16px rgba(150,200,20,.55), 0 2px 6px rgba(0,0,0,.08); }
-.tile.other, .tile.ts-per, .tile.pay-cnt, .tile.t-amber{ box-shadow:0 24px 48px -16px rgba(255,140,90,.5), 0 2px 6px rgba(0,0,0,.08); }
-.tile.personal, .tile.pay-ytd, .tile.t-purple, .tile.t-red{ box-shadow:0 24px 48px -16px rgba(255,100,40,.55), 0 2px 6px rgba(0,0,0,.08); }
+.tile.other, .tile.pay-cnt, .tile.t-amber{ box-shadow:0 24px 48px -16px rgba(255,140,90,.5), 0 2px 6px rgba(0,0,0,.08); }
+.tile.personal, .tile.pay-ytd, .tile.ts-per, .tile.t-purple, .tile.t-red{ box-shadow:0 24px 48px -16px rgba(255,100,40,.55), 0 2px 6px rgba(0,0,0,.08); }
 .tile:hover{ transform:translateY(-4px); }
 .tile-val{ font-size:38px; }
 html, body{ overflow-x:hidden; }
