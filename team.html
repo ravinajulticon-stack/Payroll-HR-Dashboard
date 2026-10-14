@@ -255,26 +255,61 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .msg{ font-size:11.5px; color:#c9271d; margin-top:10px; min-height:14px; text-align:center; }
 
 /* ---- My Payslips ---- */
-.bar-left{ display:flex; align-items:center; gap:22px; flex:1; min-width:0; }
+.bar-left{ display:flex; align-items:center; gap:16px; flex:1; min-width:0; }
 .bar-left .pg-tabs{ padding-left:4px; position:relative; }
-.bar-left .brand{ padding-right:22px; border-right:1px solid rgba(255,255,255,0.14); flex-shrink:0; }
+.bar-left .brand{ padding-right:16px; border-right:1px solid rgba(255,255,255,0.14); flex-shrink:0; }
 .pg-tabs{ overflow-x:auto; scrollbar-width:none; max-width:100%; }
 .pg-tabs::-webkit-scrollbar{ display:none; }
-.pg-tabs button{ white-space:nowrap; flex-shrink:0; min-width:150px; justify-content:center; }
+.pg-tabs button{ white-space:nowrap; flex-shrink:0; min-width:120px; justify-content:center; padding-left:12px; padding-right:12px; }
 .pg-tabs{ display:flex; gap:4px; padding:4px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); }
 .pg-tabs button{ display:flex; align-items:center; gap:7px; border:none; background:none; color:rgba(255,255,255,0.72); font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:9px; cursor:pointer; }
 .pg-tabs button:hover{ color:#fff; background:rgba(255,255,255,0.08); }
 .pg-tabs button.on{ background:#fff; color:#0f1b3d; box-shadow:0 2px 8px rgba(0,0,0,0.18); }
-@media(max-width:700px){ .bar-left{ display:contents; } .bar-left .brand{ border-right:none; padding-right:0; } .pg-tabs{ order:3; width:100%; } .pg-tabs button{ flex:1; justify-content:center; } }
+@media(max-width:700px){ .bar-left{ display:contents; } .bar-left .brand{ border-right:none; padding-right:0; } .pg-tabs{ order:3; width:100%; } .pg-tabs button{ flex:1 1 0; min-width:0; justify-content:center; padding-left:6px; padding-right:6px; font-size:12px; } }
 .tile.pay-net{ background:linear-gradient(135deg,#3b82ff 0%,#1d4ed8 100%); }
 .tile.pay-ytd{ background:linear-gradient(135deg,#34c759 0%,#1e7a35 100%); }
 .tile.pay-cnt{ background:linear-gradient(135deg,#ffa23f 0%,#f27a00 100%); }
 .tile-val.money{ font-size:28px; }
+/* ---- My Timesheet ---- */
+.tile.ts-week{ background:linear-gradient(135deg,#3b82ff 0%,#1d4ed8 100%); }
+.tile.ts-per{ background:linear-gradient(135deg,#34c759 0%,#1e7a35 100%); }
+.tile-prog{ height:6px; border-radius:3px; background:rgba(255,255,255,0.25); margin-top:10px; overflow:hidden; } .tile-prog i{ display:block; height:100%; background:#fff; border-radius:3px; }
+.ts-split{ display:grid; grid-template-columns:340px minmax(0,1fr); gap:16px; align-items:start; }
+@media(max-width:860px){ .ts-split{ grid-template-columns:1fr; } }
+.ts-clock{ padding:22px; text-align:center; }
+.ts-date{ font-size:12px; color:var(--text-3); font-weight:600; } .ts-now{ font-size:30px; font-weight:800; letter-spacing:-.6px; margin-top:2px; font-variant-numeric:tabular-nums; }
+.ts-ring{ width:186px; height:186px; border-radius:50%; margin:18px auto 14px; display:flex; align-items:center; justify-content:center; }
+.ts-ring > div{ width:156px; height:156px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.ts-ring b{ font-size:30px; font-weight:800; font-variant-numeric:tabular-nums; } .ts-ring span{ font-size:11px; color:var(--text-3); font-weight:600; margin-top:2px; }
+.ts-state{ display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:700; padding:4px 11px; border-radius:999px; margin-bottom:12px; }
+.ts-state.on{ background:#e6f6ec; color:#1e7a35; } .ts-state.lunch{ background:#fff4e5; color:#c25e00; } .ts-state.off{ background:#f1f3f8; color:var(--text-2); }
+.ts-state i{ width:8px; height:8px; border-radius:50%; background:currentColor; }
+.ts-acts{ display:grid; grid-template-columns:1fr 1fr; gap:8px; } .ts-acts.one{ grid-template-columns:1fr; }
+.ts-btn{ height:44px; border:none; border-radius:12px; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer; }
+.ts-btn:disabled{ opacity:.55; cursor:default; }
+.ts-in{ background:linear-gradient(135deg,#34c759,#1e7a35); color:#fff; box-shadow:0 8px 20px rgba(34,163,90,.3); }
+.ts-out{ background:linear-gradient(135deg,#ff6b5e,#d92d23); color:#fff; box-shadow:0 8px 20px rgba(217,45,35,.28); }
+.ts-lunch{ background:#fff4e5; color:#c25e00; border:1px solid #ffe0b8; }
+.ts-log{ margin-top:16px; text-align:left; border-top:1px solid #f0f2f7; padding-top:12px; }
+.ts-ev{ display:flex; align-items:center; gap:10px; font-size:12px; padding:5px 0; } .ts-ev i{ width:8px; height:8px; border-radius:50%; } .ts-ev b{ margin-left:auto; font-variant-numeric:tabular-nums; } .ts-ev.dim{ color:var(--text-3); }
+.ts-note{ margin-top:12px; width:100%; min-height:42px; resize:vertical; font-family:inherit; font-size:12px; color:var(--text); border:1px dashed #dfe3ec; border-radius:10px; padding:9px 12px; background:#fff; }
+.ts-note:focus{ outline:none; border-style:solid; border-color:var(--blue); }
+.ts-msg{ font-size:11.5px; color:#d92d23; margin-top:8px; min-height:14px; }
+.ts-filt{ display:flex; gap:4px; background:#f4f6fb; border-radius:10px; padding:3px; }
+.ts-filt button{ border:none; background:none; font-family:inherit; font-size:11.5px; font-weight:600; color:var(--text-2); padding:6px 12px; border-radius:8px; cursor:pointer; }
+.ts-filt button.on{ background:#fff; color:var(--text); box-shadow:0 1px 4px rgba(20,33,61,.08); }
+.ts-row{ display:grid; grid-template-columns:50px minmax(0,1fr) auto 90px; gap:12px; align-items:center; padding:11px 18px; border-top:1px solid #f0f2f7; }
+.ts-d b{ display:block; font-size:18px; font-weight:800; color:var(--blue); line-height:1; text-align:center; } .ts-d span{ display:block; text-align:center; font-size:9.5px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--text-3); margin-top:2px; }
+.ts-t{ font-size:12.5px; font-weight:600; } .ts-s{ font-size:11px; color:var(--text-3); margin-top:2px; }
+.ts-h{ text-align:right; font-size:14px; font-weight:800; font-variant-numeric:tabular-nums; } .ts-h small{ font-size:11px; color:var(--text-3); font-weight:600; }
+.sc{ font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; border:1px solid; display:inline-block; white-space:nowrap; }
+.s-ok{ background:#e6f6ec; color:#1e7a35; border-color:#c9ecd4; } .s-pend{ background:#fff4e5; color:#c25e00; border-color:#ffe0b8; } .s-no{ background:#fff1f0; color:#d92d23; border-color:#ffd2ce; } .s-lv{ background:#efe9ff; color:#5b2fd0; border-color:#ddd0ff; } .s-ph{ background:#e2f5fd; color:#0f86b8; border-color:#bde6f7; } .s-live{ background:#e6f6ec; color:#1e7a35; border-color:#9fe0b4; } .s-done{ background:#eef3ff; color:#2f5be0; border-color:#d6e2ff; }
+@media(max-width:560px){ .ts-row{ grid-template-columns:44px minmax(0,1fr) 70px; } .ts-row .ts-c{ grid-column:2; } }
 /* Keep My Leave and My Payslips the same size so switching pages doesn't jump */
 html{ scrollbar-gutter:stable; }
 .hero .tiles .tile{ min-height:144px; display:flex; flex-direction:column; }
 .hero .tiles .tile .tile-foot{ margin-top:auto; padding-top:14px; }
-#payWrap{ min-height:calc(100vh - 360px); }
+#payWrap, #timeWrap{ min-height:calc(100vh - 360px); }
 .tile-cmp{ display:inline-flex; align-items:center; gap:4px; font-weight:700; background:rgba(255,255,255,0.18); padding:2px 8px; border-radius:999px; }
 .ps-new{ display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; background:#ff9500; color:#fff; padding:2px 7px; border-radius:999px; margin-left:6px; vertical-align:2px; }
 .psl-latest .ps-new{ background:#ff9500; color:#fff; }
@@ -372,7 +407,7 @@ html{ scrollbar-gutter:stable; }
         <div class="brand-mark ddl-icon" role="img" aria-label="DDL"></div>
         <div><div class="bar-title" id="barTitle">My Leave</div><div class="bar-sub">Digital Door Locks Pty Limited</div></div>
       </div>
-      <div class="pg-tabs" role="tablist"><button type="button" class="on" id="pgLeave" onclick="showPage('leave')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg>My Leave</button><button type="button" id="pgPay" onclick="showPage('pay')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/></svg>My Payslips<span class="pg-dot" id="pgPayDot" style="display:none"></span></button></div>
+      <div class="pg-tabs" role="tablist"><button type="button" class="on" id="pgLeave" onclick="showPage('leave')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg>My Leave</button><button type="button" id="pgPay" onclick="showPage('pay')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/></svg>My Payslips<span class="pg-dot" id="pgPayDot" style="display:none"></span></button><button type="button" id="pgTime" onclick="showPage('time')" style="display:none"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 4.6V8l2.3 1.5"/></svg>My Timesheet</button></div>
       </div>
       <div class="user">
         <a href="index.html" id="adminLink" class="admin-link">Dashboard →</a>
@@ -394,6 +429,13 @@ html{ scrollbar-gutter:stable; }
       <div class="pv-banner" id="pvBanner" style="display:none"></div>
       <div class="hero-head"><span class="hero-lbl">Pay Summary</span><span class="as-of" id="payAsOf"></span></div>
       <div class="tiles" id="payTiles"><div class="empty">Loading…</div></div>
+    </div>
+    <div class="hero-in" id="timeHero" style="display:none">
+      <div class="hello" id="helloTime"></div>
+      <div class="hello-sub">Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.</div>
+      <div class="pv-banner" id="tsBanner" style="display:none"></div>
+      <div class="hero-head"><span class="hero-lbl">Hours Summary</span><span class="as-of" id="tsAsOf"></span></div>
+      <div class="tiles" id="tsTiles"><div class="empty">Loading…</div></div>
     </div>
   </div>
 
@@ -515,6 +557,17 @@ html{ scrollbar-gutter:stable; }
     <div class="card" id="psCard">
       <div class="card-head"><div class="rl-hd"><span class="rl-ic c-indigo"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/></svg></span><div><div class="card-title">My Payslips</div><div class="rl-sub">View or download any of your paid payslips</div></div></div><span class="card-meta" id="psCount"></span></div>
       <div id="psList"><div class="empty">Loading…</div></div>
+    </div>
+  </div>
+
+  <div class="wrap" id="timeWrap" style="display:none">
+    <div class="ts-split">
+      <div class="card ts-clock" id="tsClock"><div class="empty">Loading…</div></div>
+      <div class="card" id="tsShiftsCard">
+        <div class="card-head"><div class="rl-hd"><span class="rl-ic c-purple"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.3 2.6v2.6h2.6M8 5v3l2 1.3"/></svg></span><div><div class="card-title">My Shifts</div><div class="rl-sub" id="tsRangeLbl"></div></div></div>
+          <div class="ts-filt"><button type="button" class="on" data-r="period" onclick="tsSetRange('period')">This Period</button><button type="button" data-r="week" onclick="tsSetRange('week')">This Week</button><button type="button" data-r="last" onclick="tsSetRange('last')">Last Period</button></div></div>
+        <div id="tsShifts"><div class="empty">Loading…</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -691,7 +744,9 @@ async function start(){
     document.getElementById('paySub').textContent = 'Admin preview. Nothing here is saved or marked as seen.';
   }
   await loadMyPayslips();
+  await tsInit();
   if(location.hash === '#payslips' || PS_PREVIEW) showPage('pay');
+  else if(location.hash === '#timesheet' && TS_ENABLED) showPage('time');
   if(PS_PREVIEW) document.getElementById('helloPay').textContent = 'Preview: ' + PS_PREVIEW.name;
 }
 
@@ -848,18 +903,203 @@ function renderMyPayslips(){
   box.innerHTML = html;
 }
 function showPage(pg){
-  var pay = pg === 'pay';
-  document.getElementById('leaveHero').style.display = pay ? 'none' : '';
-  document.getElementById('leaveWrap').style.display = pay ? 'none' : '';
-  document.getElementById('payHero').style.display = pay ? '' : 'none';
-  document.getElementById('payWrap').style.display = pay ? '' : 'none';
-  document.getElementById('pgLeave').classList.toggle('on', !pay);
-  document.getElementById('pgPay').classList.toggle('on', pay);
-  document.getElementById('barTitle').textContent = pay ? 'My Payslips' : 'My Leave';
-  document.title = pay ? 'My Payslips' : 'My Leave';
-  if(!PS_PREVIEW) document.getElementById('helloPay').textContent = document.getElementById('hello').textContent;
-  try{ history.replaceState(null, '', pay ? '#payslips' : location.pathname + location.search); }catch(e){}
+  var pages = { leave:['leaveHero','leaveWrap','pgLeave','My Leave',''], pay:['payHero','payWrap','pgPay','My Payslips','#payslips'], time:['timeHero','timeWrap','pgTime','My Timesheet','#timesheet'] };
+  if(!pages[pg]) pg = 'leave';
+  Object.keys(pages).forEach(function(k){
+    var on = k === pg, p = pages[k];
+    document.getElementById(p[0]).style.display = on ? '' : 'none';
+    document.getElementById(p[1]).style.display = on ? '' : 'none';
+    document.getElementById(p[2]).classList.toggle('on', on);
+  });
+  document.getElementById('barTitle').textContent = pages[pg][3];
+  document.title = pages[pg][3];
+  var hello = document.getElementById('hello').textContent;
+  if(!PS_PREVIEW) document.getElementById('helloPay').textContent = hello;
+  document.getElementById('helloTime').textContent = hello;
+  try{ history.replaceState(null, '', pages[pg][4] || (location.pathname + location.search)); }catch(e){}
+  if(pg === 'time') tsRender(); 
   window.scrollTo(0, 0);
+}
+/* ---- MY TIMESHEET (clock in/out). Times come from the server; shown in Philippines time. ---- */
+var TS_ENABLED = false, TS_ROWS = [], TS_RANGE = 'period', TS_TICK = null, TS_LIVE_FROM = null;
+var TS_TZ = 'Asia/Manila';
+function tsPhParts(d){
+  var f = new Intl.DateTimeFormat('en-CA', { timeZone: TS_TZ, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }).formatToParts(d || new Date());
+  var o = {}; f.forEach(function(x){ o[x.type] = x.value; }); return o;
+}
+function tsToday(){ var o = tsPhParts(); return o.year + '-' + o.month + '-' + o.day; }
+function tsTime(ts){ return ts ? new Date(ts).toLocaleTimeString('en-US', { timeZone: TS_TZ, hour:'numeric', minute:'2-digit' }) : '—'; }
+function tsD(iso){ return new Date(iso + 'T00:00:00'); }
+function tsAdd(iso, n){ var d = tsD(iso); d.setDate(d.getDate() + n); return isoOf(d); }
+function tsPeriodOf(iso){
+  var d = tsD(iso), y = d.getFullYear(), m = d.getMonth();
+  var start = d.getDate() >= 11 ? new Date(y, m, 11) : new Date(y, m - 1, 11);
+  var end = new Date(start.getFullYear(), start.getMonth() + 1, 10);
+  var pay = new Date(end.getFullYear(), end.getMonth(), 15);
+  return { from: isoOf(start), to: isoOf(end), pay: isoOf(pay) };
+}
+function tsWeekOf(iso){ var d = tsD(iso), dow = (d.getDay() + 6) % 7; var mon = tsAdd(iso, -dow); return { from: mon, to: tsAdd(mon, 6) }; }
+function tsFmtRange(a, b){ var A = tsD(a), B = tsD(b); return MONS[A.getMonth()] + ' ' + A.getDate() + ' – ' + MONS[B.getMonth()] + ' ' + B.getDate() + ', ' + B.getFullYear(); }
+function tsHrs(n){ var v = Math.round((n || 0) * 100) / 100; return Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/0$/, ''); }
+function tsOpen(){ return TS_ROWS.find(function(r){ return !r.clock_out; }) || null; }
+function tsWorkedSoFar(r){
+  if(!r) return 0;
+  if(r.clock_out) return parseFloat(r.total_hours) || 0;
+  var now = Date.now(), lunch = 0;
+  if(r.lunch_in) lunch = ((r.lunch_out ? new Date(r.lunch_out).getTime() : now) - new Date(r.lunch_in).getTime()) / 3600000;
+  return Math.max(0, (now - new Date(r.clock_in).getTime()) / 3600000 - lunch);
+}
+async function tsInit(){
+  var en = await sb.rpc('my_timesheet_enabled');
+  TS_ENABLED = !!en.data;
+  if(!TS_ENABLED || !MY_ID) return;
+  document.getElementById('pgTime').style.display = '';
+  if(IS_ADMIN){
+    var b = document.getElementById('tsBanner');
+    b.innerHTML = '<b>Admin preview</b> — My Timesheet is only visible to admins until it goes live for everyone on <b>11 Nov 2026</b>. Clocking in here records real hours for you.';
+    b.style.display = '';
+  }
+  await tsLoad();
+}
+async function tsLoad(){
+  var from = tsPeriodOf(tsAdd(tsPeriodOf(tsToday()).from, -1)).from;
+  var res = await sb.from('time_clock').select('*').eq('employee_id', MY_ID).gte('work_date', from).order('clock_in', { ascending: true });
+  TS_ROWS = res.data || [];
+}
+function tsSetRange(r){
+  TS_RANGE = r;
+  document.querySelectorAll('.ts-filt button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-r') === r); });
+  tsRenderShifts();
+}
+function tsRender(){
+  tsRenderClock(); tsRenderTiles(); tsRenderShifts();
+  clearInterval(TS_TICK);
+  TS_TICK = setInterval(function(){
+    if(document.getElementById('timeWrap').style.display === 'none'){ clearInterval(TS_TICK); return; }
+    tsRenderClock(true);
+  }, 1000);
+}
+function tsDayInfo(iso){
+  var rows = TS_ROWS.filter(function(r){ return r.work_date === iso; });
+  var lv = (MY_ENTRIES || []).filter(function(e){ return e.leave_date === iso; });
+  var hol = (HOLIDAYS || []).find(function(h){ return h.date === iso; });
+  var worked = rows.reduce(function(a, r){ return a + tsWorkedSoFar(r); }, 0);
+  return { rows: rows, leave: lv, hol: hol, worked: worked, leaveHrs: lv.reduce(function(a, e){ return a + (parseFloat(e.hours) || 0); }, 0) };
+}
+function tsFirstDate(){ return TS_ROWS.length ? TS_ROWS[0].work_date : null; }
+function tsRenderClock(tickOnly){
+  var box = document.getElementById('tsClock'); if(!box) return;
+  var o = tsPhParts(), now = new Date();
+  var dateLbl = now.toLocaleDateString('en-US', { timeZone: TS_TZ, weekday:'long', day:'numeric', month:'long' });
+  var timeLbl = now.toLocaleTimeString('en-US', { timeZone: TS_TZ, hour:'numeric', minute:'2-digit' });
+  var open = tsOpen(), today = tsToday();
+  var todays = TS_ROWS.filter(function(r){ return r.work_date === today; });
+  var workedToday = todays.reduce(function(a, r){ return a + tsWorkedSoFar(r); }, 0);
+  var pct = Math.min(1, workedToday / 8);
+  var hh = Math.floor(workedToday), mm = Math.floor((workedToday - hh) * 60);
+  var onLunch = open && open.lunch_in && !open.lunch_out;
+  if(tickOnly && box.getAttribute('data-ready')){
+    box.querySelector('.ts-now').textContent = timeLbl;
+    box.querySelector('.ts-ring b').textContent = hh + ':' + String(mm).padStart(2, '0');
+    box.querySelector('.ts-ring').style.background = 'conic-gradient(' + (onLunch ? '#ff9500' : '#22a35a') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)';
+    return;
+  }
+  var state = open ? (onLunch ? '<span class="ts-state lunch"><i></i>On lunch since ' + tsTime(open.lunch_in) + '</span>' : '<span class="ts-state on"><i></i>Clocked in</span>') : '<span class="ts-state off"><i></i>' + (todays.length ? 'Shift complete' : 'Not clocked in') + '</span>';
+  var acts;
+  if(!open) acts = '<div class="ts-acts one"><button class="ts-btn ts-in" onclick="tsAct(\'in\', this)">Clock In</button></div>';
+  else if(onLunch) acts = '<div class="ts-acts"><button class="ts-btn ts-lunch" onclick="tsAct(\'lunch_end\', this)">End Lunch</button><button class="ts-btn ts-out" onclick="tsAct(\'out\', this)">Clock Out</button></div>';
+  else if(open.lunch_out) acts = '<div class="ts-acts one"><button class="ts-btn ts-out" onclick="tsAct(\'out\', this)">Clock Out</button></div>';
+  else acts = '<div class="ts-acts"><button class="ts-btn ts-lunch" onclick="tsAct(\'lunch_start\', this)">Start Lunch</button><button class="ts-btn ts-out" onclick="tsAct(\'out\', this)">Clock Out</button></div>';
+  var cur = open || todays[todays.length - 1];
+  var log = '<div class="ts-log">'
+    + '<div class="ts-ev' + (cur ? '' : ' dim') + '"><i style="background:#22a35a"></i>Clocked in<b>' + (cur ? tsTime(cur.clock_in) : '—') + '</b></div>'
+    + '<div class="ts-ev' + (cur && cur.lunch_in ? '' : ' dim') + '"><i style="background:#ffb340"></i>Lunch<b>' + (cur && cur.lunch_in ? tsTime(cur.lunch_in) + ' – ' + (cur.lunch_out ? tsTime(cur.lunch_out) : 'now') : '—') + '</b></div>'
+    + '<div class="ts-ev' + (cur && cur.clock_out ? '' : ' dim') + '"><i style="background:#d92d23"></i>Clocked out<b>' + (cur && cur.clock_out ? tsTime(cur.clock_out) : '—') + '</b></div></div>';
+  var note = open ? '<textarea class="ts-note" id="tsNote" maxlength="500" placeholder="✎ Add a note for this shift" onchange="tsSaveNote()">' + esc(open.note || '') + '</textarea>' : '';
+  box.innerHTML = '<div class="ts-date">' + dateLbl + '</div><div class="ts-now">' + timeLbl + '</div>'
+    + '<div class="ts-ring" style="background:conic-gradient(' + (onLunch ? '#ff9500' : '#22a35a') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)"><div><b>' + hh + ':' + String(mm).padStart(2, '0') + '</b><span>worked today</span></div></div>'
+    + state + acts + log + note + '<div class="ts-msg" id="tsMsg"></div>';
+  box.setAttribute('data-ready', '1');
+}
+async function tsAct(action, btn){
+  if(action === 'out'){
+    var open = tsOpen(), w = tsWorkedSoFar(open);
+    if(!confirm('Clock out now? You’ve worked ' + tsHrs(w) + ' hrs on this shift.')) return;
+  }
+  if(btn) btn.disabled = true;
+  var noteEl = document.getElementById('tsNote');
+  var res = await sb.rpc('time_clock_action', { p_action: action, p_note: noteEl ? noteEl.value : null });
+  if(res.error){ var m = document.getElementById('tsMsg'); if(m) m.textContent = res.error.message; if(btn) btn.disabled = false; return; }
+  await tsLoad();
+  tsRenderClock(); tsRenderTiles(); tsRenderShifts();
+}
+async function tsSaveNote(){
+  var el = document.getElementById('tsNote'); if(!el || !tsOpen()) return;
+  var res = await sb.rpc('time_clock_action', { p_action: 'note', p_note: el.value });
+  var m = document.getElementById('tsMsg'); if(m) m.textContent = res.error ? res.error.message : '';
+  if(!res.error){ var o = tsOpen(); if(o) o.note = el.value; }
+}
+function tsSum(from, to){
+  var today = tsToday(), first = tsFirstDate(), worked = 0, covered = 0, std = 0, ot = 0, missing = 0;
+  for(var d = from; d <= to; d = tsAdd(d, 1)){
+    var dow = tsD(d).getDay(); if(dow === 0 || dow === 6) continue;
+    std += 8;
+    var info = tsDayInfo(d);
+    worked += info.worked;
+    info.rows.forEach(function(r){ if(r.ot_status === 'pending') ot += parseFloat(r.ot_hours) || 0; });
+    covered += Math.min(8, info.worked + info.leaveHrs + (info.hol ? 8 : 0));
+    if(d < today && first && d >= first && !info.rows.length && !info.leave.length && !info.hol) missing++;
+  }
+  return { worked: worked, covered: covered, std: std, ot: ot, missing: missing };
+}
+function tsRenderTiles(){
+  var today = tsToday(), w = tsWeekOf(today), p = tsPeriodOf(today);
+  var ws = tsSum(w.from, tsAdd(w.from, 4)), ps = tsSum(p.from, p.to);
+  document.getElementById('tsAsOf').textContent = 'Pay period ' + tsFmtRange(p.from, p.to) + ' · paid ' + MONS[tsD(p.pay).getMonth()] + ' ' + tsD(p.pay).getDate();
+  document.getElementById('tsTiles').innerHTML =
+    '<div class="tile ts-week"><div class="tile-lbl">This Week</div><div class="tile-val">' + tsHrs(ws.worked) + ' <span style="font-size:15px;opacity:.8;font-weight:700">/ ' + ws.std + ' hrs</span></div>'
+    + '<div class="tile-unit">' + tsFmtRange(w.from, tsAdd(w.from, 4)) + '</div><div class="tile-prog"><i style="width:' + Math.min(100, ws.covered / ws.std * 100).toFixed(0) + '%"></i></div>'
+    + '<div class="tile-foot"><span>' + tsHrs(ws.covered) + ' of ' + ws.std + ' hrs covered</span>' + (ws.ot ? '<span class="tile-days">+' + tsHrs(ws.ot) + ' hrs OT pending</span>' : '') + '</div></div>'
+    + '<div class="tile ts-per"><div class="tile-lbl">This Pay Period</div><div class="tile-val">' + tsHrs(ps.worked) + ' <span style="font-size:15px;opacity:.8;font-weight:700">hrs worked</span></div>'
+    + '<div class="tile-unit">' + tsHrs(ps.covered) + ' of ' + ps.std + ' hrs covered incl. leave &amp; holidays</div>'
+    + '<div class="tile-foot"><span>' + tsFmtRange(p.from, p.to) + '</span>' + (ps.missing ? '<span class="tile-days">' + ps.missing + ' missing day' + (ps.missing !== 1 ? 's' : '') + '</span>' : '') + '</div></div>';
+}
+function tsRenderShifts(){
+  var today = tsToday(), r;
+  if(TS_RANGE === 'week'){ var w = tsWeekOf(today); r = { from: w.from, to: w.to }; }
+  else if(TS_RANGE === 'last'){ var cur = tsPeriodOf(today); r = tsPeriodOf(tsAdd(cur.from, -1)); }
+  else r = tsPeriodOf(today);
+  document.getElementById('tsRangeLbl').textContent = tsFmtRange(r.from, r.to);
+  var first = tsFirstDate(), end = r.to < today ? r.to : today, html = '';
+  for(var d = end; d >= r.from; d = tsAdd(d, -1)){
+    var dd = tsD(d), dow = dd.getDay(), info = tsDayInfo(d), isWk = dow === 0 || dow === 6;
+    if(isWk && !info.rows.length) continue;
+    var chip = '', sub = '', hrs = '—';
+    if(info.rows.length){
+      var open = info.rows.find(function(x){ return !x.clock_out; });
+      sub = info.rows.map(function(x){ return tsTime(x.clock_in) + ' → ' + (x.clock_out ? tsTime(x.clock_out) : 'now') + (x.lunch_in ? ' · lunch ' + tsHrs(((x.lunch_out ? new Date(x.lunch_out) : new Date()) - new Date(x.lunch_in)) / 3600000) + 'h' : ''); }).join('; ');
+      var st = info.rows.map(function(x){ return x.ot_status; });
+      chip = open ? '<span class="sc s-live">● On Shift</span>'
+        : st.indexOf('pending') > -1 ? '<span class="sc s-pend">OT Pending</span>'
+        : st.indexOf('approved') > -1 ? '<span class="sc s-ok">OT Approved</span>'
+        : st.indexOf('rejected') > -1 ? '<span class="sc s-no">OT Not Approved</span>'
+        : '<span class="sc s-done">Completed</span>';
+      hrs = tsHrs(info.worked) + '<small> hrs</small>';
+      if(info.leave.length) sub += ' · ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
+    } else if(info.leave.length){
+      chip = '<span class="sc s-lv">' + esc(info.leave[0].leave_type) + '</span>'; sub = tsHrs(info.leaveHrs) + 'h leave';
+    } else if(info.hol){
+      chip = '<span class="sc s-ph">Public Holiday</span>'; sub = esc(info.hol.name);
+    } else if(d === today){
+      chip = '<span class="sc s-done">Today</span>'; sub = 'Not clocked in yet';
+    } else if(first && d >= first){
+      chip = '<span class="sc s-no">No Hours</span>'; sub = 'Message payroll if you worked this day';
+    } else continue;
+    html += '<div class="ts-row"><div class="ts-d"><b>' + dd.getDate() + '</b><span>' + DOWS[dow] + '</span></div>'
+      + '<div style="min-width:0"><div class="ts-t">' + dd.toLocaleDateString('en-US', { weekday:'long', day:'numeric', month:'long' }) + '</div><div class="ts-s">' + sub + '</div></div>'
+      + '<div class="ts-c">' + chip + '</div><div class="ts-h">' + hrs + '</div></div>';
+  }
+  document.getElementById('tsShifts').innerHTML = html || '<div class="empty">No shifts yet for this period. Clock in to start your first one.</div>';
 }
 function renderPayTiles(){
   var el = document.getElementById('payTiles');
