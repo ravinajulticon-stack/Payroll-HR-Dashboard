@@ -1282,6 +1282,14 @@ html.v2 .t-blue{ --tbg:linear-gradient(150deg,#effbc9,#e2f6a0); --tb:#dff39a; --
 html.v2 .t-indigo, html.v2 .t-purple, html.v2 .t-violet{ --tbg:linear-gradient(160deg,#fff1e8,#ffe2d0); --tb:#ffd0b5; --tc:#c24d10; }
 html.v2 .t-green, html.v2 .t-teal{ --tbg:linear-gradient(150deg,#f6fde0,#e9f9b5); --tb:#dff39a; --tc:#3d5200; }
 html.v2 .t-orange{ --tbg:linear-gradient(150deg,#ffe9dc,#ffd0b5); --tb:#ffc39f; --tc:#c24d10; }
+html.v2 .lv-entry{ border-radius:7px !important; font-weight:600; }
+html.v2 .lv-entry.al{ background:#effbc9 !important; color:#3d5200 !important; }
+html.v2 .lv-entry.pl{ background:#ffe9dc !important; color:#c24d10 !important; }
+html.v2 .lv-entry.ul{ background:#fff3c4 !important; color:#8a6100 !important; }
+html.v2 .lv-entry.other{ background:#f1f2f5 !important; color:#141418 !important; }
+html.v2 .eyc-cal-table td.today{ border-color:#141418 !important; box-shadow:0 0 0 2px rgba(20,20,24,.25) !important; color:#141418 !important; }
+html.v2 .rehire-btn{ background:#effbc9 !important; color:#3d5200 !important; border-color:#dff39a !important; } html.v2 .rehire-btn:hover{ background:#141418 !important; color:#fff !important; }
+html.v2 .lv-cal-cell{ border-color:#eceef1 !important; }
 /* ---------- SIDEBAR VARIANT ---------- */
 html.v2side .v2-side{ position:fixed; left:12px; top:12px; bottom:12px; width:224px; z-index:200; border-radius:26px; padding:18px 12px; display:flex; flex-direction:column; gap:14px;
   background:radial-gradient(260px 220px at 0% 0%, rgba(211,242,92,.18), transparent 70%), radial-gradient(260px 260px at 100% 100%, rgba(255,116,56,.18), transparent 70%), #141418; color:#fff; box-shadow:0 20px 40px -20px rgba(0,0,0,.5); overflow:auto; }
@@ -1294,9 +1302,14 @@ html.v2side .v2-side .seg-btn:hover:not(.active){ background:rgba(255,255,255,.0
 html.v2side .v2-side .seg-btn .seg-ic{ order:-1; width:28px; height:28px; border-radius:9px; background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; }
 html.v2side .v2-side .seg-btn.active{ background:var(--lime) !important; color:#141418 !important; box-shadow:none !important; }
 html.v2side .v2-side .seg-btn.active .seg-ic{ background:#141418; color:#fff !important; }
-html.v2side .v2-side .v2-foot{ margin-top:auto; display:flex; flex-direction:column; gap:8px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); }
-html.v2side .v2-side .v2-foot a, html.v2side .v2-side .v2-foot button{ display:block; text-align:center; font-size:11.5px; font-weight:700; color:#fff; background:rgba(255,255,255,.1); border:none; border-radius:999px; padding:8px 12px; text-decoration:none; cursor:pointer; font-family:inherit; }
-html.v2side .v2-side .v2-foot a:hover, html.v2side .v2-side .v2-foot button:hover{ background:#fff; color:#141418; }
+html.v2side .v2-side .v2-foot{ margin-top:auto; display:flex; flex-direction:column; gap:3px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); }
+html.v2side .v2-side .v2-foot .v2-lbl{ margin-bottom:4px; }
+html.v2side .v2-side .v2-link, html.v2side .v2-side .v2-out{ display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:14px; font-size:12.5px; font-weight:600; color:rgba(255,255,255,.72); text-decoration:none; background:none; border:none; cursor:pointer; font-family:inherit; text-align:left; transition:background .2s, color .2s; }
+html.v2side .v2-side .v2-link:hover{ background:rgba(255,255,255,.08); color:#fff; }
+html.v2side .v2-side .v2-ic{ width:28px; height:28px; border-radius:9px; background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; flex:none; }
+html.v2side .v2-side .v2-out{ margin-top:8px; border:1px solid rgba(255,255,255,.12); }
+html.v2side .v2-side .v2-out:hover{ background:#ff7438; border-color:#ff7438; color:#fff; }
+html.v2side .v2-side .v2-out:hover .v2-ic{ background:rgba(255,255,255,.2); }
 html.v2side #appRoot > .titlebar, html.v2side #appRoot > .toolbar, html.v2side #appRoot > .main{ margin-left:248px; }
 html.v2side .titlebar.nav-dark{ background:transparent !important; position:static; padding-top:18px !important; }
 html.v2side .titlebar.nav-dark .nav-brand{ display:none; }
@@ -1308,10 +1321,10 @@ html.v2side .toolbar.nav-dark{ background:transparent !important; box-shadow:non
 html.v2side .toolbar.nav-dark .toolbar-sep{ display:none; }
 html.v2side .toolbar.nav-dark .rec-count{ color:#5f636e !important; }
 @media print{ html.v2side .v2-side{ display:none !important; } html.v2side #appRoot > .titlebar, html.v2side #appRoot > .toolbar, html.v2side #appRoot > .main{ margin-left:0 !important; } }
-@media(max-width:900px){ html.v2side .v2-side{ width:72px; } html.v2side .v2-side .seg-txt, html.v2side .v2-side .nav-brand > div:last-child, html.v2side .v2-side .v2-lbl, html.v2side .v2-side .v2-foot{ display:none; } html.v2side #appRoot > .titlebar, html.v2side #appRoot > .toolbar, html.v2side #appRoot > .main{ margin-left:96px; } }
+@media(max-width:900px){ html.v2side .v2-side{ width:72px; } html.v2side .v2-side .seg-txt, html.v2side .v2-side .nav-brand > div:last-child, html.v2side .v2-side .v2-lbl, html.v2side .v2-side .v2-link span:last-child, html.v2side .v2-side .v2-out span:last-child{ display:none; } html.v2side .v2-side .v2-link, html.v2side .v2-side .v2-out{ justify-content:center; padding:8px 0; } html.v2side #appRoot > .titlebar, html.v2side #appRoot > .toolbar, html.v2side #appRoot > .main{ margin-left:96px; } }
 </style>
 <script>
-(function(){ var t = new URLSearchParams(location.search).get('theme'); if(t !== 'v2' && t !== 'v2side') return;
+(function(){ var t = new URLSearchParams(location.search).get('theme') || 'v2side'; window.__V2 = (t === 'v2' || t === 'v2side'); if(!window.__V2) return;
   document.documentElement.classList.add('v2'); if(t === 'v2side') document.documentElement.classList.add('v2side');
   if(t !== 'v2side') return;
   document.addEventListener('DOMContentLoaded', function(){
@@ -1321,9 +1334,13 @@ html.v2side .toolbar.nav-dark .rec-count{ color:#5f636e !important; }
     var lbl = document.createElement('div'); lbl.className = 'v2-lbl'; lbl.textContent = 'Menu'; side.appendChild(lbl);
     var seg = root.querySelector('.toolbar .seg-ctrl'); if(seg) side.appendChild(seg);
     var foot = document.createElement('div'); foot.className = 'v2-foot';
-    var ml = root.querySelector('.myleave-link'), out = root.querySelector('.titlebar .auth-out');
-    if(ml){ var a = document.createElement('a'); a.href = ml.getAttribute('href'); a.textContent = 'My Leave →'; foot.appendChild(a); }
-    if(out){ var b = document.createElement('button'); b.textContent = 'Sign out'; b.onclick = function(){ out.click(); }; foot.appendChild(b); }
+    var ico = { time:'<circle cx="8" cy="8" r="6"/><path d="M8 4.6V8l2.3 1.5"/>', leave:'<rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/>', pay:'<path d="M3.6 1.9h8.8v12.2l-1.8-1.1-1.8 1.1-1.6-1.1-1.8 1.1-1.8-1.1z"/><path d="M6 5.4h4M6 8.3h4"/>', out:'<path d="M6 3H3v10h3M10 5l3 3-3 3M13 8H6"/>' };
+    var svg = function(k){ return '<span class="v2-ic"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + ico[k] + '</svg></span>'; };
+    var lbl2 = document.createElement('div'); lbl2.className = 'v2-lbl'; lbl2.textContent = 'My Pages'; foot.appendChild(lbl2);
+    [['time','My Timesheet','team.html#timesheet'],['leave','My Leave','team.html#leave'],['pay','My Payslips','team.html#payslips']].forEach(function(x){
+      var a = document.createElement('a'); a.className = 'v2-link'; a.href = x[2]; a.innerHTML = svg(x[0]) + '<span>' + x[1] + '</span>'; foot.appendChild(a); });
+    var out = root.querySelector('.titlebar .auth-out');
+    if(out){ var b = document.createElement('button'); b.className = 'v2-out'; b.innerHTML = svg('out') + '<span>Sign out</span>'; b.onclick = function(){ out.click(); }; foot.appendChild(b); }
     side.appendChild(foot); root.insertBefore(side, root.firstChild);
     var tb = root.querySelector('.titlebar'); if(tb){ var h = document.createElement('div'); h.className = 'v2-pagetitle'; h.id = 'v2PageTitle'; tb.insertBefore(h, tb.firstChild); }
     var setT = function(){ var a = side.querySelector('.seg-btn.active .seg-txt'); var h = document.getElementById('v2PageTitle'); if(h && a) h.textContent = a.textContent; };
@@ -2602,9 +2619,9 @@ function renderTsYearCal(){
         worked++; totalHrs += h;
         if(h > 8){ otHrs += (h - 8); style = 'background:#af52de;border-color:#8e3fbe;color:#fff;'; tip += ' \u2014 ' + h + 'h'; }
         else if(h < 8){ partial++; style = 'background:#ff9500;border-color:#c26f00;color:#fff;'; tip += ' \u2014 ' + h + 'h'; }
-        else { style = 'background:#007aff;border-color:#0056b3;color:#fff;'; tip += ' \u2014 8h'; }
-      } else if(leaveBy[ds]){ style = 'background:#34c759;border-color:#248a3d;color:#fff;'; tip += ' \u2014 ' + leaveBy[ds]; }
-      else if(holiday[ds]){ style = 'background:#5ac8fa;border-color:#2f9fd4;color:#fff;'; tip += ' \u2014 ' + holiday[ds]; }
+        else { style = window.__V2 ? 'background:#c2e83c;border-color:#9fd61c;color:#141418;' : 'background:#007aff;border-color:#0056b3;color:#fff;'; tip += ' \u2014 8h'; }
+      } else if(leaveBy[ds]){ style = window.__V2 ? 'background:#ff7438;border-color:#f2622a;color:#fff;' : 'background:#34c759;border-color:#248a3d;color:#fff;'; tip += ' \u2014 ' + leaveBy[ds]; }
+      else if(holiday[ds]){ style = window.__V2 ? 'background:#ffd0b5;border-color:#ffc39f;color:#141418;' : 'background:#5ac8fa;border-color:#2f9fd4;color:#fff;'; tip += ' \u2014 ' + holiday[ds]; }
       rows += '<td class="' + cls + '" style="' + style + '" title="' + tip + '">' + dayNum + '</td>';
     }
     rows += '</tr>';
@@ -2614,16 +2631,16 @@ function renderTsYearCal(){
   var empOpts = empOptions(tsycEmp, '');
   var yrOpts = years.map(function(y){ return '<option value="' + y + '"' + (y===tsycYear?' selected':'') + '>' + y + '</option>'; }).join('');
   var boxes = ''
-    + '<div class="eyc-count-box" style="border-color:#007aff;background:rgba(0,122,255,0.08)"><div class="eyc-count-val" style="color:#0056b3">' + worked + '</div><div class="eyc-count-lbl">Days worked</div></div>'
+    + '<div class="eyc-count-box" style="' + (window.__V2 ? 'border-color:#c2e83c;background:#f9fde8' : 'border-color:#007aff;background:rgba(0,122,255,0.08)') + '"><div class="eyc-count-val" style="color:' + (window.__V2 ? '#3d5200' : '#0056b3') + '">' + worked + '</div><div class="eyc-count-lbl">Days worked</div></div>'
     + '<div class="eyc-count-box" style="border-color:#8e8e93;background:rgba(142,142,147,0.08)"><div class="eyc-count-val">' + fmtHrs(totalHrs) + '</div><div class="eyc-count-lbl">Total hours</div></div>'
     + '<div class="eyc-count-box" style="border-color:#af52de;background:rgba(175,82,222,0.08)"><div class="eyc-count-val" style="color:#8e3fbe">' + (otHrs ? fmtHrs(otHrs) : '0') + '</div><div class="eyc-count-lbl">Overtime hrs</div></div>'
     + '<div class="eyc-count-box" style="border-color:#ff9500;background:rgba(255,149,0,0.08)"><div class="eyc-count-val" style="color:#a35b00">' + partial + '</div><div class="eyc-count-lbl">Short days</div></div>';
   var legend = '<div class="ov-legend" style="padding:0 0 10px">'
-    + '<span class="ov-leg"><i style="background:#007aff"></i>Full day</span>'
+    + '<span class="ov-leg"><i style="background:' + (window.__V2 ? '#c2e83c' : '#007aff') + '"></i>Full day</span>'
     + '<span class="ov-leg"><i style="background:#af52de"></i>Overtime</span>'
     + '<span class="ov-leg"><i style="background:#ff9500"></i>Short day</span>'
-    + '<span class="ov-leg"><i style="background:#34c759"></i>Leave</span>'
-    + '<span class="ov-leg"><i style="background:#5ac8fa"></i>Public holiday</span></div>';
+    + '<span class="ov-leg"><i style="background:' + (window.__V2 ? '#ff7438' : '#34c759') + '"></i>Leave</span>'
+    + '<span class="ov-leg"><i style="background:' + (window.__V2 ? '#ffd0b5' : '#5ac8fa') + '"></i>Public holiday</span></div>';
   host.innerHTML = '<div class="card">'
     + '<div class="card-header"><span class="card-title">Timesheet \u2014 Yearly View</span>'
     +   '<span class="rec-count">Days worked per employee</span></div>'
@@ -3148,7 +3165,15 @@ function renderLeaveCalendar(entries, periodStr){
     return `<div class="lv-cal-month"><div class="lv-cal-title">${MN[m-1]} ${y}</div><table class="lv-cal-table"><thead><tr>${DN.map(d=>'<th>'+d+'</th>').join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
   }).join('');
 }
-const EYC_TYPE_COLORS = {
+const EYC_TYPE_COLORS = window.__V2 ? {
+  'Annual Leave':'#9fd61c',
+  'Personal Leave':'#ff7438',
+  'Unpaid Leave':'#ffb340',
+  'Holiday Leave':'#ffc39f',
+  'Compassionate Leave':'#8a6100',
+  'Maternity Leave':'#c24d10',
+  'Parental Leave':'#8e8e93'
+} : {
   'Annual Leave':'#007aff',
   'Personal Leave':'#34c759',
   'Unpaid Leave':'#ff9500',
