@@ -1505,7 +1505,7 @@ function tsReportData(r){
       info.rows.forEach(function(x){
         var w = tsWorkedSoFar(x), o = x.clock_out ? (parseFloat(x.ot_hours) || 0) : Math.max(0, w - 8);
         reg += w - o;
-        if(x.ot_status === 'approved') ot += o; else if(o > 0) pend += o;
+        if(x.ot_status === 'approved') ot += o; else if(x.ot_status !== 'rejected' && o > 0) pend += o;
         if(x.ot_status && x.ot_status !== 'none') otSt = x.ot_status;
       });
     } else if(info.dash != null) reg = info.dash;
