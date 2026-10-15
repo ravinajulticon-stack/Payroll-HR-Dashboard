@@ -1457,7 +1457,11 @@ function tmCalc(){
   if(!t.cin || !t.cout){ el.innerHTML = '<span>' + (t.cin ? 'No clock out — the shift stays open' : 'Enter clock in and clock out') + '</span><span></span>'; return; }
   var lunch = (t.lin && t.lout) ? (t.lout - t.lin) / 3600000 : 0;
   var w = Math.max(0, (t.cout - t.cin) / 3600000 - lunch), ot = Math.max(0, w - 8);
-  el.innerHTML = '<span>Worked: <b>' + tsHrs(w) + ' hrs</b>' + (lunch ? ' · Lunch ' + tsHrs(lunch) + ' hr' + (lunch !== 1 ? 's' : '') + ' Unpaid' : ' · No Lunch') + '</span><span>OT: <b>' + tsHrs(ot) + '</b>' + (ot > 0 ? ' (needs approval)' : '') + '</span>';
+  // unchanged shift (within a minute) keeps its real overtime figure and status; a change will need approval again
+  var same = TM_EDIT && TM_EDIT.clock_out && Math.abs((parseFloat(TM_EDIT.total_hours) || 0) - w) < 0.02;
+  var otShow = same ? (parseFloat(TM_EDIT.ot_hours) || 0) : ot;
+  var otNote = otShow > 0 ? (same ? ' (' + ({ approved:'Approved', rejected:'Not Approved', pending:'Needs Approval' }[TM_EDIT.ot_status] || 'Needs Approval') + ')' : ' (Will Need Approval)') : '';
+  el.innerHTML = '<span>Worked: <b>' + tsHrs(same ? parseFloat(TM_EDIT.total_hours) : w) + ' hrs</b>' + (lunch ? ' · Lunch ' + tsHrs(lunch) + ' hr' + (lunch !== 1 ? 's' : '') + ' Unpaid' : ' · No Lunch') + '</span><span>OT: <b>' + tsHrs(otShow) + '</b>' + otNote + '</span>';
 }
 async function tmSave(){
   var t = tmTimes(), err = document.getElementById('fxErr'), emp = TM_EDIT ? TM_EDIT.employee_id : document.getElementById('fxEmp').value;
