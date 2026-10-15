@@ -1391,7 +1391,7 @@ function tmRender(){
     ? '<div class="tm-row h"><div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div class="r">Hours</div><div class="r">OT</div><div>Status</div><div></div></div>'
       + rows.map(function(r){
           var st = tmStatus(r), lun = r.lunch_in ? 'Lunch ' + tsTime(r.lunch_in) + ' – ' + (r.lunch_out ? tsTime(r.lunch_out) : 'now') : '';
-          var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' && r.ot_review_note ? 'OT Not Approved: ' + r.ot_review_note : ''].filter(Boolean).join(' | ');
+          var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' ? 'OT Not Approved' + (r.ot_review_note ? ': ' + r.ot_review_note : '') : ''].filter(Boolean).join(' | ');
           var tip = tipT ? ' title="' + esc(tipT) + '"' : '';
           var out = r.clock_out ? tsTime(r.clock_out) : (st === 'fix' ? '<span class="sc s-no">Forgot to Clock Out</span>' : '—');
           var hrs = r.clock_out ? tsHrs(r.total_hours) : (st === 'fix' ? '—' : tsHrs(tsWorkedSoFar(r)));
@@ -1401,7 +1401,7 @@ function tmRender(){
 }
 async function tmReview(ids, status, btn){
   var note = null;
-  if(status === 'rejected'){ note = prompt('Reason for not approving this overtime (the staff member will see this):', ''); if(note === null) return; }
+  if(status === 'rejected'){ note = prompt('Reason for not approving this overtime (optional; the staff member will see it).\n\nLeave blank and press OK to reject without a reason.', ''); if(note === null) return; }
   if(btn) btn.disabled = true;
   var r = await sb.rpc('admin_ot_review', { p_ids: ids, p_status: status, p_note: note });
   if(r.error){ alert(r.error.message); if(btn) btn.disabled = false; return; }
@@ -1586,7 +1586,7 @@ function tsRenderShifts(){
         : '<span class="sc s-done">Completed</span>';
       hrs = tsHrs(info.worked) + '<small> hrs</small>';
       if(info.rows.some(function(x){ return x.edited_by; })) sub += ' · Adjusted by Payroll';
-      info.rows.forEach(function(x){ if(x.ot_status === 'rejected' && x.ot_review_note) sub += ' · OT Not Approved: ' + esc(x.ot_review_note); });
+      info.rows.forEach(function(x){ if(x.ot_status === 'rejected') sub += ' · OT Not Approved' + (x.ot_review_note ? ': ' + esc(x.ot_review_note) : ''); });
       if(info.leave.length) sub += ' · ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
     } else if(info.dash != null && info.dash > 0){
       chip = '<span class="sc s-done">Recorded</span>'; sub = 'From the Payroll Timesheet';
