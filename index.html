@@ -1369,7 +1369,7 @@ html.v2 .auth-btn:hover{ background:#d3f25c !important; color:#141418 !important
     [['time','My Timesheet','team.html#timesheet'],['leave','My Leave','team.html#leave'],['pay','My Payslips','team.html#payslips']].forEach(function(x){
       var a = document.createElement('a'); a.className = 'v2-link'; a.href = x[2]; a.innerHTML = svg(x[0]) + '<span>' + x[1] + '</span>'; foot.appendChild(a); });
     var out = root.querySelector('.titlebar .auth-out');
-    if(out){ var b = document.createElement('button'); b.className = 'v2-out'; b.innerHTML = svg('out') + '<span>Sign out</span>'; b.onclick = function(){ out.click(); }; foot.appendChild(b); }
+    if(out){ var b = document.createElement('button'); b.className = 'v2-out'; b.innerHTML = svg('out') + '<span>Sign Out</span>'; b.onclick = function(){ out.click(); }; foot.appendChild(b); }
     side.appendChild(foot); root.insertBefore(side, root.firstChild);
     var tb = root.querySelector('.titlebar'); if(tb){ var h = document.createElement('div'); h.className = 'v2-pagetitle'; h.id = 'v2PageTitle'; tb.insertBefore(h, tb.firstChild); }
     var setT = function(){ var a = side.querySelector('.seg-btn.active .seg-txt'); var h = document.getElementById('v2PageTitle'); if(h && a) h.textContent = a.textContent; };
@@ -1404,7 +1404,7 @@ html.v2 .auth-btn:hover{ background:#d3f25c !important; color:#141418 !important
     <input type="email" id="authEmail" class="auth-input" autocomplete="username" placeholder="you@digitaldoorlocks.com.au">
     <label class="auth-label">Password</label>
     <input type="password" id="authPassword" class="auth-input" autocomplete="current-password" onkeydown="if(event.key==='Enter') authSignIn()">
-    <button id="authBtn" class="auth-btn" onclick="authSignIn()">Sign in</button>
+    <button id="authBtn" class="auth-btn" onclick="authSignIn()">Sign In</button>
     <div id="authMsg" class="auth-msg"></div>
   </div>
 </div>
@@ -1413,11 +1413,11 @@ html.v2 .auth-btn:hover{ background:#d3f25c !important; color:#141418 !important
   <div class="auth-card">
     <div class="auth-brand">Set a new password</div>
     <div class="auth-sub">Choose a password for your account</div>
-    <label class="auth-label">New password</label>
+    <label class="auth-label">New Password</label>
     <input type="password" id="newPass1" class="auth-input" autocomplete="new-password">
-    <label class="auth-label">Confirm password</label>
+    <label class="auth-label">Confirm Password</label>
     <input type="password" id="newPass2" class="auth-input" autocomplete="new-password" onkeydown="if(event.key==='Enter') authSetPassword()">
-    <button class="auth-btn" onclick="authSetPassword()">Save password</button>
+    <button class="auth-btn" onclick="authSetPassword()">Save Password</button>
     <div id="resetMsg" class="auth-msg"></div>
   </div>
 </div>
@@ -1434,7 +1434,7 @@ html.v2 .auth-btn:hover{ background:#d3f25c !important; color:#141418 !important
     <a href="team.html" class="myleave-link">My Leave →</a>
     <div class="nav-av" id="navAv"></div>
     <div><div class="nav-name" id="navName"></div><span class="auth-who" id="authWho"></span></div>
-    <button class="auth-out" onclick="authSignOut()" title="Sign out">Sign out</button>
+    <button class="auth-out" onclick="authSignOut()" title="Sign out">Sign Out</button>
     <span class="ph-flag" title="Philippines team"><svg viewBox="0 0 24 16" width="19" height="13" aria-label="Philippine flag"><rect width="24" height="8" fill="#0038a8"/><rect y="8" width="24" height="8" fill="#ce1126"/><path d="M0 0 L12 8 L0 16 Z" fill="#ffffff"/><circle cx="3.6" cy="8" r="2" fill="#fcd116"/><path d="M3.6 4.1l.42 1.3h1.37l-1.1.8.42 1.3-1.11-.8-1.11.8.42-1.3-1.1-.8h1.37z" fill="#fcd116"/><path d="M3.6 11.9l.42-1.3h1.37l-1.1-.8.42-1.3-1.11.8-1.11-.8.42 1.3-1.1.8h1.37z" fill="#fcd116"/><circle cx="1.1" cy="1.2" r="0.62" fill="#fcd116"/><circle cx="1.1" cy="14.8" r="0.62" fill="#fcd116"/><circle cx="9.6" cy="8" r="0.62" fill="#fcd116"/></svg></span>
   </div>
 </div>
@@ -2186,7 +2186,7 @@ function leavePayoutCell(rec){
   }
   // Otherwise compute from current Annual Leave balance (active / Sep+ exits)
   const payout = annualLeavePayoutNative(rec);
-  if(payout === null) return '<span style="color:var(--amber)" title="No Annual Leave balance on record for this employee">Not set</span>';
+  if(payout === null) return '<span style="color:var(--amber)" title="No Annual Leave balance on record for this employee">Not Set</span>';
   const symbol = rec.currency === 'USD' ? '$' : '\u20b1';
   return `<span title="Annual Leave balance \u00d7 Basic Pay Rate as of exit date">${symbol}${fmtMoney(payout)}</span>`;
 }
@@ -2671,19 +2671,19 @@ function renderTsYearCal(){
   var empOpts = empOptions(tsycEmp, '');
   var yrOpts = years.map(function(y){ return '<option value="' + y + '"' + (y===tsycYear?' selected':'') + '>' + y + '</option>'; }).join('');
   var boxes = ''
-    + '<div class="eyc-count-box" style="' + (window.__V2 ? 'border-color:#c2e83c;background:#f9fde8' : 'border-color:#007aff;background:rgba(0,122,255,0.08)') + '"><div class="eyc-count-val" style="color:' + (window.__V2 ? '#3d5200' : '#0056b3') + '">' + worked + '</div><div class="eyc-count-lbl">Days worked</div></div>'
-    + '<div class="eyc-count-box" style="border-color:#8e8e93;background:rgba(142,142,147,0.08)"><div class="eyc-count-val">' + fmtHrs(totalHrs) + '</div><div class="eyc-count-lbl">Total hours</div></div>'
-    + '<div class="eyc-count-box" style="border-color:#af52de;background:rgba(175,82,222,0.08)"><div class="eyc-count-val" style="color:#8e3fbe">' + (otHrs ? fmtHrs(otHrs) : '0') + '</div><div class="eyc-count-lbl">Overtime hrs</div></div>'
-    + '<div class="eyc-count-box" style="border-color:#ff9500;background:rgba(255,149,0,0.08)"><div class="eyc-count-val" style="color:#a35b00">' + partial + '</div><div class="eyc-count-lbl">Short days</div></div>';
+    + '<div class="eyc-count-box" style="' + (window.__V2 ? 'border-color:#c2e83c;background:#f9fde8' : 'border-color:#007aff;background:rgba(0,122,255,0.08)') + '"><div class="eyc-count-val" style="color:' + (window.__V2 ? '#3d5200' : '#0056b3') + '">' + worked + '</div><div class="eyc-count-lbl">Days Worked</div></div>'
+    + '<div class="eyc-count-box" style="border-color:#8e8e93;background:rgba(142,142,147,0.08)"><div class="eyc-count-val">' + fmtHrs(totalHrs) + '</div><div class="eyc-count-lbl">Total Hours</div></div>'
+    + '<div class="eyc-count-box" style="border-color:#af52de;background:rgba(175,82,222,0.08)"><div class="eyc-count-val" style="color:#8e3fbe">' + (otHrs ? fmtHrs(otHrs) : '0') + '</div><div class="eyc-count-lbl">Overtime Hrs</div></div>'
+    + '<div class="eyc-count-box" style="border-color:#ff9500;background:rgba(255,149,0,0.08)"><div class="eyc-count-val" style="color:#a35b00">' + partial + '</div><div class="eyc-count-lbl">Short Days</div></div>';
   var legend = '<div class="ov-legend" style="padding:0 0 10px">'
-    + '<span class="ov-leg"><i style="background:' + (window.__V2 ? '#c2e83c' : '#007aff') + '"></i>Full day</span>'
+    + '<span class="ov-leg"><i style="background:' + (window.__V2 ? '#c2e83c' : '#007aff') + '"></i>Full Day</span>'
     + '<span class="ov-leg"><i style="background:#af52de"></i>Overtime</span>'
-    + '<span class="ov-leg"><i style="background:#ff9500"></i>Short day</span>'
+    + '<span class="ov-leg"><i style="background:#ff9500"></i>Short Day</span>'
     + '<span class="ov-leg"><i style="background:' + (window.__V2 ? '#ff7438' : '#34c759') + '"></i>Leave</span>'
-    + '<span class="ov-leg"><i style="background:' + (window.__V2 ? '#ffd0b5' : '#5ac8fa') + '"></i>Public holiday</span></div>';
+    + '<span class="ov-leg"><i style="background:' + (window.__V2 ? '#ffd0b5' : '#5ac8fa') + '"></i>Public Holiday</span></div>';
   host.innerHTML = '<div class="card">'
     + '<div class="card-header"><span class="card-title">Timesheet \u2014 Yearly View</span>'
-    +   '<span class="rec-count">Days worked per employee</span></div>'
+    +   '<span class="rec-count">Days Worked per Employee</span></div>'
     + '<div class="eyc-topbar"><div class="eyc-name-year">'
     +   '<div><label>Name</label><select class="search-box" onchange="tsycSetEmp(this.value)">' + empOpts + '</select></div>'
     +   '<div><label>Year</label><select class="search-box" onchange="tsycSetYear(this.value)">' + yrOpts + '</select></div>'
@@ -3740,8 +3740,8 @@ function renderLoansPanel(){
     var paid = paidSum.count;
     var remaining = Math.max(0, total - paid);
     var sym = l.currency === 'USD' ? '$' : "₱";
-    var status = paid >= total ? '<span style="color:var(--green)">Fully paid</span>'
-      : (idx < 1 ? '<span style="color:var(--text-3)">Not started</span>'
+    var status = paid >= total ? '<span style="color:var(--green)">Fully Paid</span>'
+      : (idx < 1 ? '<span style="color:var(--text-3)">Not Started</span>'
       : '<span style="color:var(--blue)">' + paid + ' of ' + total + ' paid</span>');
     var lastAmt = loanInstallmentAmount(l, total);
     var pct = total ? Math.round(paid/total*100) : 0;
@@ -3770,7 +3770,7 @@ function renderLoansPanel(){
     +   '<span class="rec-count">Deduction per period = loan amount ÷ installments</span></div>'
     +   '<div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">'
     +     '<div><label class="wk-label" style="display:block;margin-bottom:4px">Employee</label>'
-    +       '<select class="search-box" id="loanEmployeeSelect" style="min-width:170px"><option value="">Choose employee</option>' + opts + '</select></div>'
+    +       '<select class="search-box" id="loanEmployeeSelect" style="min-width:170px"><option value="">Choose Employee</option>' + opts + '</select></div>'
     +     '<div><label class="wk-label" style="display:block;margin-bottom:4px">Loan Name</label>'
     +       '<input type="text" class="search-box" id="loanNameInput" placeholder="e.g. Laptop Loan" style="width:170px"></div>'
     +     '<div><label class="wk-label" style="display:block;margin-bottom:4px">Amount</label>'
@@ -3998,12 +3998,12 @@ function renderLocator(){
     +   '<div class="ov-panel"><div class="ov-panel-lbl">Luzon</div><div class="ov-panel-row"><span class="ov-panel-val">' + groups.Luzon + '</span></div></div>'
     +   '<div class="ov-panel"><div class="ov-panel-lbl">Visayas</div><div class="ov-panel-row"><span class="ov-panel-val">' + groups.Visayas + '</span></div></div>'
     +   '<div class="ov-panel"><div class="ov-panel-lbl">Mindanao</div><div class="ov-panel-row"><span class="ov-panel-val">' + groups.Mindanao + '</span></div></div>'
-    +   '<div class="ov-panel"><div class="ov-panel-lbl">Not set</div><div class="ov-panel-row"><span class="ov-panel-val">' + (staff.length - placed) + '</span></div></div>'
+    +   '<div class="ov-panel"><div class="ov-panel-lbl">Not Set</div><div class="ov-panel-row"><span class="ov-panel-val">' + (staff.length - placed) + '</span></div></div>'
     + '</div></div>'
     + '<div class="card" style="margin-bottom:14px"><div id="phMap" style="height:760px;border-radius:0 0 var(--radius) var(--radius);overflow:hidden"></div></div>'
     + '<div class="card"><div class="card-header"><span class="card-title">Set Location</span>'
     +   '<span class="rec-count"><span class="signin-dot on" style="margin-right:4px"></span>Opened My Leave &nbsp; <span class="signin-dot never" style="margin-right:4px"></span>Not yet &nbsp;\u00b7&nbsp; City only \u2014 no street addresses</span></div>'
-    + '<div class="tbl-scroll"><table class="rec-table"><thead><tr><th>Name</th><th>City</th><th>Province</th><th>Island group</th></tr></thead>'
+    + '<div class="tbl-scroll"><table class="rec-table"><thead><tr><th>Name</th><th>City</th><th>Province</th><th>Island Group</th></tr></thead>'
     + '<tbody>' + rows + '</tbody></table></div></div>';
 
   drawPhMap(staff);
