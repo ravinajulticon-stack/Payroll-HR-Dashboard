@@ -90,6 +90,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .rep-step{ font-size:10.5px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:var(--text-3); margin:6px 0 9px; display:flex; align-items:center; gap:8px; }
 .rep-step b{ width:18px; height:18px; border-radius:50%; background:#0f1b3d; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:10px; }
 .rep-period{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+#repSeg .tab{ white-space:nowrap; } @media(max-width:760px){ #repSeg{ flex-wrap:wrap; border-radius:14px; } }
 .rep-range{ font-size:12px; color:var(--text-2); }
 .rep-range b{ color:var(--text); }
 .rep-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
@@ -701,6 +702,8 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
         <div class="rep-step"><b>1</b>Period</div>
         <div class="rep-period">
           <div class="tabs" id="repSeg">
+            <button class="tab" data-k="period" onclick="repPreset('period')">This Period</button>
+            <button class="tab" data-k="lastperiod" onclick="repPreset('lastperiod')">Last Period</button>
             <button class="tab on" data-k="month" onclick="repPreset('month')">This Month</button>
             <button class="tab" data-k="lastmonth" onclick="repPreset('lastmonth')">Last Month</button>
             <button class="tab" data-k="year" onclick="repPreset('year')">This Year</button>
@@ -1894,7 +1897,10 @@ function repPreset(k){
   document.querySelectorAll('#repSeg .tab').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-k') === k); });
   if(k === 'custom'){ document.getElementById('repFrom').focus(); repUpdate(); return; }
   var t = new Date(), y = t.getFullYear(), m = t.getMonth(), a, b;
-  if(k === 'month'){ a = new Date(y, m, 1); b = new Date(y, m + 1, 0); }
+  var pm = t.getDate() >= 11 ? m : m - 1;   // pay periods run the 11th to the 10th
+  if(k === 'period'){ a = new Date(y, pm, 11); b = new Date(y, pm + 1, 10); }
+  else if(k === 'lastperiod'){ a = new Date(y, pm - 1, 11); b = new Date(y, pm, 10); }
+  else if(k === 'month'){ a = new Date(y, m, 1); b = new Date(y, m + 1, 0); }
   else if(k === 'lastmonth'){ a = new Date(y, m - 1, 1); b = new Date(y, m, 0); }
   else if(k === 'year'){ a = new Date(y, 0, 1); b = new Date(y, 11, 31); }
   else { var fy = m >= 6 ? y : y - 1; a = new Date(fy, 6, 1); b = new Date(fy + 1, 5, 30); }
