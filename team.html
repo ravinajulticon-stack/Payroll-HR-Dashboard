@@ -1391,7 +1391,7 @@ function tmRender(){
     ? '<div class="tm-row h"><div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div class="r">Hours</div><div class="r">OT</div><div>Status</div><div></div></div>'
       + rows.map(function(r){
           var st = tmStatus(r), lun = r.lunch_in ? 'Lunch ' + tsTime(r.lunch_in) + ' – ' + (r.lunch_out ? tsTime(r.lunch_out) : 'now') : '';
-          var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' && r.ot_review_note ? 'OT not approved: ' + r.ot_review_note : ''].filter(Boolean).join(' | ');
+          var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' && r.ot_review_note ? 'OT Not Approved: ' + r.ot_review_note : ''].filter(Boolean).join(' | ');
           var tip = tipT ? ' title="' + esc(tipT) + '"' : '';
           var out = r.clock_out ? tsTime(r.clock_out) : (st === 'fix' ? '<span class="sc s-no">Forgot to Clock Out</span>' : '—');
           var hrs = r.clock_out ? tsHrs(r.total_hours) : (st === 'fix' ? '—' : tsHrs(tsWorkedSoFar(r)));
@@ -1585,11 +1585,11 @@ function tsRenderShifts(){
         : st.indexOf('rejected') > -1 ? '<span class="sc s-no">OT Not Approved</span>'
         : '<span class="sc s-done">Completed</span>';
       hrs = tsHrs(info.worked) + '<small> hrs</small>';
-      if(info.rows.some(function(x){ return x.edited_by; })) sub += ' · Adjusted by payroll';
-      info.rows.forEach(function(x){ if(x.ot_status === 'rejected' && x.ot_review_note) sub += ' · OT not approved: ' + esc(x.ot_review_note); });
+      if(info.rows.some(function(x){ return x.edited_by; })) sub += ' · Adjusted by Payroll';
+      info.rows.forEach(function(x){ if(x.ot_status === 'rejected' && x.ot_review_note) sub += ' · OT Not Approved: ' + esc(x.ot_review_note); });
       if(info.leave.length) sub += ' · ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
     } else if(info.dash != null && info.dash > 0){
-      chip = '<span class="sc s-done">Recorded</span>'; sub = 'From the payroll timesheet';
+      chip = '<span class="sc s-done">Recorded</span>'; sub = 'From the Payroll Timesheet';
       hrs = tsHrs(info.dash) + '<small> hrs</small>';
       if(info.leave.length) sub += ' \u00b7 ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
     } else if(info.leave.length){
