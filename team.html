@@ -311,8 +311,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .tm-filt label{ display:flex; flex-direction:column; gap:4px; font-size:10.5px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; }
 .tm-filt select, .tm-filt input{ height:34px; border:1px solid #e3e7ef; border-radius:10px; padding:0 10px; font-family:inherit; font-size:12.5px; font-weight:600; color:var(--text); background:#fff; min-width:150px; }
 .tm-scroll{ overflow-x:auto; }
-.tm-row{ display:grid; grid-template-columns:minmax(150px,1.2fr) 88px 76px minmax(140px,1fr) 84px 60px 50px 160px 140px; gap:10px; align-items:center; padding:10px 18px; border-top:1px solid #f0f2f7; font-size:12.5px; min-width:1040px; }
-.tm-lun{ font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; } .tm-lun.now, .tm-lun.long{ color:#c24d10; } .tm-lun.no{ font-size:11px; font-weight:700; color:#c24d10; background:#fff1e8; border-radius:999px; padding:2px 8px; } .tm-lun.dim{ color:var(--text-3); }
+.tm-row{ display:grid; grid-template-columns:minmax(170px,1.3fr) 96px minmax(120px,1fr) 100px 64px 54px 170px 140px; gap:10px; align-items:center; padding:10px 18px; border-top:1px solid #f0f2f7; font-size:12.5px; min-width:900px; }
 .tm-row.h{ font-size:10px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.05em; background:#fafbfe; padding-top:8px; padding-bottom:8px; }
 .tm-row .r{ text-align:right; font-variant-numeric:tabular-nums; } .tm-row.miss{ background:#fffaf3; }
 .ot-row{ grid-template-columns:minmax(170px,1.2fr) 100px minmax(140px,1fr) 64px 54px minmax(120px,1fr) 170px; }
@@ -1377,13 +1376,6 @@ function tmQuick(st){
   if(st === 'check' || st === 'nolunch' || st === 'longlunch') document.getElementById('tmPeriod').value = 'cur';
   tmRender(); document.getElementById('tmRecCard').scrollIntoView({ behavior: 'smooth' });
 }
-function tmLunchCell(r){
-  if(!r.lunch_in) return (r.clock_out || tsWorkedSoFar(r) > 6) ? '<span class="tm-lun no">No lunch</span>' : '<span class="tm-lun dim">—</span>';
-  var mins = Math.round(((r.lunch_out ? new Date(r.lunch_out) : new Date()) - new Date(r.lunch_in)) / 60000);
-  var dur = mins >= 60 ? Math.floor(mins / 60) + 'h ' + String(mins % 60).padStart(2, '0') + 'm' : mins + 'm';
-  var cls = !r.lunch_out ? 'now' : (mins > 90 ? 'long' : 'ok');
-  return '<span class="tm-lun ' + cls + '">' + tsTime(r.lunch_in) + ' – ' + (r.lunch_out ? tsTime(r.lunch_out) : 'now') + '</span><div class="tm-sub">' + (r.lunch_out ? dur : 'On lunch · ' + dur) + (cls === 'long' ? ' · long lunch' : '') + '</div>';
-}
 function tmRender(){
   tmRenderTiles();
   var pend = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; }).sort(function(a, b){ return a.clock_in < b.clock_in ? -1 : 1; });
@@ -1396,14 +1388,14 @@ function tmRender(){
   var rows = tmFiltered();
   document.getElementById('tmSub').textContent = rows.length + ' record' + (rows.length !== 1 ? 's' : '') + ' · Philippines time · lunch is unpaid';
   document.getElementById('tmList').innerHTML = rows.length
-    ? '<div class="tm-row h"><div>Employee</div><div>Date</div><div>Clock In</div><div>Lunch</div><div>Clock Out</div><div class="r">Hours</div><div class="r">OT</div><div>Status</div><div></div></div>'
+    ? '<div class="tm-row h"><div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div class="r">Hours</div><div class="r">OT</div><div>Status</div><div></div></div>'
       + rows.map(function(r){
           var st = tmStatus(r), lun = r.lunch_in ? 'Lunch ' + tsTime(r.lunch_in) + ' – ' + (r.lunch_out ? tsTime(r.lunch_out) : 'now') : '';
           var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' && r.ot_review_note ? 'OT not approved: ' + r.ot_review_note : ''].filter(Boolean).join(' | ');
           var tip = tipT ? ' title="' + esc(tipT) + '"' : '';
           var out = r.clock_out ? tsTime(r.clock_out) : (st === 'fix' ? '<span class="sc s-no">Forgot to clock out</span>' : '—');
           var hrs = r.clock_out ? tsHrs(r.total_hours) : (st === 'fix' ? '—' : tsHrs(tsWorkedSoFar(r)));
-          return '<div class="tm-row' + (st === 'fix' ? ' miss' : '') + '"' + tip + '>' + tmAv(r.employee_id, r.note ? '✎ ' + esc(r.note) : '') + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + '</div><div>' + tmLunchCell(r) + '</div><div>' + out + '</div><div class="r">' + hrs + '</div><div class="r">' + (parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '—') + '</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + TM_CHIP[st] + (tmFlags(r).length ? ' ' + tmFlagHtml(r) : '') + '</div><div class="tm-acts">' + (st === 'otr' ? '<button type="button" class="mb ok" title="Reverse and approve this overtime" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button>' : '') + '<button type="button" class="mb' + (st === 'fix' || tmFlags(r).length ? ' fix' : '') + '" onclick="tmOpen(\'' + r.id + '\')">' + (st === 'fix' ? 'Fix' : 'Edit') + '</button></div></div>';
+          return '<div class="tm-row' + (st === 'fix' ? ' miss' : '') + '"' + tip + '>' + tmAv(r.employee_id, r.note ? '✎ ' + esc(r.note) : '') + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + (lun ? '<div class="tm-sub">' + lun + '</div>' : '') + '</div><div>' + out + '</div><div class="r">' + hrs + '</div><div class="r">' + (parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '—') + '</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + TM_CHIP[st] + (tmFlags(r).length ? ' ' + tmFlagHtml(r) : '') + '</div><div class="tm-acts">' + (st === 'otr' ? '<button type="button" class="mb ok" title="Reverse and approve this overtime" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button>' : '') + '<button type="button" class="mb' + (st === 'fix' || tmFlags(r).length ? ' fix' : '') + '" onclick="tmOpen(\'' + r.id + '\')">' + (st === 'fix' ? 'Fix' : 'Edit') + '</button></div></div>';
         }).join('')
     : '<div class="empty">No clock records match these filters.</div>';
 }
