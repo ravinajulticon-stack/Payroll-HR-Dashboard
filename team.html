@@ -1588,9 +1588,12 @@ function tsRenderShifts(){
         : st.indexOf('approved') > -1 ? '<span class="sc s-ok">OT Approved</span>'
         : st.indexOf('rejected') > -1 ? '<span class="sc s-no">OT Not Approved</span>'
         : '<span class="sc s-done">Completed</span>';
-      hrs = tsHrs(info.worked) + '<small> hrs</small>';
+      // hours counted for pay: worked time minus overtime that isn't approved (pending or not approved)
+      var paidH = info.rows.reduce(function(a, x){ return a + (x.clock_out ? (parseFloat(x.total_hours) || 0) - (x.ot_status === 'approved' ? 0 : (parseFloat(x.ot_hours) || 0)) : tsWorkedSoFar(x)); }, 0);
+      hrs = tsHrs(paidH) + '<small> hrs</small>';
+      if(!open && Math.abs(paidH - info.worked) > 0.005) sub += ' · ' + tsHrs(info.worked) + 'h Worked';
       if(info.rows.some(function(x){ return x.edited_by; })) sub += ' · Adjusted by Payroll';
-      info.rows.forEach(function(x){ if(x.ot_status === 'rejected') sub += ' · OT Not Approved' + (x.ot_review_note ? ': ' + esc(x.ot_review_note) : ''); });
+      info.rows.forEach(function(x){ if(x.ot_status === 'rejected' && x.ot_review_note) sub += ' · Reason: ' + esc(x.ot_review_note); });
       if(info.leave.length) sub += ' · ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
     } else if(info.dash != null && info.dash > 0){
       chip = '<span class="sc s-done">Recorded</span>'; sub = 'From the Payroll Timesheet';
