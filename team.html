@@ -1204,8 +1204,10 @@ function tsDayInfo(iso){
   var hol = (HOLIDAYS || []).find(function(h){ return h.date === iso; });
   var worked = rows.reduce(function(a, r){ return a + tsWorkedSoFar(r); }, 0);
   var dash = (!rows.length && TS_DASH[iso] != null) ? TS_DASH[iso] : null;
-  if(dash != null) worked = dash;
-  return { rows: rows, leave: lv, hol: hol, worked: worked, dash: dash, leaveHrs: lv.reduce(function(a, e){ return a + (parseFloat(e.hours) || 0); }, 0) };
+  // recorded = hours counted for pay: worked time minus overtime that isn't approved (pending or not approved)
+  var paid = rows.reduce(function(a, r){ return a + (r.clock_out ? (parseFloat(r.total_hours) || 0) - (r.ot_status === 'approved' ? 0 : (parseFloat(r.ot_hours) || 0)) : tsWorkedSoFar(r)); }, 0);
+  if(dash != null){ worked = dash; paid = dash; }
+  return { rows: rows, leave: lv, hol: hol, worked: worked, paid: paid, dash: dash, leaveHrs: lv.reduce(function(a, e){ return a + (parseFloat(e.hours) || 0); }, 0) };
 }
 function tsFirstDate(){ return TS_ROWS.length ? TS_ROWS[0].work_date : null; }
 function tsRenderClock(tickOnly){
@@ -1267,7 +1269,7 @@ function tsSum(from, to){
     var dow = tsD(d).getDay(); if(dow === 0 || dow === 6) continue;
     std += 8;
     var info = tsDayInfo(d);
-    worked += info.worked;
+    worked += info.paid;
     info.rows.forEach(function(r){ if(r.ot_status === 'pending') ot += parseFloat(r.ot_hours) || 0; });
     covered += Math.min(8, info.worked + info.leaveHrs + (info.hol ? 8 : 0));
     if(d < today && first && d >= first && !info.rows.length && info.dash == null && !info.leave.length && !info.hol) missing++;
@@ -1282,7 +1284,7 @@ function tsRenderTiles(){
     '<div class="tile ts-week"><div class="tile-lbl">This Week</div><div class="tile-val">' + tsHrs(ws.worked) + ' <span style="font-size:15px;opacity:.8;font-weight:700">/ ' + ws.std + ' hrs</span></div>'
     + '<div class="tile-unit">' + tsFmtRange(w.from, tsAdd(w.from, 4)) + '</div><div class="tile-prog"><i style="width:' + Math.min(100, ws.covered / ws.std * 100).toFixed(0) + '%"></i></div>'
     + '<div class="tile-foot"><span>' + tsHrs(ws.covered) + ' of ' + ws.std + ' hrs covered</span>' + (ws.ot ? '<span class="tile-days">+' + tsHrs(ws.ot) + ' hrs OT pending</span>' : '') + '</div></div>'
-    + '<div class="tile ts-per"><div class="tile-lbl">This Pay Period</div><div class="tile-val">' + tsHrs(ps.worked) + ' <span style="font-size:15px;opacity:.8;font-weight:700">hrs worked</span></div>'
+    + '<div class="tile ts-per"><div class="tile-lbl">This Pay Period</div><div class="tile-val">' + tsHrs(ps.worked) + ' <span style="font-size:15px;opacity:.8;font-weight:700">hrs recorded</span></div>'
     + '<div class="tile-unit">' + tsHrs(ps.covered) + ' of ' + ps.std + ' hrs covered incl. leave &amp; holidays</div>'
     + '<div class="tile-foot"><span>' + tsFmtRange(p.from, p.to) + '</span>' + (ps.missing ? '<span class="tile-days">' + ps.missing + ' missing day' + (ps.missing !== 1 ? 's' : '') + '</span>' : '') + '</div></div>';
 }
