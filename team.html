@@ -1158,7 +1158,7 @@ function tsPeriodOf(iso){
 }
 function tsWeekOf(iso){ var d = tsD(iso), dow = (d.getDay() + 6) % 7; var mon = tsAdd(iso, -dow); return { from: mon, to: tsAdd(mon, 6) }; }
 function tsFmtRange(a, b){ var A = tsD(a), B = tsD(b); return MONS[A.getMonth()] + ' ' + A.getDate() + ' – ' + MONS[B.getMonth()] + ' ' + B.getDate() + ', ' + B.getFullYear(); }
-function tsHrs(n){ var v = Math.round((n || 0) * 100) / 100; return Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/0$/, ''); }
+function tsHrs(n){ return (Math.round((n || 0) * 100) / 100).toFixed(2); }   // hours always shown with 2 decimals
 function tsOpen(){ return TS_ROWS.find(function(r){ return !r.clock_out; }) || null; }
 function tsWorkedSoFar(r){
   if(!r) return 0;
