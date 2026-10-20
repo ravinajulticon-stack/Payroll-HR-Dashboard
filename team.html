@@ -169,6 +169,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .rq-docnote{ font-size:11px; color:var(--text-3); margin-top:6px; line-height:1.4; }
 .doc-link{ color:var(--text); font-weight:700; text-decoration:underline; cursor:pointer; white-space:nowrap; }
 .st.docmiss{ background:#fff1e8; color:#c24d10; }
+.rq-more{ display:flex; justify-content:center; padding:10px 18px 14px; border-top:1px solid #f0f2f7; }
 #reqCard .form-foot{ margin-top:auto; border-top:1px solid var(--border); padding:14px 18px 4px; margin-top:16px; }
 #reqCard .form-foot .btn{ display:inline-flex; align-items:center; gap:8px; }
 @media(max-width:520px){ .rl-sum .sep{ display:none; } .rl-sum{ gap:8px 16px; } }
@@ -1869,6 +1870,42 @@ function docLine(r){
   return '';
 }
 
+// My Requests: current items first (Pending, approved leave not yet over, anything decided in the last 30 days);
+// older requests sit behind "Show All".
+var MY_REQ_ROWS = [], MY_REQ_ALL = false;
+function myReqCurrent(r){
+  var today = todayISO(), cut = new Date(); cut.setDate(cut.getDate() - 30);
+  if(r.status === 'Pending') return true;
+  if(r.status === 'Approved' && r.end_date >= today) return true;
+  if(r.decided_at && new Date(r.decided_at) >= cut) return true;
+  return false;
+}
+function myReqToggle(){ MY_REQ_ALL = !MY_REQ_ALL; renderMyRequests(); }
+function renderMyRequests(){
+  var rows = MY_REQ_ROWS, cur = rows.filter(myReqCurrent), older = rows.length - cur.length;
+  var show = MY_REQ_ALL ? rows : cur;
+  document.getElementById('myReqCount').textContent = MY_REQ_ALL || !older
+    ? rows.length + ' request' + (rows.length === 1 ? '' : 's')
+    : cur.length + ' current · ' + rows.length + ' total';
+  var html = show.length
+    ? show.map(function(r){
+        var cls = r.status.toLowerCase();
+        var canWithdraw = r.status === 'Pending';
+        var docMiss = r.status === 'Pending' && reqNeedsDoc(r) && !LV_DOCS[r.id];
+        return '<div class="rq"><div class="rq-main">'
+          + '<div class="rq-when">' + rangeLabel(r.start_date, r.end_date) + '</div>'
+          + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' · ' + esc(r.reason) : '')
+          + (r.previous_dates ? ' · <i>moved from ' + esc(r.previous_dates) + '</i>' : '')
+          + (r.decision_note ? ' · <i>' + esc(r.decision_note) + '</i>' : '') + docLine(r) + '</div>' + submittedLine(r) + '</div>'
+          + (docMiss ? '<span class="st docmiss">Document Missing</span>' : '') + '<span class="st ' + cls + '">' + r.status + '</span>'
+          + (canWithdraw ? '<div class="rq-acts">' + (docMiss ? '<button class="btn sm" onclick="attachLeaveDoc(\'' + r.id + '\')">Attach Document</button>' : '') + '<button class="btn ghost sm" onclick="withdrawRequest(\'' + r.id + '\')">Withdraw</button></div>' : '')
+          + '</div>';
+      }).join('')
+    : '<div class="empty">' + (rows.length ? 'No current requests.' : 'No requests yet.') + '</div>';
+  if(older) html += '<div class="rq-more"><button class="btn ghost sm" onclick="myReqToggle()">' + (MY_REQ_ALL ? 'Show Less' : 'Show All (' + older + ' More)') + '</button></div>';
+  document.getElementById('myRequests').innerHTML = html;
+}
+
 async function loadRequests(){
   // my own requests
   if(MY_ID){
@@ -1878,22 +1915,8 @@ async function loadRequests(){
     // Cancellations by an admin/approver after approval have decided_at set, so they still show.
     var rows = (mine.data || []).filter(function(r){ return !(r.status === 'Cancelled' && !r.decided_at); });
     await loadLeaveDocs(rows.map(function(r){ return r.id; }));
-    document.getElementById('myReqCount').textContent = rows.length + ' request' + (rows.length===1?'':'s');
-    document.getElementById('myRequests').innerHTML = rows.length
-      ? rows.map(function(r){
-          var cls = r.status.toLowerCase();
-          var canWithdraw = r.status === 'Pending';
-          var docMiss = r.status === 'Pending' && reqNeedsDoc(r) && !LV_DOCS[r.id];
-          return '<div class="rq"><div class="rq-main">'
-            + '<div class="rq-when">' + rangeLabel(r.start_date, r.end_date) + '</div>'
-            + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' · ' + esc(r.reason) : '')
-            + (r.previous_dates ? ' · <i>moved from ' + esc(r.previous_dates) + '</i>' : '')
-            + (r.decision_note ? ' · <i>' + esc(r.decision_note) + '</i>' : '') + docLine(r) + '</div>' + submittedLine(r) + '</div>'
-            + (docMiss ? '<span class="st docmiss">Document Missing</span>' : '') + '<span class="st ' + cls + '">' + r.status + '</span>'
-            + (canWithdraw ? '<div class="rq-acts">' + (docMiss ? '<button class="btn sm" onclick="attachLeaveDoc(\'' + r.id + '\')">Attach Document</button>' : '') + '<button class="btn ghost sm" onclick="withdrawRequest(\'' + r.id + '\')">Withdraw</button></div>' : '')
-            + '</div>';
-        }).join('')
-      : '<div class="empty">No requests yet.</div>';
+    MY_REQ_ROWS = rows;
+    renderMyRequests();
   }
 
   if(!IS_ADMIN && !IS_APPROVER) return;
