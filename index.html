@@ -3644,7 +3644,7 @@ function loanInstallmentAmount(loan, idx){
 // Every (employee, period) that has been marked Paid in Pay Run \u2014 across all periods.
 let LOAN_PAID_PERIODS = [];
 async function loadLoanPaidPeriods(){
-  const { data, error } = await sb.from('pay202_snapshots').select('employee_id,period_month').eq('is_paid', true);
+  const { data, error } = await sb.from('pay202_snapshots').select('employee_id,period_month,loan_out:data->loanOutstanding').eq('is_paid', true);
   LOAN_PAID_PERIODS = (!error && data) ? data : [];
 }
 
@@ -3660,9 +3660,20 @@ function loanPeriodForIndex(loan, idx){
 // An installment counts as paid only when that employee's Pay Run row for that period is marked Paid.
 function loanInstallmentIsPaid(loan, idx){
   var pm = loanPeriodForIndex(loan, idx);
-  return LOAN_PAID_PERIODS.some(function(s){
-    return s.employee_id === loan.employee_id && String(s.period_month).slice(0,7) === pm;
-  });
+  if(LOAN_PAID_PERIODS.some(function(s){ return s.employee_id === loan.employee_id && String(s.period_month).slice(0,7) === pm; })) return true;
+  // Final pay settles every remaining installment: once the exit period is marked Paid (and fully covered), later ones count as paid
+  var xp = loanExitPeriod(loan.employee_id);
+  if(xp && pm > xp) return LOAN_PAID_PERIODS.some(function(s){ return s.employee_id === loan.employee_id && String(s.period_month).slice(0,7) === xp && !(parseFloat(s.loan_out) > 0); });
+  return false;
+}
+
+// Pay period (YYYY-MM) that contains an employee's exit date (periods run the 11th to the 10th), or null
+function loanExitPeriod(employeeId){
+  var emp = (typeof EMP201 !== 'undefined' ? EMP201 : []).find(function(e){ return e.id === employeeId; });
+  if(!emp || !emp.exit_date) return null;
+  var p = emp.exit_date.split('-').map(Number), y = p[0], m = p[1];
+  if(p[2] >= 11){ m++; if(m > 12){ m = 1; y++; } }
+  return y + '-' + String(m).padStart(2, '0');
 }
 
 // Number of installments actually settled, and the principal already recovered.
@@ -3676,14 +3687,20 @@ function loanPaidSummary(loan){
 }
 
 function loanDeductionFor(employeeId, periodStr){
-  var usd = 0, php = 0;
+  var usd = 0, php = 0, isFinal = loanExitPeriod(employeeId) === periodStr, extra = 0;
   SALARY_LOANS.filter(function(l){ return l.employee_id === employeeId; }).forEach(function(l){
-    var idx = loanInstallmentIndex(l, periodStr);
-    if(idx < 1 || idx > (parseInt(l.installments)||0)) return;
-    var amt = loanInstallmentAmount(l, idx);
+    var n = parseInt(l.installments) || 0, idx = loanInstallmentIndex(l, periodStr);
+    var amt = 0;
+    if(isFinal){
+      // Final pay: this period's installment plus every later one still on the schedule
+      for(var i = Math.max(1, idx); i <= n; i++){ amt += loanInstallmentAmount(l, i); if(i > idx) extra++; }
+    } else {
+      if(idx < 1 || idx > n) return;
+      amt = loanInstallmentAmount(l, idx);
+    }
     if(l.currency === 'USD') usd += amt; else php += amt;
   });
-  return { usd: Math.round(usd*100)/100, php: Math.round(php*100)/100 };
+  return { usd: Math.round(usd*100)/100, php: Math.round(php*100)/100, final: isFinal && (usd + php) > 0, extra: extra };
 }
 
 async function addSalaryLoan(){
@@ -5305,10 +5322,11 @@ async function markAsPaid(empId){
     ?(monthlyPayUSD+homeOfficeUSD+doublePay+othersUSD+overtimeUSD+(leavePayoutUSD||0)+bankFees):null;
   const eburyPHP=(totalUSD!=null&&rate)?totalUSD*rate:null;
   const _ld=(typeof loanDeductionFor==='function')?loanDeductionFor(emp.id,pay202SelectedPeriod):{usd:0,php:0};
-  const loanPHP=-((_ld.php||0)+((rate&&_ld.usd)?_ld.usd*rate:0));
+  let loanPHP=-((_ld.php||0)+((rate&&_ld.usd)?_ld.usd*rate:0)), loanOutstanding=0;
+  if(_ld.final&&eburyPHP!=null){ const _before=eburyPHP+maxicare+sssPHP+thirteenth+otherPHP; if(-loanPHP>_before){ loanOutstanding=Math.round((-loanPHP-Math.max(0,_before))*100)/100; loanPHP=-Math.max(0,_before); } }
   const totalPHP=maxicare+sssPHP+thirteenth+loanPHP+otherPHP;
   const totalPayout=eburyPHP!=null?eburyPHP+totalPHP:null;
-  const snapData={ noteUsd,loanPHP,basicRate,currency,regularHours,unpaidLeaveHours,totalOt,standardHours,blankHours,
+  const snapData={ noteUsd,loanPHP,loanOutstanding,basicRate,currency,regularHours,unpaidLeaveHours,totalOt,standardHours,blankHours,
     hourlyRate,nativeMonthlyPay,overtimeNative,doublePayNative,doublePay,
     monthlyPayUSD,overtimeUSD,leavePayoutNative,leavePayoutUSD,
     homeOfficeUSD,maxicare,sssPHP,bankFees,othersUSD,thirteenth,otherPHP,note,
@@ -5862,7 +5880,8 @@ function renderPay202(){
       : null;
     const eburyPHP = (totalUSD != null && rate) ? totalUSD * rate : null;
     const _ld2=(typeof loanDeductionFor==='function')?loanDeductionFor(emp.id,pay202SelectedPeriod):{usd:0,php:0};
-    const loanPHP = -((_ld2.php||0)+((rate&&_ld2.usd)?_ld2.usd*rate:0));
+    let loanPHP = -((_ld2.php||0)+((rate&&_ld2.usd)?_ld2.usd*rate:0)), loanOut = 0;
+    if(_ld2.final && eburyPHP != null){ const _before = eburyPHP + maxicare + sssPHP + thirteenth + otherPHP; if(-loanPHP > _before){ loanOut = Math.round((-loanPHP - Math.max(0, _before)) * 100) / 100; loanPHP = -Math.max(0, _before); } }
     const totalPHP = maxicare + sssPHP + thirteenth + loanPHP + otherPHP;
     const totalPayout = (eburyPHP != null) ? eburyPHP + totalPHP : null;
 
@@ -5880,7 +5899,7 @@ function renderPay202(){
       maxicare ? fmtMoney(maxicare) : '\u2014',         // Maxicare
       sssPHP ? fmtMoney(sssPHP) : '\u2014',             // SSS
       thirteenth ? fmtMoney(thirteenth) : '—',            // 13th (auto)
-      (function(){ var _l=(typeof loanDeductionFor==='function')?loanDeductionFor(emp.id,pay202SelectedPeriod):{usd:0,php:0}; var _v=-((_l.php||0)+((rate&&_l.usd)?_l.usd*rate:0)); return _v ? '<span title="Salary loan installment" style="color:var(--amber)">' + fmtMoney(_v) + '</span>' : "—"; })(),   // Loan
+      (function(){ if(!loanPHP && !loanOut) return "—"; var t = _ld2.final ? 'Final pay: all remaining loan installments deducted' + (loanOut ? ' — ' + fmtMoney(loanOut) + ' PHP still outstanding (final pay too small)' : '') : 'Salary loan installment'; return '<span title="' + t + '" style="color:var(--amber)">' + fmtMoney(loanPHP) + (_ld2.final ? ' <b style="font-size:10px">Final</b>' : '') + '</span>' + (loanOut ? '<div style="font-size:10px;color:#c9271d;font-weight:700">' + fmtMoney(loanOut) + ' Outstanding After Final Pay</div>' : ''); })(),   // Loan
       pay202MoneyCell(emp.id, 'other_php'),             // Other (PHP)
       pay202NoteCell(emp.id),                           // Note
       totalPHP ? fmtMoney(totalPHP) : '\u2014',         // Total PHP
