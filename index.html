@@ -561,6 +561,11 @@ body {
 .ts-grid-table tr.ts-row-done td{ background:rgba(52,199,89,0.07); }
 .ts-grid-table tr.ts-row-done td:first-child{ box-shadow:inset 3px 0 0 var(--green); font-weight:600; }
 .ts-grid-table tr.ts-row-done:hover td{ background:rgba(52,199,89,0.13); }
+/* V2: completed timesheet rows — lime name pill on a light lime row */
+html.v2 .ts-grid-table tr.ts-row-done td{ background:#f6fde0 !important; }
+html.v2 .ts-grid-table tr.ts-row-done:hover td{ background:#eefbc4 !important; }
+html.v2 .ts-grid-table tr.ts-row-done td:first-child{ box-shadow:none !important; font-weight:700; color:#141418; }
+html.v2 .ts-done-pill{ display:inline-block; background:#d3f25c; border-radius:12px; padding:6px 12px; }
 /* Public holiday: highlight the date header only */
 .ts-grid-table th.ts-holiday{ background:rgba(90,200,250,0.28); box-shadow:inset 0 -3px 0 #2f9fd4; }
 .ts-hol-tag{ display:block; margin-top:1px; font-size:7.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:#1f86b8; }
@@ -2768,7 +2773,7 @@ function renderTimesheetGrid(){
       var e = TIMESHEET_ENTRIES.find(function(x){ return x.employee_id === emp.id && x.work_date === d.date; });
       return !!(e && e.hours_worked !== null && e.hours_worked !== undefined && e.hours_worked !== '');
     });
-    return `<tr class="${_done ? 'ts-row-done' : ''}"><td>${emp.name}</td><td class="ts-total-col">${fmtHrs(totalHours)}</td><td class="ts-total-col">${fmtHrs(totalOt)}</td>${cells}</tr>`;
+    return `<tr class="${_done ? 'ts-row-done' : ''}"><td>${_done ? '<span class="ts-done-pill" title="Timesheet complete for this period">' + emp.name + '</span>' : emp.name}</td><td class="ts-total-col">${fmtHrs(totalHours)}</td><td class="ts-total-col">${fmtHrs(totalOt)}</td>${cells}</tr>`;
   }).join('');
 
   // Save horizontal scroll position before replacing innerHTML, restore after — prevents the grid
@@ -5899,7 +5904,7 @@ function renderPay202(){
       maxicare ? fmtMoney(maxicare) : '\u2014',         // Maxicare
       sssPHP ? fmtMoney(sssPHP) : '\u2014',             // SSS
       thirteenth ? fmtMoney(thirteenth) : '—',            // 13th (auto)
-      (function(){ if(!loanPHP && !loanOut) return "—"; var t = _ld2.final ? 'Final pay: all remaining loan installments deducted' + (loanOut ? ' — ' + fmtMoney(loanOut) + ' PHP still outstanding (final pay too small)' : '') : 'Salary loan installment'; return '<span title="' + t + '" style="color:var(--amber)">' + fmtMoney(loanPHP) + (_ld2.final ? ' <b style="font-size:10px">Final</b>' : '') + '</span>' + (loanOut ? '<div style="font-size:10px;color:#c9271d;font-weight:700">' + fmtMoney(loanOut) + ' Outstanding After Final Pay</div>' : ''); })(),   // Loan
+      (function(){ if(!loanPHP && !loanOut) return "—"; var t = _ld2.final ? 'Final pay: all remaining loan installments deducted' + (loanOut ? ' — ' + fmtMoney(loanOut) + ' PHP still outstanding (final pay too small)' : '') : 'Salary loan installment'; return '<span title="' + t + '" style="color:var(--amber)">' + fmtMoney(loanPHP) + '</span>' + (loanOut ? '<div style="font-size:10px;color:#c9271d;font-weight:700">' + fmtMoney(loanOut) + ' Outstanding After Final Pay</div>' : ''); })(),   // Loan
       pay202MoneyCell(emp.id, 'other_php'),             // Other (PHP)
       pay202NoteCell(emp.id),                           // Note
       totalPHP ? fmtMoney(totalPHP) : '\u2014',         // Total PHP
