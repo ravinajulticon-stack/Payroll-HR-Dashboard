@@ -521,6 +521,7 @@ body{ background:var(--bg); }
 .s-pend{ background:#ffe9dc; color:#c24d10; border-color:#ffd0b5; }
 .s-no{ background:#fff0eb; color:#d23d12; border-color:#ffcdbd; }
 .s-lv{ background:#fde3d4; color:#a8410c; border-color:#ffd0b5; }
+.tm-row.lv-row{ background:#fffaf6; }
 .s-lun{ background:#fff3c4; color:#8a6100; border-color:#ffe08a; }
 .chip.annual{ background:#effbc9; color:var(--lime-ink); } .chip.personal{ background:#ffe9dc; color:#c24d10; }
 .ts-row.today{ background:#f9fde8; box-shadow:inset 3px 0 0 var(--lime2); }
@@ -778,7 +779,7 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
         <label>Pay Period<select id="tmPeriod" onchange="tmRender()"><option value="cur">This Period</option><option value="last">Last Period</option><option value="all">All Since Sep 11</option></select></label>
         <label>Date<input type="date" id="tmDate" onchange="tmRender()"></label>
         <label>Employee<select id="tmEmp" onchange="tmRender()"><option value="">All Staff</option></select></label>
-        <label>Status<select id="tmStatus" onchange="tmRender()"><option value="">All Records</option><option value="fix">Needs Fix</option><option value="shift">On Shift</option><option value="lunch">On Lunch</option><option value="otp">OT Pending</option><option value="ota">OT Approved</option><option value="otr">OT Not Approved</option><option value="edited">Edited by Admin</option><option value="check">Needs Checking (All)</option><option value="nolunch">No Lunch</option><option value="longlunch">Long Lunch</option></select></label>
+        <label>Status<select id="tmStatus" onchange="tmRender()"><option value="">All Records</option><option value="fix">Needs Fix</option><option value="shift">On Shift</option><option value="lunch">On Lunch</option><option value="otp">OT Pending</option><option value="ota">OT Approved</option><option value="otr">OT Not Approved</option><option value="edited">Edited by Admin</option><option value="check">Needs Checking (All)</option><option value="nolunch">No Lunch</option><option value="longlunch">Long Lunch</option><option value="leave">On Leave</option></select></label>
       </div>
       <div class="tm-scroll" id="tmList"><div class="empty">Loading…</div></div>
     </div>
@@ -1321,7 +1322,31 @@ async function tmLoad(){
   var r = await sb.from('time_clock').select('*').gte('work_date', TS_MIN).order('clock_in', { ascending: false });
   if(r.error){ document.getElementById('tmList').innerHTML = '<div class="empty">' + esc(r.error.message) + '</div>'; return; }
   TM_ROWS = r.data || [];
+  var lv = await sb.from('leave_entries').select('employee_id,leave_date,leave_type,hours').gte('leave_date', TS_MIN);
+  TM_LEAVE = lv.error ? [] : (lv.data || []);
   tmRender();
+}
+// Leave days shown alongside clock records (Dashboard leave entries; weekends/holidays never have entries)
+var TM_LEAVE = [];
+function tmLeaveRows(){
+  var today = tsToday(), per = document.getElementById('tmPeriod').value, dt = document.getElementById('tmDate').value, emp = document.getElementById('tmEmp').value, st = document.getElementById('tmStatus').value, rg = null;
+  if(st && st !== 'leave') return [];
+  if(per === 'cur') rg = tsPeriodOf(today); else if(per === 'last') rg = tsPeriodOf(tsAdd(tsPeriodOf(today).from, -1));
+  return TM_LEAVE.filter(function(l){
+    if(!TM_EMPS.some(function(e){ return e.id === l.employee_id; })) return false;
+    if(rg && (l.leave_date < rg.from || l.leave_date > rg.to)) return false;
+    if(dt && l.leave_date !== dt) return false;
+    if(emp && l.employee_id !== emp) return false;
+    return true;
+  }).map(function(l){ return { _leave: true, employee_id: l.employee_id, work_date: l.leave_date, leave_type: l.leave_type, hours: parseFloat(l.hours) || 0 }; });
+}
+// Clock records + leave days, newest date first (missing clock-outs stay on top)
+function tmAllRows(){
+  var st = document.getElementById('tmStatus').value;
+  var clock = st === 'leave' ? [] : tmFiltered(), lv = tmLeaveRows();
+  var fix = clock.filter(function(r){ return tmStatus(r) === 'fix'; }), rest = clock.filter(function(r){ return tmStatus(r) !== 'fix'; }).concat(lv);
+  rest.sort(function(a, b){ return a.work_date === b.work_date ? (a._leave ? 1 : 0) - (b._leave ? 1 : 0) : (a.work_date < b.work_date ? 1 : -1); });
+  return fix.concat(rest);
 }
 function tmEmp(id){ return TM_EMPS.find(function(e){ return e.id === id; }) || { name: 'Unknown' }; }
 function tmInit(n){ return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function(w){ return w.charAt(0).toUpperCase(); }).join(''); }
@@ -1369,6 +1394,9 @@ function tmRenderTiles(){
   var today = tsToday(), active = TM_EMPS.filter(function(e){ return !e.exit_date || e.exit_date >= today; }).length;
   var open = TM_ROWS.filter(function(r){ return !r.clock_out && r.work_date === today; });
   var lunch = open.filter(function(r){ return r.lunch_in && !r.lunch_out; });
+  var lvIds = {}; TM_LEAVE.forEach(function(l){ var e = TM_EMPS.find(function(x){ return x.id === l.employee_id; });
+    if(l.leave_date === today && e && (!e.exit_date || e.exit_date >= today) && !open.some(function(r){ return r.employee_id === l.employee_id; })) lvIds[l.employee_id] = 1; });
+  var onLv = Object.keys(lvIds).length;
   var pend = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; });
   var pendHrs = pend.reduce(function(a, r){ return a + (parseFloat(r.ot_hours) || 0); }, 0);
   var pendStaff = {}; pend.forEach(function(r){ pendStaff[r.employee_id] = 1; });
@@ -1380,7 +1408,7 @@ function tmRenderTiles(){
   var u = function(t){ return ' <span style="font-size:15px;opacity:.8;font-weight:700">' + t + '</span>'; };
   document.getElementById('tsHeroLbl').textContent = 'Team Today · ' + tmDayLbl(today);
   document.getElementById('tsTiles').innerHTML =
-      T('t-green', 'On Shift Now', open.length + u('/ ' + active + ' staff'), 'Clocked In Today', (active - open.length) + ' Not Clocked In', '', "tmQuick('shift')")
+      T('t-green', 'On Shift Now', open.length + u('/ ' + active + ' staff'), 'Clocked In Today', (onLv ? onLv + ' On Leave · ' : '') + Math.max(0, active - open.length - onLv) + ' Not Clocked In', '', "tmQuick('shift')")
     + T(lunch.length ? 't-amber' : 't-grey', 'On Lunch Now', lunch.length, lunch.length ? lunch.map(function(r){ return first(r.employee_id); }).join(', ') : 'Nobody on lunch', lunch.length ? 'Since ' + tsTime(lunch.map(function(r){ return r.lunch_in; }).sort()[0]) : '—', '', lunch.length ? "tmQuick('lunch')" : '')
     + T(pend.length ? 't-purple' : 't-grey', 'OT Pending Approval', tsHrs(pendHrs) + u('hrs'), pend.length + ' shift' + (pend.length !== 1 ? 's' : '') + ' · ' + Object.keys(pendStaff).length + ' staff', 'Waiting for you', pend.length ? 'Review' : '', pend.length ? "document.getElementById('tmOtCard').scrollIntoView({behavior:'smooth'})" : '')
     + T(chk ? 't-red' : 't-grey', 'Needs Checking', chk, chk ? [miss.length ? miss.length + ' No Clock-Out' : '', noL ? noL + ' No Lunch' : '', lngL ? lngL + ' Long Lunch' : ''].filter(Boolean).join(' · ') : 'Nothing to check', chk ? 'Fix before payroll' : 'All shifts look right', chk ? 'Check' : '', chk ? "tmQuick('check')" : '');
@@ -1399,11 +1427,12 @@ function tmRender(){
     ? '<div class="tm-scroll"><div class="tm-row ot-row h"><div>Employee</div><div>Date</div><div>Shift</div><div class="r">Worked</div><div class="r">OT</div><div>Note</div><div></div></div>'
       + pend.map(function(r){ return '<div class="tm-row ot-row">' + tmAv(r.employee_id) + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + ' → ' + tsTime(r.clock_out) + '</div><div class="r">' + tsHrs(r.total_hours) + '</div><div class="r"><b>' + tsHrs(r.ot_hours) + '</b></div><div class="tm-sub">' + (tmFlags(r).length ? tmFlagHtml(r) + ' ' : '') + (r.note ? esc(r.note) : (tmFlags(r).length ? '' : '—')) + '</div><div class="tm-acts"><button type="button" class="mb ok" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button><button type="button" class="mb no" onclick="tmReview([\'' + r.id + '\'],\'rejected\',this)">Reject</button></div></div>'; }).join('') + '</div>'
     : '<div class="empty">No overtime waiting for approval.</div>';
-  var rows = tmFiltered();
+  var rows = tmAllRows();
   document.getElementById('tmSub').textContent = rows.length + ' record' + (rows.length !== 1 ? 's' : '') + ' · Philippines Time · Lunch Unpaid';
   document.getElementById('tmList').innerHTML = rows.length
     ? '<div class="tm-row h"><div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div class="r">Hours</div><div class="r">OT</div><div>Status</div><div></div></div>'
       + rows.map(function(r){
+          if(r._leave) return '<div class="tm-row lv-row">' + tmAv(r.employee_id) + '<div>' + tmDayLbl(r.work_date) + '</div><div class="tm-sub">—</div><div class="tm-sub">—</div><div class="r">' + tsHrs(r.hours) + '</div><div class="r">—</div><div><span class="sc s-lv">On Leave</span><div class="tm-sub">' + esc(r.leave_type) + '</div></div><div></div></div>';
           var st = tmStatus(r), lun = r.lunch_in ? 'Lunch ' + tsTime(r.lunch_in) + ' – ' + (r.lunch_out ? tsTime(r.lunch_out) : 'now') : '';
           var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' ? 'OT Not Approved' + (r.ot_review_note ? ': ' + r.ot_review_note : '') : ''].filter(Boolean).join(' | ');
           var tip = tipT ? ' title="' + esc(tipT) + '"' : '';
@@ -1411,7 +1440,7 @@ function tmRender(){
           var hrs = r.clock_out ? tsHrs(r.total_hours) : (st === 'fix' ? '—' : tsHrs(tsWorkedSoFar(r)));
           return '<div class="tm-row' + (st === 'fix' ? ' miss' : '') + '"' + tip + '>' + tmAv(r.employee_id, r.note ? '✎ ' + esc(r.note) : '') + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + (lun ? '<div class="tm-sub">' + lun + '</div>' : '') + '</div><div>' + out + '</div><div class="r">' + hrs + '</div><div class="r">' + (parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '—') + '</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + TM_CHIP[st] + (tmFlags(r).length ? ' ' + tmFlagHtml(r) : '') + '</div><div class="tm-acts">' + (st === 'otr' ? '<button type="button" class="mb ok" title="Reverse and approve this overtime" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button>' : st === 'ota' ? '<button type="button" class="mb no" title="Reverse and reject this overtime" onclick="tmReview([\'' + r.id + '\'],\'rejected\',this)">Reject</button>' : '') + '<button type="button" class="mb' + (st === 'fix' || tmFlags(r).length ? ' fix' : '') + '" onclick="tmOpen(\'' + r.id + '\')">' + (st === 'fix' ? 'Fix' : 'Edit') + '</button></div></div>';
         }).join('')
-    : '<div class="empty">No clock records match these filters.</div>';
+    : '<div class="empty">No records match these filters.</div>';
 }
 async function tmReview(ids, status, btn){
   var note = null;
@@ -1509,11 +1538,11 @@ async function tmDelete(){
   if(r0.employee_id === MY_ID){ await tsLoad(); }
 }
 function tmCsv(){
-  var rows = tmFiltered().slice().reverse();
+  var rows = tmAllRows().slice().reverse();
   var head = ['Employee','Date','Clock In','Lunch Start','Lunch End','Clock Out','Hours','OT Hrs','OT Status','Status','Flags','Note','Edited By','Edit Reason','OT Review Note'];
   var q = function(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
   var lab = { fix:'Needs Fix', lunch:'On Lunch', shift:'On Shift', otp:'OT Pending', ota:'OT Approved', otr:'OT Not Approved', edited:'Edited by Admin', done:'Completed' };
-  var lines = [head].concat(rows.map(function(r){ return [tmEmp(r.employee_id).name, r.work_date, tsTime(r.clock_in), r.lunch_in ? tsTime(r.lunch_in) : '', r.lunch_out ? tsTime(r.lunch_out) : '', r.clock_out ? tsTime(r.clock_out) : '', r.clock_out ? tsHrs(r.total_hours) : '', parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '', r.ot_status !== 'none' ? r.ot_status : '', lab[tmStatus(r)], tmFlags(r).map(function(k){ return k === 'nolunch' ? 'No Lunch' : 'Long Lunch'; }).join('; '), r.note || '', r.edited_by || '', r.edit_reason || '', r.ot_review_note || '']; })).map(function(a){ return a.map(q).join(','); });
+  var lines = [head].concat(rows.map(function(r){ if(r._leave) return [tmEmp(r.employee_id).name, r.work_date, '', '', '', '', tsHrs(r.hours), '', '', 'On Leave', r.leave_type, '', '', '', '']; return [tmEmp(r.employee_id).name, r.work_date, tsTime(r.clock_in), r.lunch_in ? tsTime(r.lunch_in) : '', r.lunch_out ? tsTime(r.lunch_out) : '', r.clock_out ? tsTime(r.clock_out) : '', r.clock_out ? tsHrs(r.total_hours) : '', parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '', r.ot_status !== 'none' ? r.ot_status : '', lab[tmStatus(r)], tmFlags(r).map(function(k){ return k === 'nolunch' ? 'No Lunch' : 'Long Lunch'; }).join('; '), r.note || '', r.edited_by || '', r.edit_reason || '', r.ot_review_note || '']; })).map(function(a){ return a.map(q).join(','); });
   var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
   var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'Team-Clock-Records_' + tsToday() + '.csv';
