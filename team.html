@@ -517,6 +517,10 @@ body{ background:var(--bg); }
 .mb.gr{ background:var(--lime); border-color:var(--lime); color:#141418; }
 .ts-csv{ background:#141418 !important; border:none !important; color:#fff !important; border-radius:999px !important; }
 .ts-csv:hover{ transform:translateY(-1px); }
+.ts-dl{ grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.ts-dl .ts-csv{ padding:10px 12px; grid-column:auto; }
+.ts-csv.ts-pdf{ background:#fff !important; color:#141418 !important; border:1px solid #e3e7ef !important; }
+.ts-csv:disabled{ opacity:.6; cursor:wait; }
 .ts-filt, .seg{ background:#f1f2f5; border-radius:999px; } .ts-filt button{ border-radius:999px; } .ts-filt button.on{ background:#fff; color:#141418; }
 .qa-btn{ border-radius:16px; background:#fff; } .qa-btn:hover{ border-color:var(--lime2); background:#f9fde8; }
 .qa-ic.b{ background:#141418; color:#fff; } .qa-ic.g{ background:var(--lime); color:#141418; } .qa-ic.p{ background:var(--peach); color:#c24d10; } .qa-ic.o{ background:var(--orange); color:#fff; }
@@ -1598,24 +1602,194 @@ function tsRenderReport(){
     + '<div class="rs"><span>Regular</span><b>' + tsHrs(o.reg) + '<small> hrs</small></b><em>Up to 8 hrs a day</em></div>'
     + '<div class="rs ot"><span>Overtime</span><b>' + tsHrs(o.ot) + '<small> hrs</small></b><em>' + (o.otPend ? '+' + tsHrs(o.otPend) + ' hrs pending' : 'Approved only') + '</em></div>'
     + '<div class="rs lv"><span>Leave &amp; Holidays</span><b>' + tsHrs(o.leave + o.hol) + '<small> hrs</small></b><em>Paid, not worked</em></div>'
-    + '<button type="button" class="ts-csv" onclick="tsDownloadCsv()"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v8M4.8 7.6 8 10.8l3.2-3.2M3 13.5h10"/></svg>Download CSV</button>';
+    + '<div class="ts-dl"><button type="button" class="ts-csv" onclick="tsExportXlsx(this)"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v8M4.8 7.6 8 10.8l3.2-3.2M3 13.5h10"/></svg>Excel</button><button type="button" class="ts-csv ts-pdf" onclick="tsExportPdf()"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v8M4.8 7.6 8 10.8l3.2-3.2M3 13.5h10"/></svg>PDF</button></div>';
   var c = document.getElementById('tsRepCard'); if(!c) return;
   c.innerHTML = '<div class="rl-hd"><span class="rl-ic c-green"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13.5V8M8 13.5V3M13 13.5V6"/></svg></span><div><div class="card-title">Time Report</div><div class="rl-sub">' + tsFmtRange(r.from, r.to) + '</div></div></div>'
       + '<select class="ts-repsel" onchange="tsRepSet(this.value)">' + [['period','This Period'],['week','This Week'],['last','Last Period'],['custom','Custom Dates']].map(function(o){ return '<option value="' + o[0] + '"' + (TS_REP.mode === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'
       + (TS_REP.mode === 'custom' ? '<div class="ts-dates"><label>From<input type="date" min="' + TS_MIN + '" max="' + tsToday() + '" value="' + r.from + '" onchange="tsRepDate(\'from\', this.value)"></label><label>To<input type="date" min="' + r.from + '" max="' + tsToday() + '" value="' + r.to + '" onchange="tsRepDate(\'to\', this.value)"></label></div>' : '')
       + '<div class="ts-rep">' + stats + '</div>';
 }
-function tsDownloadCsv(){
+// ---------- Time Report exports: Excel and PDF (same look as the Leave Report) ----------
+var TS_XL_LIB = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', TS_MY_NAME = '';
+function tsLoadExcelLib(){
+  return new Promise(function(res, rej){
+    if(window.ExcelJS) return res();
+    var s = document.createElement('script'); s.src = TS_XL_LIB; s.onload = function(){ res(); };
+    s.onerror = function(){ rej(new Error('the Excel library could not be loaded')); };
+    document.head.appendChild(s);
+  });
+}
+async function tsMyName(){
+  if(TS_MY_NAME) return TS_MY_NAME;
+  if(MY_ID){ try { var r = await sb.from('employees_201').select('name').eq('id', MY_ID).maybeSingle(); if(r.data && r.data.name) TS_MY_NAME = r.data.name; } catch(e){} }
+  if(!TS_MY_NAME && MY_PS_EMP && MY_PS_EMP.name) TS_MY_NAME = MY_PS_EMP.name;
+  return TS_MY_NAME || document.getElementById('userName').textContent || '';
+}
+function tsLeaveText(s){ return s ? s.split('; ').map(function(x){ var m = x.match(/^([\d.]+)h (.+)$/); return m ? m[2] + ' · ' + m[1] + ' hrs' : x; }).join('; ') : ''; }
+function tsOtLabel(s){ return s === 'Rejected' ? 'Not Approved' : (s || ''); }
+function tsNum(s){ var n = parseFloat(s); return isNaN(n) ? null : n; }
+function tsIsWeekend(row){ return row[1] === 'Sat' || row[1] === 'Sun'; }
+function tsGenStamp(gen){ return fmtDay(isoOf(gen)) + ' ' + gen.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }); }
+var TS_EXPORT_NOTE = 'Hours follow the same rule as My Timesheet: up to 8 regular hours a day; overtime counts once approved. Times are in Philippines time.';
+
+async function tsExportXlsx(btn){
   var r = TS_CUR; if(!r) return;
-  var o = tsReportData(r);
-  var head = ['Date','Day','Clock In','Lunch Start','Lunch End','Clock Out','Regular Hrs','OT Hrs','OT Status','Leave','Public Holiday','Source','Note'];
-  var q = function(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
-  var lines = [head].concat(o.rows).map(function(a){ return a.map(q).join(','); });
-  lines.push('', ['Total Hours', tsHrs(o.total)].join(','), ['Regular', tsHrs(o.reg)].join(','), ['Overtime (Approved)', tsHrs(o.ot)].join(','), ['Overtime (Pending)', tsHrs(o.otPend)].join(','), ['Leave & Holidays', tsHrs(o.leave + o.hol)].join(','));
-  var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'My-Timesheet_' + r.from + '_to_' + r.to + '.csv';
-  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  var orig = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.textContent = 'Preparing…'; }
+  try {
+    await tsLoadExcelLib();
+    var o = tsReportData(r), name = await tsMyName(), gen = new Date();
+    var wb = new ExcelJS.Workbook(); wb.creator = 'DDL Staff Portal'; wb.created = gen;
+    var ws = wb.addWorksheet('Timesheet', {
+      views: [{ showGridLines: false }],
+      pageSetup: { paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0, printTitlesRow: '11:11',
+                   margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.2, footer: 0.2 } }
+    });
+    var NAVY = 'FF0F1B3D', MID = 'FF5B6478', GREY = 'FF8A91A5', INK = 'FF14213D', LINE = 'FFE9ECF3';
+    var head = ['Date','Clock In','Lunch Start','Lunch End','Clock Out','Regular Hrs','OT Hrs','OT Status','Leave','Public Holiday','Source','Note'];
+    ws.columns = [17,10,11,10,10,11,9,13,22,18,17,30].map(function(w){ return { width: w }; });
+    var L = 'L';   // last column
+    var font = function(o){ return Object.assign({ name: 'Calibri', size: 10, color: { argb: INK } }, o || {}); };
+
+    // Header: logo left, title right, navy rule underneath
+    ws.getRow(1).height = 30; ws.getRow(2).height = 18;
+    try {
+      var logo = await new Promise(function(res, rej){
+        fetch('ddl-logo.png').then(function(x){ return x.blob(); }).then(function(b){ var fr = new FileReader(); fr.onload = function(){ res(fr.result); }; fr.onerror = rej; fr.readAsDataURL(b); }, rej);
+      });
+      ws.addImage(wb.addImage({ base64: logo, extension: 'png' }), { tl: { col: 0, row: 0.15 }, ext: { width: 110, height: 44 } });
+    } catch(e){}
+    ws.mergeCells('H1:' + L + '1'); ws.getCell('H1').value = 'Timesheet Report';
+    ws.getCell('H1').font = font({ size: 18, bold: true, color: { argb: NAVY } }); ws.getCell('H1').alignment = { horizontal: 'right', vertical: 'bottom' };
+    ws.mergeCells('H2:' + L + '2'); ws.getCell('H2').value = 'Digital Door Locks Pty Limited';
+    ws.getCell('H2').font = font({ size: 9.5, color: { argb: MID } }); ws.getCell('H2').alignment = { horizontal: 'right', vertical: 'top' };
+    for(var c = 1; c <= 12; c++) ws.getRow(2).getCell(c).border = { bottom: { style: 'medium', color: { argb: NAVY } } };
+
+    ws.getCell('A4').value = 'Employee: ' + name + '   ·   Period: ' + fmtDay(r.from) + ' – ' + fmtDay(r.to);
+    ws.getCell('A4').font = font({ size: 10, color: { argb: MID } });
+    ws.getCell('A5').value = 'Generated ' + tsGenStamp(gen);
+    ws.getCell('A5').font = font({ size: 8.5, color: { argb: GREY } });
+
+    // Summary boxes
+    var kpis = [
+      ['A','B', o.total, 'Total Hours', o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked'],
+      ['C','E', o.reg, 'Regular', 'Up to 8 hrs a day'],
+      ['F','H', o.ot, 'Overtime', o.otPend ? '+' + tsHrs(o.otPend) + ' hrs pending' : 'Approved only'],
+      ['I','J', o.leave + o.hol, 'Leave & Holidays', 'Paid, not worked']
+    ];
+    ws.getRow(7).height = 24;
+    kpis.forEach(function(k){
+      [[7, k[2], font({ size: 16, bold: true, color: { argb: NAVY } }), '0.00'], [8, k[3], font({ size: 8.5, bold: true, color: { argb: MID } })], [9, k[4], font({ size: 8.5, color: { argb: GREY } })]].forEach(function(p){
+        ws.mergeCells(k[0] + p[0] + ':' + k[1] + p[0]);
+        var cell = ws.getCell(k[0] + p[0]); cell.value = p[1]; cell.font = p[2]; if(p[3]) cell.numFmt = p[3];
+        cell.alignment = { horizontal: 'left', vertical: 'middle', indent: 1 };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8FAFF' } };
+        var b = { color: { argb: 'FFE1E6F0' }, style: 'thin' };
+        cell.border = { left: b, right: b, top: p[0] === 7 ? b : undefined, bottom: p[0] === 9 ? b : undefined };
+      });
+    });
+
+    // Daily table
+    var HR = 11, hr = ws.getRow(HR); hr.values = head; hr.height = 20;
+    hr.eachCell(function(cell, i){
+      cell.font = font({ size: 9, bold: true, color: { argb: 'FF3D4660' } });
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF2FA' } };
+      cell.border = { bottom: { style: 'thin', color: { argb: 'FFD6DCEA' } } };
+      cell.alignment = { vertical: 'middle', horizontal: (i === 6 || i === 7) ? 'right' : 'left', indent: i === 8 ? 1 : 0 };
+    });
+    o.rows.forEach(function(a, i){
+      var p = a[0].split('-').map(Number), wk = tsIsWeekend(a);
+      var row = ws.getRow(HR + 1 + i);
+      row.values = [new Date(Date.UTC(p[0], p[1] - 1, p[2])), a[2], a[3], a[4], a[5], tsNum(a[6]), tsNum(a[7]), tsOtLabel(a[8]), tsLeaveText(a[9]), a[10], a[11], a[12] || (wk ? 'Weekend' : '')];
+      row.eachCell({ includeEmpty: true }, function(cell, ci){
+        if(ci > 12) return;
+        cell.font = font({ size: 10, color: { argb: wk ? 'FFA3A9B8' : INK }, italic: wk && ci === 12 });
+        cell.border = { bottom: { style: 'thin', color: { argb: LINE } } };
+        cell.alignment = { vertical: 'top', horizontal: (ci === 6 || ci === 7) ? 'right' : 'left', wrapText: ci >= 9, indent: ci === 8 ? 1 : 0 };
+        if(wk) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFAFBFD' } };
+      });
+      row.getCell(1).numFmt = 'ddd d mmm yyyy'; row.getCell(6).numFmt = '0.00'; row.getCell(7).numFmt = '0.00';
+      if(a[8] === 'Rejected') row.getCell(8).font = font({ color: { argb: 'FFC9271D' } });
+      else if(a[8] === 'Approved') row.getCell(8).font = font({ color: { argb: 'FF1A8A4B' } });
+      else if(a[8] === 'Pending') row.getCell(8).font = font({ color: { argb: 'FFB86B00' } });
+    });
+    var first = HR + 1, last = HR + o.rows.length, tr = ws.getRow(last + 1);
+    tr.values = [o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked', '', '', '', 'Total',
+      { formula: 'SUM(F' + first + ':F' + last + ')', result: Math.round(o.reg * 100) / 100 },
+      { formula: 'SUM(G' + first + ':G' + last + ')', result: Math.round((o.ot + o.otPend) * 100) / 100 }, '', '', '', '', ''];
+    tr.eachCell({ includeEmpty: true }, function(cell, ci){
+      if(ci > 12) return;
+      cell.font = font({ bold: true });
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF7F9FD' } };
+      cell.border = { top: { style: 'medium', color: { argb: 'FFD6DCEA' } }, bottom: { style: 'thin', color: { argb: 'FFD6DCEA' } } };
+      cell.alignment = { horizontal: (ci >= 5 && ci <= 7) ? 'right' : 'left' };
+    });
+    tr.getCell(6).numFmt = '0.00'; tr.getCell(7).numFmt = '0.00';
+    var nt = ws.getCell('A' + (last + 3)); nt.value = TS_EXPORT_NOTE; nt.font = font({ size: 8.5, color: { argb: GREY } });
+
+    var buf = await wb.xlsx.writeBuffer();
+    var blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'Timesheet-Report_' + r.from + '_to_' + r.to + '.xlsx';
+    document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 800);
+  } catch(err){
+    alert('Could not build the Excel file: ' + (err.message || err));
+  } finally {
+    if(btn){ btn.disabled = false; btn.innerHTML = orig; }
+  }
+}
+
+async function tsExportPdf(){
+  var r = TS_CUR; if(!r) return;
+  var w = window.open('', '_blank');
+  if(!w){ alert('Please allow pop-ups for this site to open the report.'); return; }
+  w.document.write('<p style="font-family:sans-serif;padding:24px;color:#5b6478">Preparing your report…</p>');
+  var o = tsReportData(r), name = await tsMyName(), gen = new Date();
+  var stCls = { Approved: 'approved', Pending: 'pending', Rejected: 'declined' };
+  var body = '';
+  o.rows.forEach(function(a){
+    var wk = tsIsWeekend(a);
+    var lunch = a[3] ? a[3] + (a[4] ? ' – ' + a[4] : '') : '';
+    var lv = [tsLeaveText(a[9]), a[10] ? 'Public Holiday: ' + a[10] : ''].filter(Boolean).map(esc).join('<br>');
+    body += '<tr' + (wk ? ' class="wk"' : '') + '><td class="nw">' + fmtDay(a[0]) + '</td><td class="nw">' + esc(a[2]) + '</td><td class="nw">' + esc(lunch) + '</td><td class="nw">' + esc(a[5]) + '</td>'
+      + '<td class="n">' + esc(a[6]) + '</td><td class="n">' + esc(a[7]) + '</td>'
+      + '<td>' + (a[8] ? '<span class="st ' + (stCls[a[8]] || '') + '">' + esc(tsOtLabel(a[8])) + '</span>' : '') + '</td>'
+      + '<td>' + (lv || (wk ? '<i>Weekend</i>' : '')) + '</td><td class="note">' + esc(a[12]) + '</td></tr>';
+  });
+  var kpi = function(v, l, s){ return '<div class="kpi"><div class="kv">' + tsHrs(v) + ' <small>hrs</small></div><div class="kl">' + l + '</div><div class="ks">' + s + '</div></div>'; };
+  var kpis = '<div class="kpis">' + kpi(o.total, 'Total Hours', o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked') + kpi(o.reg, 'Regular', 'Up to 8 hrs a day')
+    + kpi(o.ot, 'Overtime', o.otPend ? '+' + tsHrs(o.otPend) + ' hrs pending' : 'Approved only') + kpi(o.leave + o.hol, 'Leave &amp; Holidays', 'Paid, not worked') + '</div>';
+  var logo = new URL('ddl-logo.png', location.href).href;
+  var css = '*{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#14213d;margin:0;background:#f4f6fb}'
+    + '.page{max-width:1000px;margin:0 auto;padding:28px 32px 40px;background:#fff}'
+    + '.bar{position:sticky;top:0;background:#0f1b3d;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;z-index:2}'
+    + '.bar button{background:#2f6bff;color:#fff;border:none;border-radius:8px;height:32px;padding:0 16px;font-weight:700;cursor:pointer;margin-left:8px}.bar button.g{background:transparent;border:1px solid rgba(255,255,255,.4)}'
+    + 'header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #0f1b3d;padding-bottom:14px;margin-bottom:6px}'
+    + 'header img{height:46px}h1{font-size:22px;margin:0 0 2px;text-align:right}.co{font-size:11.5px;color:#5b6478;text-align:right}'
+    + '.filters{font-size:12px;color:#5b6478;margin:10px 0 4px}.filters b{color:#14213d}.gen{font-size:10.5px;color:#8a91a5}'
+    + 'h2{font-size:15px;margin:26px 0 2px;padding-top:4px;color:#0f1b3d}.sub{font-size:11px;color:#8a91a5;margin:0 0 8px}'
+    + 'table{width:100%;border-collapse:collapse;font-size:11px}th{text-align:left;background:#eef2fa;color:#3d4660;font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:7px 7px;border-bottom:1px solid #d6dcea}'
+    + 'td{padding:5px 7px;border-bottom:1px solid #e9ecf3;vertical-align:top}tfoot td{font-weight:700;background:#f7f9fd;border-top:2px solid #d6dcea}'
+    + 'tr.wk td{color:#a3a9b8;background:#fafbfd}'
+    + 'th{white-space:nowrap}td.note{min-width:140px}'
+    + '.n{text-align:right;white-space:nowrap}.nw{white-space:nowrap}.dd{color:#8a91a5;font-weight:400;font-size:10px}.note{color:#5b6478;font-size:10.5px}'
+    + '.st{font-size:9.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}.st.approved{background:#e6f6ec;color:#1a8a4b}.st.pending{background:#fff4e0;color:#b86b00}.st.declined{background:#ffe9e8;color:#c9271d}'
+    + '.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 4px}.kpi{border:1px solid #e1e6f0;border-radius:10px;padding:10px 12px;background:#f8faff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.kv{font-size:20px;font-weight:800;color:#0f1b3d}.kv small{font-size:11px;font-weight:600;color:#8a91a5}.kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#5b6478;margin-top:2px}.ks{font-size:10px;color:#8a91a5;margin-top:1px}'
+    + 'footer{margin-top:30px;font-size:10px;color:#8a91a5;border-top:1px solid #e6e9f2;padding-top:8px}'
+    + '@media print{body{background:#fff}.bar{display:none}.page{padding:0;max-width:none}th,tfoot td,tr.wk td,.st{-webkit-print-color-adjust:exact;print-color-adjust:exact}tfoot{display:table-row-group}tr{break-inside:avoid}h2{break-after:avoid}thead{display:table-header-group}}'
+    + '@page{size:A4;margin:14mm 12mm}';
+  var title = 'Timesheet Report ' + r.from + ' to ' + r.to;
+  var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>' + css + '</style></head><body>'
+    + '<div class="bar"><span>Timesheet Report · use <b>Save as PDF</b> in the print dialog</span><span><button class="g" onclick="window.close()">Close</button><button onclick="window.print()">Print / Save as PDF</button></span></div>'
+    + '<div class="page"><header><img src="' + logo + '" alt="DDL"><div><h1>Timesheet Report</h1><div class="co">Digital Door Locks Pty Limited</div></div></header>'
+    + '<div class="filters">Employee: <b>' + esc(name) + '</b> · Period: <b>' + fmtDay(r.from) + ' – ' + fmtDay(r.to) + '</b></div><div class="gen">Generated ' + tsGenStamp(gen) + '</div>'
+    + kpis
+    + '<h2>Daily Hours</h2><p class="sub">Every day in the period, in date order. Weekends are greyed out.</p>'
+    + '<table><thead><tr><th>Date</th><th>Clock In</th><th>Lunch</th><th>Clock Out</th><th class="n">Regular</th><th class="n">OT</th><th>OT Status</th><th>Leave / Holiday</th><th>Note</th></tr></thead><tbody>' + body + '</tbody>'
+    + '<tfoot><tr><td colspan="4">' + o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked</td><td class="n">' + tsHrs(o.reg) + '</td><td class="n">' + tsHrs(o.ot + o.otPend) + '</td><td colspan="3"></td></tr></tfoot></table>'
+    + '<footer>' + TS_EXPORT_NOTE + '</footer></div>'
+    + '<script>window.onload=function(){setTimeout(function(){window.print();},350);};<\/script></body></html>';
+  w.document.open(); w.document.write(doc); w.document.close();
 }
 function tsRenderShifts(){
   var today = tsToday(), r;
