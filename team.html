@@ -1008,7 +1008,7 @@ function dateTile(dateStr, cls, title){
   var d = new Date(dateStr + 'T00:00:00');
   return '<div class="dt ' + (cls||'') + '">'
     + '<div class="dt-day">' + d.getDate() + '</div>'
-    + '<div class="dt-mon">' + MONS[d.getMonth()] + ' · ' + DOWS[d.getDay()] + '</div>'
+    + '<div class="dt-mon">' + MONS[d.getMonth()] + ' ' + d.getFullYear() + ' · ' + DOWS[d.getDay()] + '</div>'
     + '<div class="dt-name">' + title + '</div>'
     + '</div>';
 }
@@ -1645,105 +1645,162 @@ function tsIsWeekend(row){ return row[1] === 'Sat' || row[1] === 'Sun'; }
 function tsGenStamp(gen){ return fmtDay(isoOf(gen)) + ' ' + gen.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }); }
 var TS_EXPORT_NOTE = 'Hours follow the same rule as My Timesheet: up to 8 regular hours a day; overtime counts once approved. Times are in Philippines time.';
 
+// Excel styling shared by every sheet
+var TSX = { NAVY: 'FF0F1B3D', MID: 'FF5B6478', GREY: 'FF8A91A5', INK: 'FF14213D', LINE: 'FFE9ECF3' };
+function tsxFont(o){ return Object.assign({ name: 'Calibri', size: 10, color: { argb: TSX.INK } }, o || {}); }
+function tsxFill(c){ return { type: 'pattern', pattern: 'solid', fgColor: { argb: c } }; }
+function tsLogoB64(){
+  return new Promise(function(res){
+    fetch('ddl-logo.png').then(function(x){ return x.blob(); }).then(function(b){ var fr = new FileReader(); fr.onload = function(){ res(fr.result); }; fr.onerror = function(){ res(null); }; fr.readAsDataURL(b); }, function(){ res(null); });
+  });
+}
+function tsxSheetName(wb, name){
+  var b = String(name || 'Sheet').replace(/[\\\/\?\*\[\]:]/g, ' ').trim().slice(0, 31) || 'Sheet', n = b, i = 2;
+  while(wb.getWorksheet(n)){ var suf = ' (' + (i++) + ')'; n = b.slice(0, 31 - suf.length) + suf; }
+  return n;
+}
+function tsxSheet(wb, name, widths, headRow){
+  var ws = wb.addWorksheet(tsxSheetName(wb, name), {
+    views: [{ showGridLines: false }],
+    pageSetup: { paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0, printTitlesRow: headRow + ':' + headRow,
+                 margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.2, footer: 0.2 } }
+  });
+  ws.columns = widths.map(function(w){ return { width: w }; });
+  return ws;
+}
+// Logo left, title right, navy rule, then the who / when lines
+function tsxHeader(ws, logoId, titleFrom, last, nCols, line1, gen){
+  ws.getRow(1).height = 30; ws.getRow(2).height = 18;
+  if(logoId != null) ws.addImage(logoId, { tl: { col: 0, row: 0.15 }, ext: { width: 110, height: 44 } });
+  ws.mergeCells(titleFrom + '1:' + last + '1'); ws.getCell(titleFrom + '1').value = 'Timesheet Report';
+  ws.getCell(titleFrom + '1').font = tsxFont({ size: 18, bold: true, color: { argb: TSX.NAVY } }); ws.getCell(titleFrom + '1').alignment = { horizontal: 'right', vertical: 'bottom' };
+  ws.mergeCells(titleFrom + '2:' + last + '2'); ws.getCell(titleFrom + '2').value = 'Digital Door Locks Pty Limited';
+  ws.getCell(titleFrom + '2').font = tsxFont({ size: 9.5, color: { argb: TSX.MID } }); ws.getCell(titleFrom + '2').alignment = { horizontal: 'right', vertical: 'top' };
+  for(var c = 1; c <= nCols; c++) ws.getRow(2).getCell(c).border = { bottom: { style: 'medium', color: { argb: TSX.NAVY } } };
+  ws.getCell('A4').value = line1; ws.getCell('A4').font = tsxFont({ size: 10, color: { argb: TSX.MID } });
+  ws.getCell('A5').value = 'Generated ' + tsGenStamp(gen); ws.getCell('A5').font = tsxFont({ size: 8.5, color: { argb: TSX.GREY } });
+}
+// Summary boxes on rows 7-9: [fromCol, toCol, value, label, sub]
+function tsxKpis(ws, boxes){
+  ws.getRow(7).height = 24;
+  boxes.forEach(function(k){
+    [[7, k[2], tsxFont({ size: 16, bold: true, color: { argb: TSX.NAVY } }), '0.00'], [8, k[3], tsxFont({ size: 8.5, bold: true, color: { argb: TSX.MID } })], [9, k[4], tsxFont({ size: 8.5, color: { argb: TSX.GREY } })]].forEach(function(p){
+      if(k[0] !== k[1]) ws.mergeCells(k[0] + p[0] + ':' + k[1] + p[0]);
+      var cell = ws.getCell(k[0] + p[0]); cell.value = p[1]; cell.font = p[2]; if(p[3]) cell.numFmt = p[3];
+      cell.alignment = { horizontal: 'left', vertical: 'middle', indent: 1 };
+      cell.fill = tsxFill('FFF8FAFF');
+      var b = { color: { argb: 'FFE1E6F0' }, style: 'thin' };
+      cell.border = { left: b, right: b, top: p[0] === 7 ? b : undefined, bottom: p[0] === 9 ? b : undefined };
+    });
+  });
+}
+function tsxHeadRow(ws, rowNo, head, rightCols){
+  var hr = ws.getRow(rowNo); hr.values = head; hr.height = 20;
+  hr.eachCell(function(cell, i){
+    cell.font = tsxFont({ size: 9, bold: true, color: { argb: 'FF3D4660' } });
+    cell.fill = tsxFill('FFEEF2FA');
+    cell.border = { bottom: { style: 'thin', color: { argb: 'FFD6DCEA' } } };
+    cell.alignment = { vertical: 'middle', horizontal: rightCols.indexOf(i) > -1 ? 'right' : 'left', indent: (rightCols.indexOf(i - 1) > -1 && rightCols.indexOf(i) < 0) ? 1 : 0 };
+  });
+}
+function tsxTotalRow(row, nCols, rightFrom){
+  row.eachCell({ includeEmpty: true }, function(cell, ci){
+    if(ci > nCols) return;
+    cell.font = tsxFont({ bold: true });
+    cell.fill = tsxFill('FFF7F9FD');
+    cell.border = { top: { style: 'medium', color: { argb: 'FFD6DCEA' } }, bottom: { style: 'thin', color: { argb: 'FFD6DCEA' } } };
+    cell.alignment = { horizontal: ci >= rightFrom ? 'right' : 'left' };
+  });
+}
+var TSX_RES = function(n){ return Math.round((n || 0) * 100) / 100; };
+// One person's sheet: summary boxes + every day in the period
+function tsxPersonSheet(wb, logoId, ctx, gen, sheetName){
+  var r = ctx.r, o = ctx.o;
+  var ws = tsxSheet(wb, sheetName || 'Timesheet', [17,10,11,10,10,11,9,13,22,18,17,30], 11);
+  tsxHeader(ws, logoId, 'H', 'L', 12, 'Employee: ' + ctx.name + '   ·   Period: ' + fmtDay(r.from) + ' – ' + fmtDay(r.to), gen);
+  tsxKpis(ws, [
+    ['A','B', o.total, 'Total Hours', o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked'],
+    ['C','E', o.reg, 'Regular', 'Up to 8 hrs a day'],
+    ['F','H', o.ot, 'Overtime', o.otPend ? '+' + tsHrs(o.otPend) + ' hrs pending' : 'Approved only'],
+    ['I','J', o.leave + o.hol, 'Leave & Holidays', 'Paid, not worked']
+  ]);
+  var HR = 11;
+  tsxHeadRow(ws, HR, ['Date','Clock In','Lunch Start','Lunch End','Clock Out','Regular Hrs','OT Hrs','OT Status','Leave','Public Holiday','Source','Note'], [6, 7]);
+  o.rows.forEach(function(a, i){
+    var p = a[0].split('-').map(Number), wk = tsIsWeekend(a);
+    var row = ws.getRow(HR + 1 + i);
+    row.values = [new Date(Date.UTC(p[0], p[1] - 1, p[2])), a[2], a[3], a[4], a[5], tsNum(a[6]), tsNum(a[7]), tsOtLabel(a[8]), tsLeaveText(a[9]), a[10], a[11], a[12] || (wk ? 'Weekend' : '')];
+    row.eachCell({ includeEmpty: true }, function(cell, ci){
+      if(ci > 12) return;
+      cell.font = tsxFont({ size: 10, color: { argb: wk ? 'FFA3A9B8' : TSX.INK }, italic: wk && ci === 12 });
+      cell.border = { bottom: { style: 'thin', color: { argb: TSX.LINE } } };
+      cell.alignment = { vertical: 'top', horizontal: (ci === 6 || ci === 7) ? 'right' : 'left', wrapText: ci >= 9, indent: ci === 8 ? 1 : 0 };
+      if(wk) cell.fill = tsxFill('FFFAFBFD');
+    });
+    row.getCell(1).numFmt = 'ddd d mmm yyyy'; row.getCell(6).numFmt = '0.00'; row.getCell(7).numFmt = '0.00';
+    if(a[8] === 'Rejected') row.getCell(8).font = tsxFont({ color: { argb: 'FFC9271D' } });
+    else if(a[8] === 'Approved') row.getCell(8).font = tsxFont({ color: { argb: 'FF1A8A4B' } });
+    else if(a[8] === 'Pending') row.getCell(8).font = tsxFont({ color: { argb: 'FFB86B00' } });
+  });
+  var first = HR + 1, last = HR + o.rows.length, tr = ws.getRow(last + 1);
+  tr.values = [o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked', '', '', '', 'Total',
+    { formula: 'SUM(F' + first + ':F' + last + ')', result: TSX_RES(o.reg) },
+    { formula: 'SUM(G' + first + ':G' + last + ')', result: TSX_RES(o.ot + o.otPend) }, '', '', '', '', ''];
+  tsxTotalRow(tr, 12, 5); for(var c = 8; c <= 12; c++) tr.getCell(c).alignment = { horizontal: 'left' };
+  tr.getCell(6).numFmt = '0.00'; tr.getCell(7).numFmt = '0.00';
+  var nt = ws.getCell('A' + (last + 3)); nt.value = TS_EXPORT_NOTE; nt.font = tsxFont({ size: 8.5, color: { argb: TSX.GREY } });
+}
+// All Staff: one line per person, then a sheet each
+function tsxSummarySheet(wb, logoId, ctx, gen){
+  var r = ctx.r, P = ctx.people, T = tsAllTotals(P);
+  var ws = tsxSheet(wb, 'Summary', [30,13,13,13,13,17,13], 11);
+  tsxHeader(ws, logoId, 'D', 'G', 7, 'All Staff (' + P.length + ')   ·   Period: ' + fmtDay(r.from) + ' – ' + fmtDay(r.to), gen);
+  tsxKpis(ws, [
+    ['A','A', T.total, 'Total Hours', P.length + ' staff'],
+    ['B','C', T.reg, 'Regular', 'Up to 8 hrs a day each'],
+    ['D','E', T.ot, 'Overtime', T.otPend ? '+' + tsHrs(T.otPend) + ' hrs pending' : 'Approved only'],
+    ['F','G', T.lv, 'Leave & Holidays', 'Paid, not worked']
+  ]);
+  var HR = 11;
+  tsxHeadRow(ws, HR, ['Employee','Days Worked','Regular Hrs','OT Approved','OT Pending','Leave & Holidays','Total Hours'], [2,3,4,5,6,7]);
+  P.forEach(function(p, i){
+    var o = p.o, row = ws.getRow(HR + 1 + i);
+    row.values = [p.name + (p.exit_date ? ' (Exited)' : ''), o.days, TSX_RES(o.reg), TSX_RES(o.ot), TSX_RES(o.otPend), TSX_RES(o.leave + o.hol), TSX_RES(o.total)];
+    row.eachCell({ includeEmpty: true }, function(cell, ci){
+      if(ci > 7) return;
+      cell.font = tsxFont({ bold: ci === 7 });
+      cell.border = { bottom: { style: 'thin', color: { argb: TSX.LINE } } };
+      cell.alignment = { horizontal: ci === 1 ? 'left' : 'right' };
+      if(ci >= 3) cell.numFmt = '0.00';
+    });
+  });
+  var first = HR + 1, last = HR + P.length, tr = ws.getRow(last + 1);
+  var sum = function(col, v){ return { formula: 'SUM(' + col + first + ':' + col + last + ')', result: v }; };
+  tr.values = ['Total', sum('B', T.days), sum('C', TSX_RES(T.reg)), sum('D', TSX_RES(T.ot)), sum('E', TSX_RES(T.otPend)), sum('F', TSX_RES(T.lv)), sum('G', TSX_RES(T.total))];
+  tsxTotalRow(tr, 7, 2); for(var c = 3; c <= 7; c++) tr.getCell(c).numFmt = '0.00';
+  var nt = ws.getCell('A' + (last + 3)); nt.value = 'Each person has their own sheet with every day in the period. ' + TS_EXPORT_NOTE; nt.font = tsxFont({ size: 8.5, color: { argb: TSX.GREY } });
+}
+function tsAllTotals(P){
+  return P.reduce(function(t, p){ var o = p.o; t.total += o.total; t.reg += o.reg; t.ot += o.ot; t.otPend += o.otPend; t.lv += o.leave + o.hol; t.days += o.days; return t; }, { total: 0, reg: 0, ot: 0, otPend: 0, lv: 0, days: 0 });
+}
+
 async function tsExportXlsx(btn, ctx){
   var r = ctx ? ctx.r : TS_CUR; if(!r) return;
   var orig = btn ? btn.innerHTML : '';
   if(btn){ btn.disabled = true; btn.textContent = 'Preparing…'; }
   try {
     await tsLoadExcelLib();
-    var o = ctx ? ctx.o : tsReportData(r), name = ctx ? ctx.name : await tsMyName(), gen = new Date();
-    var wb = new ExcelJS.Workbook(); wb.creator = 'DDL Staff Portal'; wb.created = gen;
-    var ws = wb.addWorksheet('Timesheet', {
-      views: [{ showGridLines: false }],
-      pageSetup: { paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0, printTitlesRow: '11:11',
-                   margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.2, footer: 0.2 } }
-    });
-    var NAVY = 'FF0F1B3D', MID = 'FF5B6478', GREY = 'FF8A91A5', INK = 'FF14213D', LINE = 'FFE9ECF3';
-    var head = ['Date','Clock In','Lunch Start','Lunch End','Clock Out','Regular Hrs','OT Hrs','OT Status','Leave','Public Holiday','Source','Note'];
-    ws.columns = [17,10,11,10,10,11,9,13,22,18,17,30].map(function(w){ return { width: w }; });
-    var L = 'L';   // last column
-    var font = function(o){ return Object.assign({ name: 'Calibri', size: 10, color: { argb: INK } }, o || {}); };
-
-    // Header: logo left, title right, navy rule underneath
-    ws.getRow(1).height = 30; ws.getRow(2).height = 18;
-    try {
-      var logo = await new Promise(function(res, rej){
-        fetch('ddl-logo.png').then(function(x){ return x.blob(); }).then(function(b){ var fr = new FileReader(); fr.onload = function(){ res(fr.result); }; fr.onerror = rej; fr.readAsDataURL(b); }, rej);
-      });
-      ws.addImage(wb.addImage({ base64: logo, extension: 'png' }), { tl: { col: 0, row: 0.15 }, ext: { width: 110, height: 44 } });
-    } catch(e){}
-    ws.mergeCells('H1:' + L + '1'); ws.getCell('H1').value = 'Timesheet Report';
-    ws.getCell('H1').font = font({ size: 18, bold: true, color: { argb: NAVY } }); ws.getCell('H1').alignment = { horizontal: 'right', vertical: 'bottom' };
-    ws.mergeCells('H2:' + L + '2'); ws.getCell('H2').value = 'Digital Door Locks Pty Limited';
-    ws.getCell('H2').font = font({ size: 9.5, color: { argb: MID } }); ws.getCell('H2').alignment = { horizontal: 'right', vertical: 'top' };
-    for(var c = 1; c <= 12; c++) ws.getRow(2).getCell(c).border = { bottom: { style: 'medium', color: { argb: NAVY } } };
-
-    ws.getCell('A4').value = 'Employee: ' + name + '   ·   Period: ' + fmtDay(r.from) + ' – ' + fmtDay(r.to);
-    ws.getCell('A4').font = font({ size: 10, color: { argb: MID } });
-    ws.getCell('A5').value = 'Generated ' + tsGenStamp(gen);
-    ws.getCell('A5').font = font({ size: 8.5, color: { argb: GREY } });
-
-    // Summary boxes
-    var kpis = [
-      ['A','B', o.total, 'Total Hours', o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked'],
-      ['C','E', o.reg, 'Regular', 'Up to 8 hrs a day'],
-      ['F','H', o.ot, 'Overtime', o.otPend ? '+' + tsHrs(o.otPend) + ' hrs pending' : 'Approved only'],
-      ['I','J', o.leave + o.hol, 'Leave & Holidays', 'Paid, not worked']
-    ];
-    ws.getRow(7).height = 24;
-    kpis.forEach(function(k){
-      [[7, k[2], font({ size: 16, bold: true, color: { argb: NAVY } }), '0.00'], [8, k[3], font({ size: 8.5, bold: true, color: { argb: MID } })], [9, k[4], font({ size: 8.5, color: { argb: GREY } })]].forEach(function(p){
-        ws.mergeCells(k[0] + p[0] + ':' + k[1] + p[0]);
-        var cell = ws.getCell(k[0] + p[0]); cell.value = p[1]; cell.font = p[2]; if(p[3]) cell.numFmt = p[3];
-        cell.alignment = { horizontal: 'left', vertical: 'middle', indent: 1 };
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8FAFF' } };
-        var b = { color: { argb: 'FFE1E6F0' }, style: 'thin' };
-        cell.border = { left: b, right: b, top: p[0] === 7 ? b : undefined, bottom: p[0] === 9 ? b : undefined };
-      });
-    });
-
-    // Daily table
-    var HR = 11, hr = ws.getRow(HR); hr.values = head; hr.height = 20;
-    hr.eachCell(function(cell, i){
-      cell.font = font({ size: 9, bold: true, color: { argb: 'FF3D4660' } });
-      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF2FA' } };
-      cell.border = { bottom: { style: 'thin', color: { argb: 'FFD6DCEA' } } };
-      cell.alignment = { vertical: 'middle', horizontal: (i === 6 || i === 7) ? 'right' : 'left', indent: i === 8 ? 1 : 0 };
-    });
-    o.rows.forEach(function(a, i){
-      var p = a[0].split('-').map(Number), wk = tsIsWeekend(a);
-      var row = ws.getRow(HR + 1 + i);
-      row.values = [new Date(Date.UTC(p[0], p[1] - 1, p[2])), a[2], a[3], a[4], a[5], tsNum(a[6]), tsNum(a[7]), tsOtLabel(a[8]), tsLeaveText(a[9]), a[10], a[11], a[12] || (wk ? 'Weekend' : '')];
-      row.eachCell({ includeEmpty: true }, function(cell, ci){
-        if(ci > 12) return;
-        cell.font = font({ size: 10, color: { argb: wk ? 'FFA3A9B8' : INK }, italic: wk && ci === 12 });
-        cell.border = { bottom: { style: 'thin', color: { argb: LINE } } };
-        cell.alignment = { vertical: 'top', horizontal: (ci === 6 || ci === 7) ? 'right' : 'left', wrapText: ci >= 9, indent: ci === 8 ? 1 : 0 };
-        if(wk) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFAFBFD' } };
-      });
-      row.getCell(1).numFmt = 'ddd d mmm yyyy'; row.getCell(6).numFmt = '0.00'; row.getCell(7).numFmt = '0.00';
-      if(a[8] === 'Rejected') row.getCell(8).font = font({ color: { argb: 'FFC9271D' } });
-      else if(a[8] === 'Approved') row.getCell(8).font = font({ color: { argb: 'FF1A8A4B' } });
-      else if(a[8] === 'Pending') row.getCell(8).font = font({ color: { argb: 'FFB86B00' } });
-    });
-    var first = HR + 1, last = HR + o.rows.length, tr = ws.getRow(last + 1);
-    tr.values = [o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked', '', '', '', 'Total',
-      { formula: 'SUM(F' + first + ':F' + last + ')', result: Math.round(o.reg * 100) / 100 },
-      { formula: 'SUM(G' + first + ':G' + last + ')', result: Math.round((o.ot + o.otPend) * 100) / 100 }, '', '', '', '', ''];
-    tr.eachCell({ includeEmpty: true }, function(cell, ci){
-      if(ci > 12) return;
-      cell.font = font({ bold: true });
-      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF7F9FD' } };
-      cell.border = { top: { style: 'medium', color: { argb: 'FFD6DCEA' } }, bottom: { style: 'thin', color: { argb: 'FFD6DCEA' } } };
-      cell.alignment = { horizontal: (ci >= 5 && ci <= 7) ? 'right' : 'left' };
-    });
-    tr.getCell(6).numFmt = '0.00'; tr.getCell(7).numFmt = '0.00';
-    var nt = ws.getCell('A' + (last + 3)); nt.value = TS_EXPORT_NOTE; nt.font = font({ size: 8.5, color: { argb: GREY } });
-
+    if(!ctx) ctx = { r: r, o: tsReportData(r), name: await tsMyName() };
+    var gen = new Date(), wb = new ExcelJS.Workbook(); wb.creator = 'DDL Staff Portal'; wb.created = gen;
+    var b64 = await tsLogoB64(), logoId = b64 ? wb.addImage({ base64: b64, extension: 'png' }) : null;
+    if(ctx.people){
+      tsxSummarySheet(wb, logoId, ctx, gen);
+      ctx.people.forEach(function(p){ tsxPersonSheet(wb, logoId, { r: r, o: p.o, name: p.name }, gen, p.name); });
+    } else tsxPersonSheet(wb, logoId, ctx, gen);
     var buf = await wb.xlsx.writeBuffer();
     var blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = tsFileName(name, r) + '.xlsx';
+    a.download = tsFileName(ctx.people ? 'All Staff' : ctx.name, r) + '.xlsx';
     document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 800);
   } catch(err){
     alert('Could not build the Excel file: ' + (err.message || err));
@@ -1752,17 +1809,14 @@ async function tsExportXlsx(btn, ctx){
   }
 }
 
-async function tsExportPdf(getCtx){
-  if(!getCtx && !TS_CUR) return;
-  var w = window.open('', '_blank');
-  if(!w){ alert('Please allow pop-ups for this site to open the report.'); return; }
-  w.document.write('<p style="font-family:sans-serif;padding:24px;color:#5b6478">Preparing your report…</p>');
-  var ctx;
-  try { ctx = getCtx ? await getCtx() : { r: TS_CUR, o: tsReportData(TS_CUR), name: await tsMyName() }; }
-  catch(err){ w.document.body.innerHTML = '<p style="font-family:sans-serif;padding:24px;color:#c9271d">Could not build the report: ' + esc(err.message || err) + '</p>'; return; }
-  var r = ctx.r, o = ctx.o, name = ctx.name, gen = new Date();
-  var stCls = { Approved: 'approved', Pending: 'pending', Rejected: 'declined' };
-  var body = '';
+// PDF pieces (same look as the Leave Report)
+function tsPdfKpi(v, l, s){ return '<div class="kpi"><div class="kv">' + tsHrs(v) + ' <small>hrs</small></div><div class="kl">' + l + '</div><div class="ks">' + s + '</div></div>'; }
+function tsPdfHeader(logo, who, r, gen){
+  return '<header><img src="' + logo + '" alt="DDL"><div><h1>Timesheet Report</h1><div class="co">Digital Door Locks Pty Limited</div></div></header>'
+    + '<div class="filters">' + who + ' · Period: <b>' + fmtDay(r.from) + ' – ' + fmtDay(r.to) + '</b></div><div class="gen">Generated ' + tsGenStamp(gen) + '</div>';
+}
+function tsPdfPerson(o){
+  var stCls = { Approved: 'approved', Pending: 'pending', Rejected: 'declined' }, body = '';
   o.rows.forEach(function(a){
     var wk = tsIsWeekend(a);
     var lunch = a[3] ? a[3] + (a[4] ? ' – ' + a[4] : '') : '';
@@ -1772,10 +1826,34 @@ async function tsExportPdf(getCtx){
       + '<td>' + (a[8] ? '<span class="st ' + (stCls[a[8]] || '') + '">' + esc(tsOtLabel(a[8])) + '</span>' : '') + '</td>'
       + '<td>' + (lv || (wk ? '<i>Weekend</i>' : '')) + '</td><td class="note">' + esc(a[12]) + '</td></tr>';
   });
-  var kpi = function(v, l, s){ return '<div class="kpi"><div class="kv">' + tsHrs(v) + ' <small>hrs</small></div><div class="kl">' + l + '</div><div class="ks">' + s + '</div></div>'; };
-  var kpis = '<div class="kpis">' + kpi(o.total, 'Total Hours', o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked') + kpi(o.reg, 'Regular', 'Up to 8 hrs a day')
-    + kpi(o.ot, 'Overtime', o.otPend ? '+' + tsHrs(o.otPend) + ' hrs pending' : 'Approved only') + kpi(o.leave + o.hol, 'Leave &amp; Holidays', 'Paid, not worked') + '</div>';
-  var logo = new URL('ddl-logo.png', location.href).href;
+  return '<div class="kpis">' + tsPdfKpi(o.total, 'Total Hours', o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked') + tsPdfKpi(o.reg, 'Regular', 'Up to 8 hrs a day')
+    + tsPdfKpi(o.ot, 'Overtime', o.otPend ? '+' + tsHrs(o.otPend) + ' hrs pending' : 'Approved only') + tsPdfKpi(o.leave + o.hol, 'Leave &amp; Holidays', 'Paid, not worked') + '</div>'
+    + '<h2>Daily Hours</h2><p class="sub">Every day in the period, in date order. Weekends are greyed out.</p>'
+    + '<table><thead><tr><th>Date</th><th>Clock In</th><th>Lunch</th><th>Clock Out</th><th class="n">Regular</th><th class="n">OT</th><th>OT Status</th><th>Leave / Holiday</th><th>Note</th></tr></thead><tbody>' + body + '</tbody>'
+    + '<tfoot><tr><td colspan="4">' + o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked</td><td class="n">' + tsHrs(o.reg) + '</td><td class="n">' + tsHrs(o.ot + o.otPend) + '</td><td colspan="3"></td></tr></tfoot></table>';
+}
+async function tsExportPdf(getCtx){
+  if(!getCtx && !TS_CUR) return;
+  var w = window.open('', '_blank');
+  if(!w){ alert('Please allow pop-ups for this site to open the report.'); return; }
+  w.document.write('<p style="font-family:sans-serif;padding:24px;color:#5b6478">Preparing your report…</p>');
+  var ctx;
+  try { ctx = getCtx ? await getCtx() : { r: TS_CUR, o: tsReportData(TS_CUR), name: await tsMyName() }; }
+  catch(err){ w.document.body.innerHTML = '<p style="font-family:sans-serif;padding:24px;color:#c9271d">Could not build the report: ' + esc(err.message || err) + '</p>'; return; }
+  var r = ctx.r, gen = new Date(), logo = new URL('ddl-logo.png', location.href).href, main;
+  if(ctx.people){
+    var P = ctx.people, T = tsAllTotals(P);
+    main = tsPdfHeader(logo, '<b>All Staff (' + P.length + ')</b>', r, gen)
+      + '<div class="kpis">' + tsPdfKpi(T.total, 'Total Hours', P.length + ' staff') + tsPdfKpi(T.reg, 'Regular', 'Up to 8 hrs a day each')
+      + tsPdfKpi(T.ot, 'Overtime', T.otPend ? '+' + tsHrs(T.otPend) + ' hrs pending' : 'Approved only') + tsPdfKpi(T.lv, 'Leave &amp; Holidays', 'Paid, not worked') + '</div>'
+      + '<h2>Summary</h2><p class="sub">One line per person. Each person’s daily hours follow on their own page.</p>'
+      + '<table><thead><tr><th>Employee</th><th class="n">Days Worked</th><th class="n">Regular</th><th class="n">OT Approved</th><th class="n">OT Pending</th><th class="n">Leave &amp; Holidays</th><th class="n">Total Hours</th></tr></thead><tbody>'
+      + P.map(function(p){ var o = p.o; return '<tr><td>' + esc(p.name) + (p.exit_date ? ' <span class="dd">· exited ' + fmtDay(p.exit_date) + '</span>' : '') + '</td><td class="n">' + o.days + '</td><td class="n">' + tsHrs(o.reg) + '</td><td class="n">' + tsHrs(o.ot) + '</td><td class="n">' + tsHrs(o.otPend) + '</td><td class="n">' + tsHrs(o.leave + o.hol) + '</td><td class="n"><b>' + tsHrs(o.total) + '</b></td></tr>'; }).join('')
+      + '</tbody><tfoot><tr><td>Total</td><td class="n">' + T.days + '</td><td class="n">' + tsHrs(T.reg) + '</td><td class="n">' + tsHrs(T.ot) + '</td><td class="n">' + tsHrs(T.otPend) + '</td><td class="n">' + tsHrs(T.lv) + '</td><td class="n">' + tsHrs(T.total) + '</td></tr></tfoot></table>'
+      + P.map(function(p){ return '<section class="pb">' + tsPdfHeader(logo, 'Employee: <b>' + esc(p.name) + '</b>', r, gen) + tsPdfPerson(p.o) + '</section>'; }).join('');
+  } else {
+    main = tsPdfHeader(logo, 'Employee: <b>' + esc(ctx.name) + '</b>', r, gen) + tsPdfPerson(ctx.o);
+  }
   var css = '*{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#14213d;margin:0;background:#f4f6fb}'
     + '.page{max-width:1000px;margin:0 auto;padding:28px 32px 40px;background:#fff}'
     + '.bar{position:sticky;top:0;background:#0f1b3d;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;z-index:2}'
@@ -1791,27 +1869,22 @@ async function tsExportPdf(getCtx){
     + '.n{text-align:right;white-space:nowrap}.nw{white-space:nowrap}.dd{color:#8a91a5;font-weight:400;font-size:10px}.note{color:#5b6478;font-size:10.5px}'
     + '.st{font-size:9.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}.st.approved{background:#e6f6ec;color:#1a8a4b}.st.pending{background:#fff4e0;color:#b86b00}.st.declined{background:#ffe9e8;color:#c9271d}'
     + '.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 4px}.kpi{border:1px solid #e1e6f0;border-radius:10px;padding:10px 12px;background:#f8faff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.kv{font-size:20px;font-weight:800;color:#0f1b3d}.kv small{font-size:11px;font-weight:600;color:#8a91a5}.kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#5b6478;margin-top:2px}.ks{font-size:10px;color:#8a91a5;margin-top:1px}'
+    + '.pb{margin-top:44px;padding-top:28px;border-top:2px dashed #e1e6f0}'
     + 'footer{margin-top:30px;font-size:10px;color:#8a91a5;border-top:1px solid #e6e9f2;padding-top:8px}'
-    + '@media print{body{background:#fff}.bar{display:none}.page{padding:0;max-width:none}th,tfoot td,tr.wk td,.st{-webkit-print-color-adjust:exact;print-color-adjust:exact}tfoot{display:table-row-group}tr{break-inside:avoid}h2{break-after:avoid}thead{display:table-header-group}}'
+    + '@media print{body{background:#fff}.bar{display:none}.page{padding:0;max-width:none}.pb{break-before:page;margin-top:0;padding-top:0;border-top:none}th,tfoot td,tr.wk td,.st{-webkit-print-color-adjust:exact;print-color-adjust:exact}tfoot{display:table-row-group}tr{break-inside:avoid}h2{break-after:avoid}thead{display:table-header-group}}'
     + '@page{size:A4;margin:14mm 12mm}';
-  var title = tsFileName(name, r);
+  var title = tsFileName(ctx.people ? 'All Staff' : ctx.name, r);
   var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>' + css + '</style></head><body>'
     + '<div class="bar"><span>Timesheet Report · use <b>Save as PDF</b> in the print dialog</span><span><button class="g" onclick="window.close()">Close</button><button onclick="window.print()">Print / Save as PDF</button></span></div>'
-    + '<div class="page"><header><img src="' + logo + '" alt="DDL"><div><h1>Timesheet Report</h1><div class="co">Digital Door Locks Pty Limited</div></div></header>'
-    + '<div class="filters">Employee: <b>' + esc(name) + '</b> · Period: <b>' + fmtDay(r.from) + ' – ' + fmtDay(r.to) + '</b></div><div class="gen">Generated ' + tsGenStamp(gen) + '</div>'
-    + kpis
-    + '<h2>Daily Hours</h2><p class="sub">Every day in the period, in date order. Weekends are greyed out.</p>'
-    + '<table><thead><tr><th>Date</th><th>Clock In</th><th>Lunch</th><th>Clock Out</th><th class="n">Regular</th><th class="n">OT</th><th>OT Status</th><th>Leave / Holiday</th><th>Note</th></tr></thead><tbody>' + body + '</tbody>'
-    + '<tfoot><tr><td colspan="4">' + o.days + ' day' + (o.days !== 1 ? 's' : '') + ' worked</td><td class="n">' + tsHrs(o.reg) + '</td><td class="n">' + tsHrs(o.ot + o.otPend) + '</td><td colspan="3"></td></tr></tfoot></table>'
-    + '<footer>' + TS_EXPORT_NOTE + '</footer></div>'
+    + '<div class="page">' + main + '<footer>' + TS_EXPORT_NOTE + '</footer></div>'
     + '<script>window.onload=function(){setTimeout(function(){window.print();},350);};<\/script></body></html>';
   w.document.open(); w.document.write(doc); w.document.close();
 }
-// ---------- Admin: Timesheet Report for any staff member (My Team) ----------
+// ---------- Admin: Timesheet Report for any staff member, or all staff (My Team) ----------
 // Filled once the staff list is loaded (tmLoad)
 function trInit(){
   var sel = document.getElementById('trEmp'); if(!sel || sel.options.length) return;
-  sel.innerHTML = TM_EMPS.map(function(x){ return '<option value="' + esc(x.id) + '">' + esc(x.name) + (x.exit_date ? ' (Exited)' : '') + '</option>'; }).join('');
+  sel.innerHTML = '<option value="__all">All Staff</option>' + TM_EMPS.map(function(x){ return '<option value="' + esc(x.id) + '">' + esc(x.name) + (x.exit_date ? ' (Exited)' : '') + '</option>'; }).join('');
   trPerSet();
 }
 function trPerSet(){
@@ -1820,26 +1893,44 @@ function trPerSet(){
   var rg = p === 'last' ? tsPeriodOf(tsAdd(tsPeriodOf(today).from, -1)) : tsPeriodOf(today);
   document.getElementById('trFrom').value = rg.from; document.getElementById('trTo').value = rg.to;
 }
-// One person's clock records, Dashboard Timesheet hours and leave, run through the same rules as My Timesheet
-async function trData(empId, r){
-  var c = await sb.from('time_clock').select('*').eq('employee_id', empId).gte('work_date', r.from).lte('work_date', r.to).order('clock_in', { ascending: true });
-  if(c.error) throw new Error(c.error.message);
-  var t = await sb.from('timesheet_entries').select('work_date,hours_worked').eq('employee_id', empId).gte('work_date', r.from).lte('work_date', r.to);
-  if(t.error) throw new Error(t.error.message);
-  var l = await sb.from('leave_entries').select('leave_date,leave_type,hours').eq('employee_id', empId).gte('leave_date', r.from).lte('leave_date', r.to);
-  if(l.error) throw new Error(l.error.message);
-  var dash = {}; (t.data || []).forEach(function(x){ dash[x.work_date] = parseFloat(x.hours_worked) || 0; });
-  var keep = [TS_ROWS, TS_DASH, MY_ENTRIES], o;
-  TS_ROWS = c.data || []; TS_DASH = dash; MY_ENTRIES = l.data || [];
-  try { o = tsReportData(r); } finally { TS_ROWS = keep[0]; TS_DASH = keep[1]; MY_ENTRIES = keep[2]; }
-  return o;
+// Reads every page of a query (Supabase returns 1,000 rows at a time)
+async function trFetchAll(build){
+  var out = [], from = 0;
+  for(;;){
+    var res = await build().range(from, from + 999);
+    if(res.error) throw new Error(res.error.message);
+    out = out.concat(res.data || []);
+    if(!res.data || res.data.length < 1000) return out;
+    from += 1000;
+  }
+}
+// Clock records, Dashboard Timesheet hours and leave for the chosen staff, run through the same rules as My Timesheet
+async function trDataMany(emps, r){
+  var ids = emps.map(function(e){ return e.id; });
+  var clock = await trFetchAll(function(){ return sb.from('time_clock').select('*').in('employee_id', ids).gte('work_date', r.from).lte('work_date', r.to).order('clock_in', { ascending: true }); });
+  var ts = await trFetchAll(function(){ return sb.from('timesheet_entries').select('employee_id,work_date,hours_worked').in('employee_id', ids).gte('work_date', r.from).lte('work_date', r.to).order('work_date'); });
+  var lv = await trFetchAll(function(){ return sb.from('leave_entries').select('employee_id,leave_date,leave_type,hours').in('employee_id', ids).gte('leave_date', r.from).lte('leave_date', r.to).order('leave_date'); });
+  var keep = [TS_ROWS, TS_DASH, MY_ENTRIES];
+  try {
+    return emps.map(function(e){
+      var dash = {}; ts.forEach(function(x){ if(x.employee_id === e.id) dash[x.work_date] = parseFloat(x.hours_worked) || 0; });
+      TS_ROWS = clock.filter(function(x){ return x.employee_id === e.id; }); TS_DASH = dash; MY_ENTRIES = lv.filter(function(x){ return x.employee_id === e.id; });
+      return { id: e.id, name: e.name, exit_date: e.exit_date, o: tsReportData(r) };
+    });
+  } finally { TS_ROWS = keep[0]; TS_DASH = keep[1]; MY_ENTRIES = keep[2]; }
 }
 async function trRun(kind, btn){
   var emp = document.getElementById('trEmp').value, f = document.getElementById('trFrom').value, t = document.getElementById('trTo').value, err = document.getElementById('trErr');
   err.textContent = '';
   if(!emp || !f || !t || t < f){ err.textContent = 'Choose an employee and a valid date range.'; return; }
-  var r = { from: f, to: t }, name = (TM_EMPS.find(function(x){ return x.id === emp; }) || {}).name || '';
-  var getCtx = async function(){ return { r: r, o: await trData(emp, r), name: name }; };
+  var r = { from: f, to: t }, all = emp === '__all';
+  // All Staff: everyone still employed at the start of the period (leavers who exit inside it are included)
+  var list = all ? TM_EMPS.filter(function(x){ return !x.exit_date || x.exit_date >= f; }) : TM_EMPS.filter(function(x){ return x.id === emp; });
+  if(!list.length){ err.textContent = 'No staff were employed in this period.'; return; }
+  var getCtx = async function(){
+    var res = await trDataMany(list, r);
+    return all ? { r: r, people: res } : { r: r, o: res[0].o, name: res[0].name };
+  };
   if(kind === 'pdf') return tsExportPdf(getCtx);
   var ctx; btn.disabled = true;
   try { ctx = await getCtx(); } catch(e){ err.textContent = 'Could not load the records: ' + (e.message || e); btn.disabled = false; return; }
