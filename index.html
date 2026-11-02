@@ -2746,10 +2746,8 @@ function renderTimesheetGrid(){
     const cells = days.map(d => {
       const entry = TIMESHEET_ENTRIES.find(t => t.employee_id === emp.id && t.work_date === d.date);
       const hrs = entry ? (parseFloat(entry.hours_worked) || 0) : 0;
-      if(entry){
-        totalHours += hrs;
-        if(hrs > 8) totalOt += (hrs - 8);
-      }
+      if(entry) totalHours += hrs;
+      totalOt += dayOtHours(emp.id, d.date, hrs, entry && entry.source);
       const val = entry ? entry.hours_worked : '';
       const leave = leaveOn(emp.id, d.date);
       const badge = leave ? (() => {
@@ -2820,6 +2818,14 @@ let LEAVE_BALANCES = [];
 let leaveSelectedPeriod = '2026-09';
 
 function leaveTypeInfo(name){ return LEAVE_TYPES.find(t => t.name === name) || { name, paid: false, tracksBalance: false }; }
+// Overtime for one day: hours worked plus paid leave over 8 (e.g. 6.00 worked + 3.00 Personal Leave = 1.00 OT).
+// Unpaid leave never counts. Clock-in days keep the approval flow: only approved overtime (hours over 8) counts.
+function dayOtHours(employeeId, dateStr, workedHrs, source){
+  if(source === 'clock') return Math.max(0, Math.round(((workedHrs || 0) - 8) * 100) / 100);
+  const lv = leaveOn(employeeId, dateStr), info = lv ? leaveTypeInfo(lv.leave_type) : null;
+  const paid = (info && info.paid) ? (parseFloat(lv.hours) || 0) : 0;
+  return Math.max(0, Math.round(((workedHrs || 0) + paid - 8) * 100) / 100);
+}
 function leaveOn(employeeId, dateStr){ return LEAVE_ENTRIES.find(l => l.employee_id === employeeId && l.leave_date === dateStr) || null; }
 
 async function loadLeaveEntries(){
@@ -5278,7 +5284,7 @@ async function markAsPaid(empId){
   days.forEach(d=>{
     const entry=TIMESHEET_ENTRIES.find(t=>t.employee_id===emp.id&&t.work_date===d.date);
     const workedHrs=entry?(parseFloat(entry.hours_worked)||0):0;
-    if(workedHrs>8) totalOt+=(workedHrs-8);
+    totalOt+=dayOtHours(emp.id,d.date,workedHrs,entry&&entry.source);
     const leave=leaveOn(emp.id,d.date); const info=leave?leaveTypeInfo(leave.leave_type):null;
     const paidHrs=(info&&info.paid)?(parseFloat(leave.hours)||0):0;
     const unpaidHrs=(info&&!info.paid)?(parseFloat(leave.hours)||0):0;
@@ -5787,14 +5793,14 @@ function renderPay202(){
     // Overtime hours (hours over 8 worked on any day) and regular hours "accounted for" — actual hours
     // worked plus paid leave hours (Sick/Annual), combined and capped at 8/day. A weekday with neither
     // a timesheet entry nor a paid leave entry counts as unpaid/absent. Unpaid Leave is recorded for the
-    // record but never adds hours. Overtime is always derived purely from hours actually worked.
+    // record but never adds hours. Overtime = hours worked plus paid leave over 8 on a manual day; clock-in days count approved OT only (dayOtHours).
     let totalOt = 0;
     let regularHours = 0;
     let unpaidLeaveHours = 0;
     days.forEach(d => {
       const entry = TIMESHEET_ENTRIES.find(t => t.employee_id === emp.id && t.work_date === d.date);
       const workedHrs = entry ? (parseFloat(entry.hours_worked) || 0) : 0;
-      if(workedHrs > 8) totalOt += (workedHrs - 8);
+      totalOt += dayOtHours(emp.id, d.date, workedHrs, entry && entry.source);
 
       const leave = leaveOn(emp.id, d.date);
       const info = leave ? leaveTypeInfo(leave.leave_type) : null;
