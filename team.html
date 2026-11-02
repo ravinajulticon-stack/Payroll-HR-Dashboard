@@ -95,7 +95,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .rep-range b{ color:var(--text); }
 .rep-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
 .rep-grid label{ display:block; font-size:11.5px; font-weight:600; color:var(--text-2); margin-bottom:6px; }
-.rep-secs{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.rep-secs{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
 .rep-sec{ position:relative; display:flex; gap:10px; align-items:flex-start; padding:12px 30px 12px 12px; border:1.5px solid var(--border); border-radius:12px; background:#fbfcfe; cursor:pointer; transition:all 0.14s; user-select:none; }
 .rep-sec input{ position:absolute; opacity:0; pointer-events:none; }
 .rep-sec:hover{ border-color:#c9d6ff; }
@@ -745,6 +745,7 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
         <div class="rep-secs">
           <label class="rep-sec on" id="sec_incSummary"><input type="checkbox" id="incSummary" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic b"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 6.2a1.7 1.7 0 1 0 0-.01M2.6 12.5c.4-1.7 1.6-2.6 2.9-2.6s2.5.9 2.9 2.6M10 5.5h3.5M10 8h3.5M11 10.5h2.5"/></svg></span><span><div class="rep-sec-t">Summary Per Person</div><div class="rep-sec-d">Days and hours of each leave type, per person</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
           <label class="rep-sec on" id="sec_incBalances"><input type="checkbox" id="incBalances" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic g"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="12" height="9.5" rx="2"/><path d="M2 6.5h12M10.5 9.8h1.3"/></svg></span><span><div class="rep-sec-t">Current Balances</div><div class="rep-sec-d">Hours available today, plus leave booked ahead</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
+          <label class="rep-sec on" id="sec_incRunning"><input type="checkbox" id="incRunning" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic b"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12.5l3.5-3.5 2.5 2.5L14 5.5"/><path d="M10.5 5.5H14V9"/></svg></span><span><div class="rep-sec-t">Running Balance</div><div class="rep-sec-d">Opening balance, each accrual and leave day, line by line</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
           <label class="rep-sec on" id="sec_incTaken"><input type="checkbox" id="incTaken" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic p"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3M5.5 9.5h1M9.5 9.5h1M5.5 11.7h1"/></svg></span><span><div class="rep-sec-t">Leave Taken (By Date)</div><div class="rep-sec-d">Every leave day in the period, in date order</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
           <label class="rep-sec on" id="sec_incRequests"><input type="checkbox" id="incRequests" checked onchange="repSecToggle(this)"><span class="rep-sec-ic qa-ic o"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1.8h5.5L13 5.3V14a.9.9 0 0 1-.9.9H4a.9.9 0 0 1-.9-.9V2.7a.9.9 0 0 1 .9-.9z"/><path d="M5.6 9l1.6 1.6 3.2-3.2"/></svg></span><span><div class="rep-sec-t">Leave Requests</div><div class="rep-sec-d">Submitted, status, reason and approver note</div></span><span class="rep-chk"><svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-4.9"/></svg></span></label>
         </div>
@@ -2377,7 +2378,7 @@ function repSecToggle(cb){ cb.closest('.rep-sec').classList.toggle('on', cb.chec
 function repReset(){
   document.getElementById('repEmp').value = '';
   document.getElementById('repType').value = '';
-  ['incSummary','incBalances','incTaken','incRequests'].forEach(function(id){ var c = document.getElementById(id); c.checked = true; repSecToggle(c); });
+  ['incSummary','incBalances','incRunning','incTaken','incRequests'].forEach(function(id){ var c = document.getElementById(id); c.checked = true; repSecToggle(c); });
   document.getElementById('repMsg').textContent = '';
   repPreset('month');
 }
@@ -2434,11 +2435,11 @@ async function generateReport(){
   var from = document.getElementById('repFrom').value, to = document.getElementById('repTo').value;
   var empId = document.getElementById('repEmp').value, type = document.getElementById('repType').value;
   var inc = { summary: document.getElementById('incSummary').checked, balances: document.getElementById('incBalances').checked,
-              taken: document.getElementById('incTaken').checked, requests: document.getElementById('incRequests').checked };
+              taken: document.getElementById('incTaken').checked, running: document.getElementById('incRunning').checked, requests: document.getElementById('incRequests').checked };
   var msg = document.getElementById('repMsg');
   if(!from || !to){ msg.className = 'reqmsg err'; msg.textContent = 'Choose a From and To date.'; return; }
   if(from > to){ msg.className = 'reqmsg err'; msg.textContent = 'From date must be on or before the To date.'; return; }
-  if(!inc.summary && !inc.balances && !inc.taken && !inc.requests){ msg.className = 'reqmsg err'; msg.textContent = 'Tick at least one section.'; return; }
+  if(!inc.summary && !inc.balances && !inc.running && !inc.taken && !inc.requests){ msg.className = 'reqmsg err'; msg.textContent = 'Tick at least one section.'; return; }
 
   // open the window during the click so the browser doesn't block it as a pop-up
   var w = window.open('', '_blank');
@@ -2526,7 +2527,51 @@ async function generateReport(){
       }
     }
 
-    // 3. Leave taken by date
+    // 3. Running balance: opening balance, then each 15th accrual and each leave day in date order
+    if(inc.running){
+      var rTypes = ['Annual Leave', 'Personal Leave'].filter(function(t){ return !type || t === type; });
+      out += '<h2>Running Balance</h2><p class="sub">Opening balance at the start of the period, then each monthly accrual (15th) and each leave day in date order, with the balance after every line. Dates after today are booked leave or upcoming accruals.</p>';
+      if(!rTypes.length) out += '<p class="none">' + esc(type) + ' has no accruing balance.</p>';
+      else {
+        var anyR = false, dayBefore = new Date(from + 'T00:00:00'); dayBefore.setDate(dayBefore.getDate() - 1);
+        people.slice().sort(function(a, b){ return a.name.localeCompare(b.name); }).forEach(function(e){
+          var blocks = rTypes.map(function(t){
+            var rec = bals.find(function(b){ return b.employee_id === e.id && b.leave_type === t; });
+            if(!rec || rec.seed_date > to) return '';
+            var bal, openLbl, after;
+            if(rec.seed_date >= from){ bal = parseFloat(rec.seed_balance) || 0; openLbl = 'Opening Balance <span class="dd">(set up ' + fmtDay(rec.seed_date) + ')</span>'; after = rec.seed_date; }
+            else { bal = repBalance(e, rec, entries, dayBefore); openLbl = 'Opening Balance'; after = isoOf(dayBefore); }
+            var end = (e.exit_date && e.exit_date < to) ? e.exit_date : to;   // nothing accrues or is taken after the exit date
+            var ev = [], rate = ACCRUAL[t] || 0, y = +after.slice(0, 4), m = +after.slice(5, 7);
+            for(var k = 0; k < 600; k++){
+              var d15 = y + '-' + String(m).padStart(2, '0') + '-15';
+              if(d15 > end) break;
+              if(d15 > after && d15 > rec.seed_date) ev.push({ d: d15, o: 0, add: rate, lbl: 'Monthly Accrual' });
+              m++; if(m > 12){ m = 1; y++; }
+            }
+            entries.forEach(function(l){
+              if(l.employee_id === e.id && l.leave_type === t && l.leave_date > after && l.leave_date > rec.seed_date && l.leave_date <= end)
+                ev.push({ d: l.leave_date, o: 1, use: parseFloat(l.hours) || 0, lbl: 'Leave Taken' + (l.note ? ' <span class="dd">· ' + esc(l.note) + '</span>' : '') });
+            });
+            ev.sort(function(a, b){ return a.d.localeCompare(b.d) || a.o - b.o; });
+            anyR = true;
+            var rows = '<tr class="open"><td class="nw">' + fmtDay(after === rec.seed_date ? rec.seed_date : from) + '</td><td>' + openLbl + '</td><td class="n"></td><td class="n"></td><td class="n"><b' + (bal < 0 ? ' class="neg"' : '') + '>' + h2(bal) + '</b> <span class="dd">(' + d1(bal) + 'd)</span></td></tr>';
+            var added = 0, used = 0;
+            ev.forEach(function(x){
+              bal += (x.add || 0) - (x.use || 0); added += x.add || 0; used += x.use || 0;
+              var fut = x.d > todayStr ? ' <span class="tag' + (x.o ? '' : ' up') + '">' + (x.o ? 'Booked' : 'Upcoming') + '</span>' : '';
+              rows += '<tr><td class="nw">' + fmtDay(x.d) + fut + '</td><td>' + x.lbl + '</td><td class="n pos">' + (x.add ? '+' + h2(x.add) : '') + '</td><td class="n">' + (x.use ? '−' + h2(x.use) : '') + '</td><td class="n"' + (bal < 0 ? ' style="color:#c9271d"' : '') + '>' + h2(bal) + '</td></tr>';
+            });
+            return '<div class="rbt">' + esc(t) + '</div><table><thead><tr><th style="width:150px">Date</th><th>Detail</th><th class="n">Added</th><th class="n">Used</th><th class="n">Balance (Hrs)</th></tr></thead><tbody>' + rows + '</tbody>'
+              + '<tfoot><tr><td colspan="2">Closing Balance · ' + fmtDay(end) + (e.exit_date && e.exit_date <= to ? ' <span class="dd">(exit date)</span>' : '') + '</td><td class="n">+' + h2(added) + '</td><td class="n">−' + h2(used) + '</td><td class="n"' + (bal < 0 ? ' style="color:#c9271d"' : '') + '>' + h2(bal) + ' <span class="dd">(' + d1(bal) + 'd)</span></td></tr></tfoot></table>';
+          }).join('');
+          if(blocks) out += '<div class="rbp"><h3>' + esc(e.name) + (e.exit_date ? ' <span class="dd">· exited ' + fmtDay(e.exit_date) + '</span>' : '') + '</h3>' + blocks + '</div>';
+        });
+        if(!anyR) out += '<p class="none">No balances have been set up for the selection.</p>';
+      }
+    }
+
+    // 4. Leave taken by date
     if(inc.taken){
       out += '<h2>Leave Taken (By Date)</h2><p class="sub">Every leave day recorded in the period, in date order.</p>';
       if(!inRange.length) out += '<p class="none">No leave recorded in this period.</p>';
@@ -2541,7 +2586,7 @@ async function generateReport(){
       }
     }
 
-    // 4. Leave requests overlapping the period
+    // 5. Leave requests overlapping the period
     if(inc.requests){
       var rq = reqs.filter(function(r){ return r.start_date <= to && r.end_date >= from && (!empId || r.employee_id === empId) && (!type || r.leave_type === type); })
         .sort(function(a, b){ return a.start_date.localeCompare(b.start_date) || String(a.employee_name).localeCompare(String(b.employee_name)); });
@@ -2577,8 +2622,9 @@ async function generateReport(){
       + '.tag{font-size:9px;background:#fff1e3;color:#c26f00;border-radius:4px;padding:1px 5px;font-weight:700;text-transform:uppercase}'
       + '.st{font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}.st.approved{background:#e6f6ec;color:#1a8a4b}.st.pending{background:#fff4e0;color:#b86b00}.st.declined{background:#ffe9e8;color:#c9271d}.st.cancelled{background:#f0f1f5;color:#5b6478}'
       + '.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 4px}.kpi{border:1px solid #e1e6f0;border-radius:10px;padding:10px 12px;background:#f8faff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.kv{font-size:20px;font-weight:800;color:#0f1b3d}.kl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#5b6478;margin-top:2px}.ks{font-size:10px;color:#8a91a5;margin-top:1px}'
+      + 'h3{font-size:13px;margin:20px 0 2px;color:#0f1b3d}.rbt{font-size:10.5px;font-weight:700;color:#5b6478;text-transform:uppercase;letter-spacing:.4px;margin:10px 0 4px}.rbp{padding-bottom:4px;border-bottom:1px dashed #e1e6f0}.pos{color:#1a8a4b}.tag.up{background:#eef2fa;color:#3d4660}tr.open td{background:#fbfcfe}'
       + 'footer{margin-top:30px;font-size:10px;color:#8a91a5;border-top:1px solid #e6e9f2;padding-top:8px}'
-      + '@media print{body{background:#fff}.bar{display:none}.page{padding:0;max-width:none}th,tfoot td,.st,.tag{-webkit-print-color-adjust:exact;print-color-adjust:exact}tr{break-inside:avoid}h2{break-after:avoid}thead{display:table-header-group}}'
+      + '@media print{body{background:#fff}.bar{display:none}.page{padding:0;max-width:none}h3{break-after:avoid}.rbt{break-after:avoid}th,tfoot td,.st,.tag,tr.open td{-webkit-print-color-adjust:exact;print-color-adjust:exact}tfoot{display:table-row-group}tr{break-inside:avoid}h2{break-after:avoid}thead{display:table-header-group}}'
       + '@page{size:A4;margin:14mm 12mm}';
     var title = 'DDL Leave Report ' + from + ' to ' + to;
     var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>' + css + '</style></head><body>'
