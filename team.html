@@ -1596,7 +1596,9 @@ function tsReportData(r){
         if(x.ot_status && x.ot_status !== 'none') otSt = x.ot_status;
       });
     } else if(info.dash != null) reg = info.dash;
-    var lvH = info.leaveHrs, holH = (!info.rows.length && info.dash == null && info.hol) ? 8 : 0;
+    var wkDay = dd.getDay() !== 0 && dd.getDay() !== 6;
+    // a weekday public holiday with nothing recorded is paid 8 hrs; leave on the day (e.g. Holiday Leave) is counted once, as leave
+    var lvH = info.leaveHrs, holH = (wkDay && !info.rows.length && info.dash == null && !info.leave.length && info.hol) ? 8 : 0;
     out.reg += reg; out.ot += ot; out.otPend += pend; out.leave += lvH; out.hol += holH;
     if(reg + ot + pend > 0) out.days++;
     var x0 = info.rows[0] || {}, xl = info.rows[info.rows.length - 1] || {};
@@ -1963,14 +1965,16 @@ function tsRenderShifts(){
       if(info.rows.some(function(x){ return x.edited_by; })) sub += ' · Adjusted by Payroll';
       info.rows.forEach(function(x){ if(x.ot_status === 'approved') sub += ' · OT Approved'; if(x.ot_status === 'rejected') sub += ' · OT Not Approved' + (x.ot_review_note ? ': ' + esc(x.ot_review_note) : ''); });
       if(info.leave.length) sub += ' · ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
+      if(info.hol && !isWk) sub += ' · <b>Public Holiday · Double Pay</b>';
     } else if(info.dash != null && info.dash > 0){
       chip = '<span class="sc s-done">Recorded</span>'; sub = 'From the Payroll Timesheet';
       hrs = tsHrs(info.dash) + '<small> hrs</small>';
       if(info.leave.length) sub += ' \u00b7 ' + info.leave.map(function(e){ return tsHrs(e.hours) + 'h ' + e.leave_type; }).join(', ');
+      if(info.hol && !isWk) sub += ' \u00b7 <b>Public Holiday \u00b7 Double Pay</b>';
     } else if(info.leave.length){
       chip = '<span class="sc s-lv">' + esc(info.leave[0].leave_type) + '</span>'; sub = tsHrs(info.leaveHrs) + 'h Leave';
     } else if(info.hol){
-      chip = '<span class="sc s-ph">Public Holiday</span>'; sub = esc(info.hol.name);
+      chip = '<span class="sc s-ph">Public Holiday</span>'; sub = esc(info.hol.name) + (isWk ? ' · Weekend' : ' · Paid 8.00 hrs');
     } else if(isWk){
       chip = '<span class="sc s-wk">Weekend</span>'; rowCls += ' wkend';
     } else if(d === today){
