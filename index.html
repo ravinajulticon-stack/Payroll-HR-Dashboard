@@ -2756,8 +2756,9 @@ function renderTimesheetGrid(){
         return `<div class="ts-leave-badge ${info.paid ? 'ts-leave-paid' : 'ts-leave-unpaid'}" title="${leave.leave_type} \u2014 ${fmtHrs(parseFloat(leave.hours)||0)}h${leave.note ? ': ' + leave.note.replace(/"/g,'&quot;') : ''}">${abbrev} ${fmtHrs(parseFloat(leave.hours)||0)}h</div>`;
       })() : '';
       const holCls = holidayName[d.date] ? ' class="ts-holiday"' : '';
-      if(entry && entry.source === 'clock') return `<td${holCls}><input class="ts-clock-in" type="number" value="${val}" readonly title="From clock-in (approved overtime only). To change, edit the shift in My Timesheet \u2192 My Team.">${badge}</td>`;
-      return `<td${holCls}><input type="number" step="0.5" min="0" placeholder="\u2014" value="${val}" onchange="updateTimesheetHours('${emp.id}','${d.date}',this.value)">${badge}</td>`;
+      const phBadge = holidayAutoHrs(emp, d.date, entry, leave) ? `<div class="ts-leave-badge ts-leave-paid" title="Public Holiday \u2014 paid 8h automatically. Enter hours only if they worked it (Double Pay).">PH 8h</div>` : '';
+      if(entry && entry.source === 'clock') return `<td${holCls}><input class="ts-clock-in" type="number" value="${val}" readonly title="From clock-in (approved overtime only). To change, edit the shift in My Timesheet \u2192 My Team.">${badge}${phBadge}</td>`;
+      return `<td${holCls}><input type="number" step="0.5" min="0" placeholder="\u2014" value="${val}" onchange="updateTimesheetHours('${emp.id}','${d.date}',this.value)">${badge}${phBadge}</td>`;
     }).join('');
     // A row counts as complete when every working day is accounted for:
     // hours entered, on leave, a public holiday, or outside their employment dates.
@@ -2826,6 +2827,16 @@ function dayOtHours(employeeId, dateStr, workedHrs, source){
   const paid = (info && info.paid) ? (parseFloat(lv.hours) || 0) : 0;
   return Math.max(0, Math.round(((workedHrs || 0) + paid - 8) * 100) / 100);
 }
+// A weekday VIC public holiday is paid as 8 hrs when the person has no hours and no leave recorded that day
+// (only staff who work it need hours entered; they also get Double Pay). Skipped outside their employment dates.
+function holidayAutoHrs(emp, dateStr, entry, leave){
+  if(entry || leave) return 0;
+  if(emp.start_date && dateStr < emp.start_date) return 0;
+  if(emp.exit_date && dateStr > emp.exit_date) return 0;
+  const dow = new Date(dateStr + 'T00:00:00').getDay(); if(dow === 0 || dow === 6) return 0;
+  return (typeof VIC_HOLIDAYS !== 'undefined' && VIC_HOLIDAYS.some(function(h){ return h.date === dateStr; })) ? 8 : 0;
+}
+function isoLocal(d){ return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function leaveOn(employeeId, dateStr){ return LEAVE_ENTRIES.find(l => l.employee_id === employeeId && l.leave_date === dateStr) || null; }
 
 async function loadLeaveEntries(){
@@ -5288,7 +5299,7 @@ async function markAsPaid(empId){
     const leave=leaveOn(emp.id,d.date); const info=leave?leaveTypeInfo(leave.leave_type):null;
     const paidHrs=(info&&info.paid)?(parseFloat(leave.hours)||0):0;
     const unpaidHrs=(info&&!info.paid)?(parseFloat(leave.hours)||0):0;
-    regularHours+=Math.min(workedHrs+paidHrs,8); unpaidLeaveHours+=unpaidHrs;
+    regularHours+=Math.min(workedHrs+paidHrs+holidayAutoHrs(emp,d.date,entry,leave),8); unpaidLeaveHours+=unpaidHrs;
   });
   const standardHours=days.length*8;
   const hourlyRate=basicRate*12/52/40;
@@ -5296,7 +5307,7 @@ async function markAsPaid(empId){
   const nativeMonthlyPay=blankHours===0?Math.max(0,basicRate-(unpaidLeaveHours*hourlyRate)):Math.min(hourlyRate*regularHours,basicRate);
   const overtimeNative=hourlyRate*OT_MULTIPLIER*totalOt;
   const { start:pStart, end:pEnd }=periodBounds(pay202SelectedPeriod);
-  const pSS=pStart.toISOString().slice(0,10), pES=pEnd.toISOString().slice(0,10);
+  const pSS=isoLocal(pStart), pES=isoLocal(pEnd);
   let doublePayNative=0;
   VIC_HOLIDAYS.filter(h=>h.date>=pSS&&h.date<=pES).forEach(h=>{
     const ts=TIMESHEET_ENTRIES.find(t=>t.employee_id===emp.id&&t.work_date===h.date);
@@ -5792,7 +5803,7 @@ function renderPay202(){
 
     // Overtime hours (hours over 8 worked on any day) and regular hours "accounted for" — actual hours
     // worked plus paid leave hours (Sick/Annual), combined and capped at 8/day. A weekday with neither
-    // a timesheet entry nor a paid leave entry counts as unpaid/absent. Unpaid Leave is recorded for the
+    // a timesheet entry nor a paid leave entry counts as unpaid/absent, except a public holiday, which is paid 8 hrs (holidayAutoHrs). Unpaid Leave is recorded for the
     // record but never adds hours. Overtime = hours worked plus paid leave over 8 on a day; clock-in days only include approved OT (dayOtHours).
     let totalOt = 0;
     let regularHours = 0;
@@ -5807,7 +5818,7 @@ function renderPay202(){
       const paidLeaveHrs   = (info && info.paid)  ? (parseFloat(leave.hours) || 0) : 0;
       const unpaidLeaveHrs = (info && !info.paid) ? (parseFloat(leave.hours) || 0) : 0;
 
-      regularHours     += Math.min(workedHrs + paidLeaveHrs, 8);
+      regularHours     += Math.min(workedHrs + paidLeaveHrs + holidayAutoHrs(emp, d.date, entry, leave), 8);
       unpaidLeaveHours += unpaidLeaveHrs;
     });
     const standardHours = days.length * 8;
@@ -5855,8 +5866,8 @@ function renderPay202(){
     // Manual per-period figures.
     // Auto-compute Double Pay: 1× extra hourly for each hour worked on a VIC public holiday in this period.
     const { start: pStart, end: pEnd } = periodBounds(pay202SelectedPeriod);
-    const pStartStr = pStart.toISOString().slice(0,10);
-    const pEndStr   = pEnd.toISOString().slice(0,10);
+    const pStartStr = isoLocal(pStart);
+    const pEndStr   = isoLocal(pEnd);
     let doublePayNative = 0;
     VIC_HOLIDAYS.filter(h => h.date >= pStartStr && h.date <= pEndStr).forEach(h => {
       const tsEntry = TIMESHEET_ENTRIES.find(t => t.employee_id === emp.id && t.work_date === h.date);
