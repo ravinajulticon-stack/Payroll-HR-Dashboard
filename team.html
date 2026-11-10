@@ -531,6 +531,9 @@ body{ background:var(--bg); }
 .s-no{ background:#fff0eb; color:#d23d12; border-color:#ffcdbd; }
 .s-lv{ background:#e8efff; color:#2f55c9; border-color:#d3e0ff; }
 .tm-row.lv-row{ background:#f8faff; }
+.tm-live{ font-weight:800; color:var(--text); font-variant-numeric:tabular-nums; } .tm-live small{ font-weight:600; color:var(--text-3); }
+.tm-lbar{ height:4px; max-width:96px; margin:4px 0 0 auto; border-radius:4px; background:#eef1f6; overflow:hidden; } .tm-lbar i{ display:block; height:100%; border-radius:4px; background:#b4e61f; transition:width .9s linear; }
+.tm-lbar.lunch i{ background:#ff7438; } .tm-lbar.ot i{ background:#e8344e; }
 .s-lun{ background:#fff3c4; color:#8a6100; border-color:#ffe08a; }
 .chip.annual{ background:#effbc9; color:var(--lime-ink); } .chip.personal{ background:#ffe9dc; color:#c24d10; }
 .ts-row.today{ background:#f9fde8; box-shadow:inset 3px 0 0 var(--lime2); }
@@ -1440,8 +1443,30 @@ function tmQuick(st){
   if(st === 'check' || st === 'nolunch' || st === 'longlunch') document.getElementById('tmPeriod').value = 'cur';
   tmRender(); document.getElementById('tmRecCard').scrollIntoView({ behavior: 'smooth' });
 }
+// Open shifts: running clock (h:mm:ss, paused during lunch) with a bar filling to 8 hrs
+var TM_TICK = null;
+function tmLiveParts(r){
+  var w = tsWorkedSoFar(r), s = Math.floor(w * 3600 + 1e-6), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+  var onLunch = r.lunch_in && !r.lunch_out;
+  return { txt: h + ':' + String(m).padStart(2, '0') + '<small>:' + String(sec).padStart(2, '0') + '</small>', pct: Math.min(100, w / 8 * 100), cls: onLunch ? ' lunch' : (w >= 8 ? ' ot' : '') };
+}
+function tmLiveCell(r){
+  var p = tmLiveParts(r);
+  return '<span class="tm-live" data-id="' + esc(r.id) + '">' + p.txt + '</span><div class="tm-lbar' + p.cls + '" data-id="' + esc(r.id) + '"><i style="width:' + p.pct.toFixed(1) + '%"></i></div>';
+}
+function tmTick(){
+  var wrap = document.getElementById('teamWrap');
+  if(!wrap || wrap.style.display === 'none'){ clearInterval(TM_TICK); TM_TICK = null; return; }
+  document.querySelectorAll('#tmList .tm-live').forEach(function(el){
+    var r = TM_ROWS.find(function(x){ return String(x.id) === el.getAttribute('data-id'); }); if(!r || r.clock_out) return;
+    var p = tmLiveParts(r), bar = el.parentNode.querySelector('.tm-lbar');
+    el.innerHTML = p.txt;
+    if(bar){ bar.className = 'tm-lbar' + p.cls; bar.firstChild.style.width = p.pct.toFixed(1) + '%'; }
+  });
+}
 function tmRender(){
   tmRenderTiles();
+  if(!TM_TICK) TM_TICK = setInterval(tmTick, 1000);
   var pend = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; }).sort(function(a, b){ return a.clock_in < b.clock_in ? -1 : 1; });
   var aa = document.getElementById('tmApproveAll');
   aa.style.display = pend.length > 1 ? '' : 'none'; aa.textContent = 'Approve All (' + pend.length + ')';
@@ -1459,7 +1484,7 @@ function tmRender(){
           var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' ? 'OT Not Approved' + (r.ot_review_note ? ': ' + r.ot_review_note : '') : ''].filter(Boolean).join(' | ');
           var tip = tipT ? ' title="' + esc(tipT) + '"' : '';
           var out = r.clock_out ? tsTime(r.clock_out) : (st === 'fix' ? '<span class="sc s-no">Forgot to Clock Out</span>' : '—');
-          var hrs = r.clock_out ? tsHrs(r.total_hours) : (st === 'fix' ? '—' : tsHrs(tsWorkedSoFar(r)));
+          var hrs = r.clock_out ? tsHrs(r.total_hours) : (st === 'fix' ? '—' : tmLiveCell(r));
           return '<div class="tm-row' + (st === 'fix' ? ' miss' : '') + '"' + tip + '>' + tmAv(r.employee_id, r.note ? '✎ ' + esc(r.note) : '') + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + (lun ? '<div class="tm-sub">' + lun + '</div>' : '') + '</div><div>' + out + '</div><div class="r">' + hrs + '</div><div class="r">' + (parseFloat(r.ot_hours) > 0 ? tsHrs(r.ot_hours) : '—') + '</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + TM_CHIP[st] + (tmFlags(r).length ? ' ' + tmFlagHtml(r) : '') + '</div><div class="tm-acts">' + (st === 'otr' ? '<button type="button" class="mb ok" title="Reverse and approve this overtime" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button>' : st === 'ota' ? '<button type="button" class="mb no" title="Reverse and reject this overtime" onclick="tmReview([\'' + r.id + '\'],\'rejected\',this)">Reject</button>' : '') + '<button type="button" class="mb' + (st === 'fix' || tmFlags(r).length ? ' fix' : '') + '" onclick="tmOpen(\'' + r.id + '\')">' + (st === 'fix' ? 'Fix' : 'Edit') + '</button></div></div>';
         }).join('')
     : '<div class="empty">No records match these filters.</div>';
