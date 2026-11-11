@@ -531,6 +531,35 @@ body{ background:var(--bg); }
 .s-no{ background:#fff0eb; color:#d23d12; border-color:#ffcdbd; }
 .s-lv{ background:#e8efff; color:#2f55c9; border-color:#d3e0ff; }
 .tm-row.lv-row{ background:#f8faff; }
+/* My Team: Live Now */
+.lv-card-wrap{ padding:16px 18px 14px; }
+.lv-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+.lv-ttl{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.lv-seg{ display:inline-flex; background:#f1f2f5; border-radius:999px; padding:3px; } .lv-seg button{ border:0; background:none; font:inherit; font-size:12px; font-weight:700; padding:6px 14px; border-radius:999px; color:var(--text-3); cursor:pointer; } .lv-seg button.on{ background:#141418; color:#fff; }
+.lv-stats{ display:flex; gap:8px; flex-wrap:wrap; } .lv-stat{ display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; background:#f4f5f8; font-size:12px; font-weight:700; color:var(--text); } .lv-stat i{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+.lv-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(205px,1fr)); gap:12px; }
+.lv-card{ border:1px solid #eef0f5; border-radius:18px; padding:14px; background:#fff; } .lv-card.on{ background:linear-gradient(180deg,#fbfff0,#fff); } .lv-card.lunch{ background:linear-gradient(180deg,#fff6f0,#fff); } .lv-card.ot{ background:linear-gradient(180deg,#fff1f2,#fff); }
+.lv-top{ display:flex; align-items:center; gap:10px; }
+.lv-av{ width:34px; height:34px; border-radius:50%; background:#141418; color:#fff; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; position:relative; flex-shrink:0; } .lv-av img{ width:100%; height:100%; border-radius:50%; object-fit:cover; }
+.lv-av b{ position:absolute; right:-1px; bottom:-1px; width:10px; height:10px; border-radius:50%; border:2px solid #fff; background:#7bbf00; animation:lvPulse 1.6s infinite; } .lv-card.lunch .lv-av b, .lv-av.lunch b{ background:#ff7438; animation:none; } .lv-card.ot .lv-av b{ background:#e8344e; } .lv-av.off b{ background:#c8cdd8; animation:none; }
+@keyframes lvPulse{ 0%{ box-shadow:0 0 0 0 rgba(123,191,0,.6); } 70%{ box-shadow:0 0 0 7px rgba(123,191,0,0); } 100%{ box-shadow:0 0 0 0 rgba(123,191,0,0); } }
+.lv-n{ font-weight:700; font-size:13px; color:var(--text); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .lv-s{ font-size:11px; color:var(--text-3); }
+.lv-mid{ display:flex; align-items:center; gap:12px; margin-top:12px; }
+.lv-ring{ width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; } .lv-ring>div{ width:50px; height:50px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:var(--text); }
+.lv-clock{ font-size:24px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--text); letter-spacing:-.5px; } .lv-clock small, .lv-tc small{ font-size:12px; color:var(--text-3); font-weight:600; }
+.lv-chip{ display:inline-block; margin-top:3px; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:999px; background:#effbc9; color:#3d5a00; } .lv-card.lunch .lv-chip{ background:#ffe9dc; color:#c24d10; } .lv-card.ot .lv-chip{ background:#ffe3e6; color:#c9271d; }
+.lv-foot{ display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:11px; color:var(--text-3); border-top:1px dashed #eef0f5; padding-top:8px; } .lv-foot .mb{ height:26px; padding:0 10px; font-size:11px; }
+.lv-axis, .lv-tr{ display:grid; grid-template-columns:210px 1fr 92px; gap:12px; align-items:center; } .lv-axis{ font-size:10.5px; color:var(--text-3); font-weight:700; margin-bottom:6px; }
+.lv-hours{ position:relative; height:14px; } .lv-hours span{ position:absolute; transform:translateX(-50%); white-space:nowrap; }
+.lv-tr{ height:46px; border-top:1px solid #f3f4f8; } .lv-tn{ display:flex; align-items:center; gap:8px; min-width:0; } .lv-tn .lv-av{ width:28px; height:28px; font-size:10px; }
+.lv-track{ position:relative; height:16px; background:#f6f7fa; border-radius:8px; }
+.lv-sg{ position:absolute; top:2px; bottom:2px; border-radius:6px; background:#b4e61f; } .lv-sg.l{ background:#ff9a66; } .lv-sg.ot{ background:#e8344e; } .lv-sg.live{ background:linear-gradient(90deg,#b4e61f,#d6f56e); }
+.lv-now{ position:absolute; top:-6px; bottom:-6px; width:2px; margin-left:-1px; background:#141418; border-radius:2px; } .lv-now.first:after{ content:'NOW'; position:absolute; top:-13px; left:-12px; font-size:9px; font-weight:800; color:#141418; }
+.lv-tc{ text-align:right; font-weight:800; font-variant-numeric:tabular-nums; font-size:14px; color:var(--text); }
+.lv-leg{ display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--text-3); margin-top:10px; } .lv-leg i{ display:inline-block; width:14px; height:8px; border-radius:4px; margin-right:5px; vertical-align:middle; }
+.lv-mini{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; padding-top:12px; border-top:1px solid #f0f2f7; } .lv-mini span{ font-size:11.5px; font-weight:700; padding:5px 10px; border-radius:999px; background:#f4f5f8; color:var(--text-3); } .lv-mini b{ color:var(--text); }
+@media(max-width:700px){ .lv-axis, .lv-tr{ grid-template-columns:120px 1fr 70px; } .lv-tn .lv-s{ display:none; } }
+
 .tm-live{ font-weight:800; color:var(--text); font-variant-numeric:tabular-nums; } .tm-live small{ font-weight:600; color:var(--text-3); }
 .tm-lbar{ height:4px; max-width:96px; margin:4px 0 0 auto; border-radius:4px; background:#eef1f6; overflow:hidden; } .tm-lbar i{ display:block; height:100%; border-radius:4px; background:#b4e61f; transition:width .9s linear; }
 .tm-lbar.lunch i{ background:#ff7438; } .tm-lbar.ot i{ background:#e8344e; }
@@ -782,6 +811,7 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
     </div>
   </div>
   <div class="wrap" id="teamWrap" style="display:none">
+    <div class="card lv-card-wrap" id="tmLive"><div class="empty">Loading…</div></div>
     <div class="card" id="tmOtCard">
       <div class="card-head"><div class="rl-hd"><span class="rl-ic c-purple"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.3 1.4"/></svg></span><div><div class="card-title">Overtime Approvals</div><div class="rl-sub">Shifts over 8 hrs after the unpaid lunch · approved OT counts towards pay</div></div></div><button type="button" class="mb ok tall" id="tmApproveAll" onclick="tmReviewAll()" style="display:none"></button></div>
       <div id="tmOt"><div class="empty">Loading…</div></div>
@@ -1443,6 +1473,87 @@ function tmQuick(st){
   if(st === 'check' || st === 'nolunch' || st === 'longlunch') document.getElementById('tmPeriod').value = 'cur';
   tmRender(); document.getElementById('tmRecCard').scrollIntoView({ behavior: 'smooth' });
 }
+// ---------- My Team: Live Now (Cards / Timeline) ----------
+var LV_VIEW = (function(){ try { return localStorage.getItem('tmLiveView') || 'cards'; } catch(e){ return 'cards'; } })();
+function lvSetView(v){ LV_VIEW = v; try { localStorage.setItem('tmLiveView', v); } catch(e){} lvRender(); }
+function lvMin(ts){ var o = tsPhParts(new Date(ts)); return (+o.hour % 24) * 60 + (+o.minute) + (+o.second) / 60; }   // minutes since midnight, PH time
+function lvClock(m){ var s = Math.floor(m * 60 + 1e-6), h = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60), ss = s % 60; return h + ':' + String(mm).padStart(2, '0') + '<small>:' + String(ss).padStart(2, '0') + '</small>'; }
+function lvT12(m){ m = Math.round(m); var h = Math.floor(m / 60) % 24, mi = m % 60; return ((h + 11) % 12 + 1) + ':' + String(mi).padStart(2, '0') + (h < 12 ? ' AM' : ' PM'); }
+function lvAv(id, cls){
+  var e = tmEmp(id), ph = photoFor(id, e.name);
+  return '<span class="lv-av' + (cls ? ' ' + cls : '') + '">' + (ph ? '<img src="' + esc(ph) + '" alt="">' : esc(tmInit(e.name))) + '<b></b></span>';
+}
+function lvRender(){
+  var box = document.getElementById('tmLive'); if(!box) return;
+  var today = tsToday(), nowM = lvMin(new Date());
+  var act = TM_EMPS.filter(function(e){ return !e.exit_date || e.exit_date >= today; });
+  var todays = TM_ROWS.filter(function(r){ return r.work_date === today; });
+  var open = todays.filter(function(r){ return !r.clock_out; });
+  var lunch = open.filter(function(r){ return r.lunch_in && !r.lunch_out; });
+  var out = act.filter(function(e){ return todays.some(function(r){ return r.employee_id === e.id; }) && !open.some(function(r){ return r.employee_id === e.id; }); });
+  var lvToday = TM_LEAVE.filter(function(l){ return l.leave_date === today && act.some(function(e){ return e.id === l.employee_id; }); });
+  var dow = tsD(today).getDay(), hol = (typeof HOLIDAYS !== 'undefined' ? HOLIDAYS : []).find(function(h){ return h.date === today; });
+  var notIn = (dow === 0 || dow === 6 || hol) ? [] : act.filter(function(e){ return !todays.some(function(r){ return r.employee_id === e.id; }) && !lvToday.some(function(l){ return l.employee_id === e.id; }); });
+  var first = function(id){ return esc(tmEmp(id).name.split(' ')[0]); };
+  // Upcoming leave (next 30 days), grouped into date ranges per person
+  var lim = tsAdd(today, 30), up = TM_LEAVE.filter(function(l){ return l.leave_date > today && l.leave_date <= lim && act.some(function(e){ return e.id === l.employee_id; }); })
+    .sort(function(a, b){ return a.employee_id === b.employee_id ? (a.leave_date < b.leave_date ? -1 : 1) : (a.employee_id < b.employee_id ? -1 : 1); });
+  var ranges = []; up.forEach(function(l){ var r = ranges[ranges.length - 1]; if(r && r.id === l.employee_id && (l.leave_date === tsAdd(r.to, 1) || (tsD(r.to).getDay() === 5 && l.leave_date === tsAdd(r.to, 3)))) r.to = l.leave_date; else ranges.push({ id: l.employee_id, from: l.leave_date, to: l.leave_date }); });
+  ranges.sort(function(a, b){ return a.from < b.from ? -1 : 1; });
+  var md = function(d){ var x = tsD(d); return MONS[x.getMonth()] + ' ' + x.getDate(); };
+  var stat = function(c, n, l){ return '<div class="lv-stat"><i style="background:' + c + '"></i>' + n + ' ' + l + '</div>'; };
+  var head = '<div class="lv-head"><div class="lv-ttl"><div><div class="card-title">Live Now</div><div class="rl-sub">' + tmDayLbl(today) + (hol ? ' · ' + esc(hol.name) : '') + ' · updates every second</div></div>'
+    + '<div class="lv-seg"><button type="button" class="' + (LV_VIEW === 'cards' ? 'on' : '') + '" onclick="lvSetView(\'cards\')">Cards</button><button type="button" class="' + (LV_VIEW === 'timeline' ? 'on' : '') + '" onclick="lvSetView(\'timeline\')">Timeline</button></div></div>'
+    + '<div class="lv-stats">' + stat('#7bbf00', open.length - lunch.length, 'On Shift') + stat('#ff7438', lunch.length, 'On Lunch') + stat('#c8cdd8', notIn.length, 'Not Clocked In') + stat('#2f55c9', lvToday.length, 'On Leave') + '</div></div>';
+  var body = '';
+  if(LV_VIEW === 'cards'){
+    var cards = open.map(function(r){ return { r: r, w: tsWorkedSoFar(r) }; }).sort(function(a, b){ return b.w - a.w; }).map(function(x){
+      var r = x.r, w = x.w, ln = r.lunch_in && !r.lunch_out, cls = ln ? 'lunch' : (w >= 8 ? 'ot' : 'on'), pct = Math.min(100, w / 8 * 100);
+      var col = ln ? '#ff7438' : (w >= 8 ? '#e8344e' : '#b4e61f'), ci = lvMin(r.clock_in);
+      var lunchM = r.lunch_in ? ((r.lunch_out ? lvMin(r.lunch_out) : nowM) - lvMin(r.lunch_in)) : 60;
+      var foot = ln ? 'Lunch so far ' + Math.max(0, Math.round(nowM - lvMin(r.lunch_in))) + ' min' : (w >= 8 ? 'Over 8 hrs by ' + tsHrs(w - 8) + ' hrs' : 'Finishes ~' + lvT12(ci + 480 + lunchM));
+      var sub = 'In ' + tsTime(r.clock_in) + (r.lunch_in ? ' · Lunch ' + tsTime(r.lunch_in) + (r.lunch_out ? '–' + tsTime(r.lunch_out) : '') : '');
+      return '<div class="lv-card ' + cls + '"><div class="lv-top">' + lvAv(r.employee_id) + '<div style="min-width:0"><div class="lv-n">' + esc(tmEmp(r.employee_id).name) + '</div><div class="lv-s">' + sub + '</div></div></div>'
+        + '<div class="lv-mid"><div class="lv-ring" style="background:conic-gradient(' + col + ' ' + pct.toFixed(1) + '%,#eef1f6 0)"><div>' + Math.round(pct) + '%</div></div><div><div class="lv-clock">' + lvClock(w * 60) + '</div><span class="lv-chip">' + (ln ? 'On Lunch' : (w >= 8 ? 'Over 8 Hrs' : 'On Shift')) + '</span></div></div>'
+        + '<div class="lv-foot"><span>' + foot + '</span><button type="button" class="mb" onclick="tmOpen(\'' + r.id + '\')">Edit</button></div></div>';
+    }).join('');
+    body = cards ? '<div class="lv-grid">' + cards + '</div>' : '<div class="empty">Nobody is clocked in right now.</div>';
+  } else {
+    var S = 4 * 60, E = 18 * 60;
+    todays.forEach(function(r){ var a = lvMin(r.clock_in), b = r.clock_out ? lvMin(r.clock_out) : nowM; if(a < S) S = Math.floor(a / 60) * 60; if(b > E) E = Math.ceil(b / 60) * 60; });
+    var X = function(m){ return ((Math.max(S, Math.min(E, m)) - S) / (E - S) * 100).toFixed(2) + '%'; }, W = function(a, b){ return (Math.max(0, Math.min(E, b) - Math.max(S, a)) / (E - S) * 100).toFixed(2) + '%'; };
+    var ids = []; todays.slice().sort(function(a, b){ return a.clock_in < b.clock_in ? -1 : 1; }).forEach(function(r){ if(ids.indexOf(r.employee_id) < 0) ids.push(r.employee_id); });
+    var axis = ''; for(var h = Math.ceil(S / 60); h * 60 <= E; h += 2) axis += '<span style="left:' + X(h * 60) + '">' + (((h + 11) % 12) + 1) + (h < 12 ? ' AM' : ' PM') + '</span>';
+    var rowsH = ids.map(function(id, i){
+      var rs = todays.filter(function(r){ return r.employee_id === id; }).sort(function(a, b){ return a.clock_in < b.clock_in ? -1 : 1; });
+      var segs = '', tot = 0, run = 0, isOpen = rs.some(function(r){ return !r.clock_out; }), ln = rs.some(function(r){ return !r.clock_out && r.lunch_in && !r.lunch_out; });
+      rs.forEach(function(r){
+        var a = lvMin(r.clock_in), b = r.clock_out ? lvMin(r.clock_out) : nowM, live = !r.clock_out;
+        var parts = r.lunch_in ? [[a, lvMin(r.lunch_in), 'w'], [lvMin(r.lunch_in), r.lunch_out ? lvMin(r.lunch_out) : b, 'l']].concat(r.lunch_out ? [[lvMin(r.lunch_out), b, 'w']] : []) : [[a, b, 'w']];
+        parts.forEach(function(p){
+          if(p[2] === 'l'){ segs += '<div class="lv-sg l" style="left:' + X(p[0]) + ';width:' + W(p[0], p[1]) + '"></div>'; return; }
+          var x0 = p[0], len = p[1] - p[0], left = Math.max(0, 480 - run), okLen = Math.min(len, left);
+          if(okLen > 0) segs += '<div class="lv-sg' + (live ? ' live' : '') + '" style="left:' + X(x0) + ';width:' + W(x0, x0 + okLen) + '"></div>';
+          if(len > okLen) segs += '<div class="lv-sg ot" style="left:' + X(x0 + okLen) + ';width:' + W(x0 + okLen, p[1]) + '"></div>';
+          run += len;
+        });
+        tot += tsWorkedSoFar(r);
+      });
+      var st = isOpen ? (ln ? 'On Lunch' : 'On Shift') : 'Clocked Out ' + tsTime(rs[rs.length - 1].clock_out);
+      return '<div class="lv-tr"><div class="lv-tn">' + lvAv(id, isOpen ? (ln ? 'lunch' : 'on') : 'off') + '<div style="min-width:0"><div class="lv-n">' + esc(tmEmp(id).name) + '</div><div class="lv-s">' + st + ' · in ' + tsTime(rs[0].clock_in) + '</div></div></div>'
+        + '<div class="lv-track">' + segs + '<div class="lv-now' + (i === 0 ? ' first' : '') + '" style="left:' + X(nowM) + '"></div></div><div class="lv-tc">' + lvClock(tot * 60) + '</div></div>';
+    }).join('');
+    body = ids.length ? '<div class="lv-axis"><div></div><div class="lv-hours">' + axis + '</div><div style="text-align:right">Worked</div></div>' + rowsH
+      + '<div class="lv-leg"><span><i style="background:#b4e61f"></i>Working</span><span><i style="background:#ff9a66"></i>Lunch</span><span><i style="background:#e8344e"></i>Past 8 Hrs</span><span><i style="background:#141418;width:2px"></i>Now</span></div>'
+      : '<div class="empty">No shifts yet today.</div>';
+  }
+  var mini = '<div class="lv-mini">'
+    + '<span>On Leave Today: <b>' + (lvToday.length ? lvToday.map(function(l){ return first(l.employee_id); }).join(', ') : '—') + '</b></span>'
+    + (notIn.length ? '<span>Not Clocked In: <b>' + notIn.map(function(e){ return esc(e.name.split(' ')[0]); }).join(', ') + '</b></span>' : '')
+    + '<span>Upcoming Leave: ' + (ranges.length ? ranges.slice(0, 5).map(function(r){ return '<b>' + first(r.id) + '</b> ' + md(r.from) + (r.to !== r.from ? '–' + (tsD(r.to).getMonth() === tsD(r.from).getMonth() ? tsD(r.to).getDate() : md(r.to)) : ''); }).join(' · ') : '<b>—</b>') + '</span>'
+    + '<span>Clocked Out Today: <b>' + out.length + '</b></span></div>';
+  box.innerHTML = head + body + mini;
+}
 // Open shifts: running clock (h:mm:ss, paused during lunch) with a bar filling to 8 hrs
 var TM_TICK = null;
 function tmLiveParts(r){
@@ -1457,6 +1568,7 @@ function tmLiveCell(r){
 function tmTick(){
   var wrap = document.getElementById('teamWrap');
   if(!wrap || wrap.style.display === 'none'){ clearInterval(TM_TICK); TM_TICK = null; return; }
+  lvRender();
   document.querySelectorAll('#tmList .tm-live').forEach(function(el){
     var r = TM_ROWS.find(function(x){ return String(x.id) === el.getAttribute('data-id'); }); if(!r || r.clock_out) return;
     var p = tmLiveParts(r), bar = el.parentNode.querySelector('.tm-lbar');
@@ -1466,6 +1578,7 @@ function tmTick(){
 }
 function tmRender(){
   tmRenderTiles();
+  lvRender();
   if(!TM_TICK) TM_TICK = setInterval(tmTick, 1000);
   var pend = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; }).sort(function(a, b){ return a.clock_in < b.clock_in ? -1 : 1; });
   var aa = document.getElementById('tmApproveAll');
