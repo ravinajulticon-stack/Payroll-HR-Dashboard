@@ -1364,7 +1364,7 @@ function tsSetMode(m){
   document.getElementById('timeWrap').style.display = team ? 'none' : '';
   document.getElementById('teamWrap').style.display = team ? '' : 'none';
   document.getElementById('tsAsOf').style.display = team ? 'none' : '';
-  document.getElementById('tsHelloSub').textContent = team ? 'Admin view — see everyone’s clock-ins, approve overtime and fix records. Times are in Philippines time.' : 'Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.';
+  var hs = document.getElementById('tsHelloSub'); hs.style.display = team ? 'none' : ''; hs.textContent = team ? '' : 'Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.';
   if(team){ clearInterval(TS_TICK); tmLoad(); } else { tsRender(); }
 }
 async function tmLoad(){
