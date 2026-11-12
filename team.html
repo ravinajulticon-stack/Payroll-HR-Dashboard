@@ -655,20 +655,19 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
     </div>
     <div class="hero-in" id="leaveHero">
       <div class="hello" id="hello"></div>
-      <div class="hello-sub">Here’s your leave balance and what’s coming up.</div>
       <div class="hero-head"><span class="hero-lbl">Leave Balance</span><span class="as-of" id="asOf"></span></div>
       <div class="tiles" id="balances"></div>
     </div>
     <div class="hero-in" id="payHero" style="display:none">
       <div class="hello" id="helloPay"></div>
-      <div class="hello-sub" id="paySub">Your payslips from DDL Middle East - FZCO. Only payslips marked paid are shown.</div>
+      <div class="hello-sub" id="paySub" style="display:none"></div>
       <div class="pv-banner" id="pvBanner" style="display:none"></div>
       <div class="hero-head"><span class="hero-lbl">Pay Summary</span><span class="as-of" id="payAsOf"></span></div>
       <div class="tiles" id="payTiles"><div class="empty">Loading…</div></div>
     </div>
     <div class="hero-in" id="timeHero" style="display:none">
       <div class="hello" id="helloTime"></div>
-      <div class="hello-sub" id="tsHelloSub">Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.</div>
+      <div class="hello-sub" id="tsHelloSub" style="display:none"></div>
       <div class="pv-banner" id="tsBanner" style="display:none"></div>
       <div class="hero-head"><span class="hero-lbl" id="tsHeroLbl">Hours Summary</span><span style="display:flex;align-items:center"><span class="as-of" id="tsAsOf"></span><span class="tm-seg" id="tsModeSeg" style="display:none"><button type="button" class="on" data-m="me" onclick="tsSetMode('me')">My Time</button><button type="button" data-m="team" onclick="tsSetMode('team')">My Team</button></span></span></div>
       <div class="tiles" id="tsTiles"><div class="empty">Loading…</div></div>
@@ -1024,7 +1023,7 @@ async function start(){
     PS_PREVIEW = { name: qp.get('preview'), pd: qp.get('pd') || null };
     document.getElementById('pvBanner').innerHTML = '<b>Preview</b> \u2014 this is what <b>' + esc(PS_PREVIEW.name) + '</b> sees on My Payslips. A payslip marked \u201cNot Paid Yet\u201d only becomes visible to them once you mark it Paid.';
     document.getElementById('pvBanner').style.display = '';
-    document.getElementById('paySub').textContent = 'Admin preview. Nothing here is saved or marked as seen.';
+    document.getElementById('paySub').textContent = 'Admin preview. Nothing here is saved or marked as seen.'; document.getElementById('paySub').style.display = '';
   }
   await loadMyPayslips();
   await tsInit();
@@ -1364,7 +1363,6 @@ function tsSetMode(m){
   document.getElementById('timeWrap').style.display = team ? 'none' : '';
   document.getElementById('teamWrap').style.display = team ? '' : 'none';
   document.getElementById('tsAsOf').style.display = team ? 'none' : '';
-  var hs = document.getElementById('tsHelloSub'); hs.style.display = team ? 'none' : ''; hs.textContent = team ? '' : 'Clock in and out here. Your shifts are sent to payroll automatically. Times are in Philippines time.';
   if(team){ clearInterval(TS_TICK); tmLoad(); } else { tsRender(); }
 }
 async function tmLoad(){
