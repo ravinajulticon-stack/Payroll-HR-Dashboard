@@ -2317,7 +2317,7 @@ function populateHistoryFilterOptions(){
   const empSel = document.getElementById('historyEmployeeFilter');
   const currentEmp = empSel.value;
   const emps = [...new Set(HISTORY500.map(r => r.employee_name))].sort();
-  empSel.innerHTML = '<option value="">All Employees</option>' + emps.map(e => `<option value="${e}">${e}</option>`).join('');
+  empSel.innerHTML = '<option value="">All Employees</option>' + empNameOptions(emps, '');
   empSel.value = currentEmp && emps.includes(currentEmp) ? currentEmp : '';
 
   const yearSel = document.getElementById('historyYearFilter');
@@ -4179,7 +4179,7 @@ function renderPayslipPanel(){
     +       '<input type="month" class="search-box" id="payslipPeriodInput" min="' + MIN_OPEN_PERIOD + '" value="' + payslipPeriod + '" style="width:160px"></div>'
     +     '<div><label class="wk-label" style="display:block;margin-bottom:4px">Employee</label>'
     +       '<select class="search-box" id="payslipEmpSelect" style="min-width:190px"><option value="">All Employees</option>'
-    +       names.map(function(n){ return '<option value="' + n + '"' + (n===payslipEmp?' selected':'') + '>' + n + '</option>'; }).join('') + '</select></div>'
+    +       empNameOptions(names, payslipEmp) + '</select></div>'
     +     '<div class="ps-zoom">'
     +     '<button class="io-btn" onclick="psZoomOut()" title="Zoom out">\u2212</button>'
     +     '<span id="psZoomLabel" onclick="psZoomReset()" title="Reset to 100%">100%</span>'
@@ -5130,6 +5130,14 @@ function empOptions(selectedId, placeholder){
     html += '<optgroup label="Exited">' + gone.map(opt).join('') + '</optgroup>';
   }
   return html;
+}
+
+// Same grouping for dropdowns keyed by name (Payroll History, Payslips)
+function empNameOptions(names, selected){
+  const gone = names.filter(function(n){ const e = EMP201.find(function(x){ return x.name === n; }); return e && e.status && e.status !== 'Active'; });
+  const act = names.filter(function(n){ return gone.indexOf(n) < 0; }).slice().sort(); gone.sort();
+  const o = function(n){ return '<option value="' + n + '"' + (n === selected ? ' selected' : '') + '>' + n + '</option>'; };
+  return act.map(o).join('') + (gone.length ? '<optgroup label="Exited">' + gone.map(o).join('') + '</optgroup>' : '');
 }
 
 function renderLeavePanel(){
