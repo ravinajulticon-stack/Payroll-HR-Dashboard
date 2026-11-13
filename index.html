@@ -4517,7 +4517,9 @@ function ovIssues(periodStr){
   SALARY_LOANS.forEach(function(l){
     var n = parseInt(l.installments)||0;
     var idx = loanInstallmentIndex(l, nextP);
-    if(idx === n){
+    // Skip leavers: their remaining instalments are taken from final pay in their exit period
+    var xp = loanExitPeriod(l.employee_id);
+    if(idx === n && !(xp && nextP > xp) && !loanInstallmentIsPaid(l, idx)){
       var e = EMP201.find(function(x){ return x.id === l.employee_id; });
       out.push({ sev:'low', text:(e?e.name.split(' ')[0]:'A') + "'s loan finishes next period", hint:(l.loan_name||'Loan') + ' \u00b7 final instalment', go:'loans' });
     }
