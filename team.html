@@ -1067,17 +1067,29 @@ function psPeriod(payDate){
   var pd = payDate.split('-').map(Number), sm = pd[1] - 1, sy = pd[0]; if(sm <= 0){ sm = 12; sy -= 1; }
   return { label: MONS[sm-1] + ' 11 – ' + MONS[pd[1]-1] + ' 10, ' + pd[0], month: MONF[pd[1]-1] + ' ' + pd[0], pd: pd };
 }
+// Standard Pay line: hourly rates are stored in the employee's own currency (PHP or USD), pay in USD
+function psStd(r, emp){
+  var rate = parseFloat(r.ebury_rate) || 0, monthly = parseFloat(emp.basic_pay_rate) || 0;
+  var std = parseFloat(r.standard_pay) || 0, hrs = parseFloat(r.standard_hours) || 0, hr = parseFloat(r.standard_pay_rate) || 0;
+  var cur = emp.currency;
+  if(cur !== 'USD' && cur !== 'PHP'){
+    var exp = monthly ? Math.min(hrs * hr, monthly) : hrs * hr;
+    cur = rate && Math.abs(std * rate - exp) < Math.abs(std - exp) ? 'PHP' : 'USD';
+  }
+  var nat = cur === 'USD' ? std : std * rate;
+  var isFull = !!monthly && Math.abs(nat - monthly) <= Math.max(1, monthly * 0.0005);
+  return { sym: cur === 'USD' ? '$' : '₱', isFull: isFull, label: isFull ? 'Standard Pay (Monthly)' : 'Standard Pay (Pro-rated)', units: isFull ? 1 : hrs, rate: isFull ? monthly : hr };
+}
 function buildMyPayslip(r){
   var emp = MY_PS_EMP || {};
   var rate = parseFloat(r.ebury_rate) || 0;
   var toPhp = function(usd){ return rate ? usd * rate : 0; };
   var per = psPeriod(r.pay_date), pd = per.pd;
-  var monthly = parseFloat(emp.basic_pay_rate) || 0;
   var stdPay = parseFloat(r.standard_pay) || 0;
-  var isFull = monthly && Math.abs(stdPay - monthly) < 0.01;
+  var sp = psStd(r, emp);
   var rows = '';
-  rows += psLine(isFull ? 'Standard Pay (Monthly)' : 'Standard Pay (Pro-rated)', isFull ? 1 : (parseFloat(r.standard_hours) || 0), isFull ? monthly : (parseFloat(r.standard_pay_rate) || 0), stdPay, toPhp(stdPay));
-  rows += psLine('Overtime Pay', r.overtime_hours || 0, r.overtime_pay_rate, r.overtime_pay, toPhp(r.overtime_pay||0));
+  rows += psLine(sp.label, sp.units, sp.rate, stdPay, toPhp(stdPay), sp.sym);
+  rows += psLine('Overtime Pay', r.overtime_hours || 0, r.overtime_pay_rate, r.overtime_pay, toPhp(r.overtime_pay||0), sp.sym);
   rows += psLine('Double Pay', null, null, r.double_pay, toPhp(r.double_pay||0));
   rows += psLine('Leave Payout', null, null, r.vacation_pay, toPhp(r.vacation_pay||0));
   rows += psLine('Home Office', 1, r.home_office, r.home_office, toPhp(r.home_office||0));
