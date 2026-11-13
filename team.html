@@ -813,7 +813,7 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
   <div class="wrap" id="teamWrap" style="display:none">
     <div class="card lv-card-wrap" id="tmLive"><div class="empty">Loading…</div></div>
     <div class="card" id="tmOtCard">
-      <div class="card-head"><div class="rl-hd"><span class="rl-ic c-purple"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.3 1.4"/></svg></span><div><div class="card-title">Overtime Approvals</div><div class="rl-sub">Shifts over 8 hrs after the unpaid lunch · approved OT counts towards pay</div></div></div><button type="button" class="mb ok tall" id="tmApproveAll" onclick="tmReviewAll()" style="display:none"></button></div>
+      <div class="card-head"><div class="rl-hd"><span class="rl-ic c-purple"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 4.8V8l2.3 1.4"/></svg></span><div><div class="card-title">Overtime Approvals</div><div class="rl-sub">Shifts over 8 hrs after the unpaid lunch · approved OT counts towards pay</div></div></div><div style="display:flex;gap:6px"><button type="button" class="mb no tall" id="tmRejectAll" onclick="tmReviewAll('rejected')" style="display:none"></button><button type="button" class="mb ok tall" id="tmApproveAll" onclick="tmReviewAll('approved')" style="display:none"></button></div></div>
       <div id="tmOt"><div class="empty">Loading…</div></div>
     </div>
     <div class="card" id="trCard">
@@ -1582,6 +1582,8 @@ function tmRender(){
   var pend = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; }).sort(function(a, b){ return a.clock_in < b.clock_in ? -1 : 1; });
   var aa = document.getElementById('tmApproveAll');
   aa.style.display = pend.length > 1 ? '' : 'none'; aa.textContent = 'Approve All (' + pend.length + ')';
+  var ra = document.getElementById('tmRejectAll');
+  ra.style.display = aa.style.display; ra.textContent = 'Reject All (' + pend.length + ')';
   document.getElementById('tmOt').innerHTML = pend.length
     ? '<div class="tm-scroll"><div class="tm-row ot-row h"><div>Employee</div><div>Date</div><div>Shift</div><div class="r">Worked</div><div class="r">OT</div><div>Note</div><div></div></div>'
       + pend.map(function(r){ return '<div class="tm-row ot-row">' + tmAv(r.employee_id) + '<div>' + tmDayLbl(r.work_date) + '</div><div>' + tsTime(r.clock_in) + ' → ' + tsTime(r.clock_out) + '</div><div class="r">' + tsHrs(r.total_hours) + '</div><div class="r"><b>' + tsHrs(r.ot_hours) + '</b></div><div class="tm-sub">' + (tmFlags(r).length ? tmFlagHtml(r) + ' ' : '') + (r.note ? esc(r.note) : (tmFlags(r).length ? '' : '—')) + '</div><div class="tm-acts"><button type="button" class="mb ok" onclick="tmReview([\'' + r.id + '\'],\'approved\',this)">Approve</button><button type="button" class="mb no" onclick="tmReview([\'' + r.id + '\'],\'rejected\',this)">Reject</button></div></div>'; }).join('') + '</div>'
@@ -1609,10 +1611,11 @@ async function tmReview(ids, status, btn){
   if(r.error){ alert(r.error.message); if(btn) btn.disabled = false; return; }
   await tmLoad();
 }
-function tmReviewAll(){
+function tmReviewAll(status){
+  var rej = status === 'rejected';
   var ids = TM_ROWS.filter(function(r){ return r.clock_out && r.ot_status === 'pending' && parseFloat(r.ot_hours) > 0; }).map(function(r){ return r.id; });
-  if(!ids.length || !confirm('Approve all ' + ids.length + ' overtime shifts?')) return;
-  tmReview(ids, 'approved', document.getElementById('tmApproveAll'));
+  if(!ids.length || !confirm((rej ? 'Reject' : 'Approve') + ' all ' + ids.length + ' overtime shifts?' + (rej ? '\n\nThe same reason (if any) will go on every shift.' : ''))) return;
+  tmReview(ids, rej ? 'rejected' : 'approved', document.getElementById(rej ? 'tmRejectAll' : 'tmApproveAll'));
 }
 function tmHm(ts){ return ts ? new Date(ts).toLocaleTimeString('en-GB', { timeZone: TS_TZ, hour:'2-digit', minute:'2-digit', hour12:false }) : ''; }
 function tmTs(date, hm, after){
