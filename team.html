@@ -2772,7 +2772,7 @@ async function generateReport(){
         rq.forEach(function(r){
           var days = workingDays(r.start_date, r.end_date).length, hrs = days * parseFloat(r.hours_per_day || 0);
           var sub = r.created_at ? fmtDay(isoOf(new Date(r.created_at))) : '—';
-          var notes = [r.reason ? esc(r.reason) : '', r.previous_dates ? '<i>moved from ' + esc(r.previous_dates) + '</i>' : '', r.status === 'Cancelled' ? '<i>' + (r.decided_at ? 'Cancelled by approver ' + fmtDay(isoOf(new Date(r.decided_at))) : 'Withdrawn by staff before approval') + '</i>' : '', r.decision_note ? '<i>' + esc(r.decision_note) + '</i>' : ''].filter(Boolean).join(' · ');
+          var notes = [r.reason ? esc(r.reason) : '', r.previous_dates ? '<i>moved from ' + esc(r.previous_dates) + '</i>' : '', r.status === 'Cancelled' ? '<i>' + (r.decided_at ? 'Cancelled by approver ' + fmtDay(isoOf(new Date(r.decided_at))) : 'Withdrawn by staff before approval') + '</i>' : '', r.decision_note ? '<i>' + esc(r.decision_note) + '</i>' : ''].filter(Boolean).join('<br>');
           out += '<tr><td class="nw">' + sub + '</td><td>' + esc(r.employee_name || nameOf(r.employee_id)) + '</td><td class="nw">' + (r.start_date === r.end_date ? fmtDay(r.start_date) : fmtDay(r.start_date) + ' –<br>' + fmtDay(r.end_date)) + '</td><td>' + esc(r.leave_type) + '</td><td class="n">' + days + ' · ' + h2(hrs) + '</td><td><span class="st ' + String(r.status).toLowerCase() + '">' + esc(r.status) + '</span></td><td class="note">' + notes + '</td></tr>';
         });
         out += '</tbody></table>';
