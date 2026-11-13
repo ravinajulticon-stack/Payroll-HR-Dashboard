@@ -830,7 +830,7 @@ input:focus, select:focus, textarea:focus{ outline:none; border-color:#141418 !i
     <div class="card" id="tmRecCard">
       <div class="card-head"><div class="rl-hd"><span class="rl-ic c-green"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3" width="11" height="10.5" rx="1.5"/><path d="M2.5 6.5h11M5.5 1.8v2.4M10.5 1.8v2.4"/></svg></span><div><div class="card-title">Team Clock Records</div><div class="rl-sub" id="tmSub">Every clock-in · Philippines time · lunch is unpaid</div></div></div><div class="tm-acts"><button type="button" class="mb gr tall" onclick="tmCsv()">Download CSV</button><button type="button" class="mb pri tall" onclick="tmOpen(null)">+ Add Manual Entry</button></div></div>
       <div class="tm-filt">
-        <label>Pay Period<select id="tmPeriod" onchange="tmRender()"><option value="cur">This Period</option><option value="last">Last Period</option><option value="all">All Since Sep 11</option></select></label>
+        <label>Pay Period<select id="tmPeriod" onchange="tmRender()"><option value="today" selected>Today</option><option value="cur">This Period</option><option value="last">Last Period</option><option value="all">All Since Sep 11</option></select></label>
         <label>Date<input type="date" id="tmDate" onchange="tmRender()"></label>
         <label>Employee<select id="tmEmp" onchange="tmRender()"><option value="">All Staff</option></select></label>
         <label>Status<select id="tmStatus" onchange="tmRender()"><option value="">All Records</option><option value="fix">Needs Fix</option><option value="shift">On Shift</option><option value="lunch">On Lunch</option><option value="otp">OT Pending</option><option value="ota">OT Approved</option><option value="otr">OT Not Approved</option><option value="edited">Edited by Admin</option><option value="check">Needs Checking (All)</option><option value="nolunch">No Lunch</option><option value="longlunch">Long Lunch</option><option value="leave">On Leave</option></select></label>
@@ -1385,7 +1385,7 @@ var TM_LEAVE = [];
 function tmLeaveRows(){
   var today = tsToday(), per = document.getElementById('tmPeriod').value, dt = document.getElementById('tmDate').value, emp = document.getElementById('tmEmp').value, st = document.getElementById('tmStatus').value, rg = null;
   if(st && st !== 'leave') return [];
-  if(per === 'cur') rg = tsPeriodOf(today); else if(per === 'last') rg = tsPeriodOf(tsAdd(tsPeriodOf(today).from, -1));
+  if(dt) rg = null; else if(per === 'today') rg = { from: today, to: today }; else if(per === 'cur') rg = tsPeriodOf(today); else if(per === 'last') rg = tsPeriodOf(tsAdd(tsPeriodOf(today).from, -1));
   return TM_LEAVE.filter(function(l){
     if(!TM_EMPS.some(function(e){ return e.id === l.employee_id; })) return false;
     if(rg && (l.leave_date < rg.from || l.leave_date > rg.to)) return false;
@@ -1433,7 +1433,7 @@ var TM_CHIP = { fix:'<span class="sc s-pend">Needs Fix</span>', lunch:'<span cla
 function tmDayLbl(iso){ var d = tsD(iso); return DOWS[d.getDay()] + ', ' + MONS[d.getMonth()] + ' ' + d.getDate(); }
 function tmFiltered(){
   var today = tsToday(), per = document.getElementById('tmPeriod').value, dt = document.getElementById('tmDate').value, emp = document.getElementById('tmEmp').value, st = document.getElementById('tmStatus').value, rg = null;
-  if(per === 'cur') rg = tsPeriodOf(today); else if(per === 'last') rg = tsPeriodOf(tsAdd(tsPeriodOf(today).from, -1));
+  if(dt) rg = null; else if(per === 'today') rg = { from: today, to: today }; else if(per === 'cur') rg = tsPeriodOf(today); else if(per === 'last') rg = tsPeriodOf(tsAdd(tsPeriodOf(today).from, -1));
   return TM_ROWS.filter(function(r){
     var s0 = tmStatus(r);
     if(st !== 'fix' && st !== 'shift' && st !== 'lunch' && rg && (r.work_date < rg.from || r.work_date > rg.to) && s0 !== 'fix') return false;
