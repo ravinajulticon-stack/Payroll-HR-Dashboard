@@ -194,6 +194,7 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 .rq-grp.g-pend span{ background:#fff1e8; color:#c24d10; }
 .rq-grp.g-appr{ margin-top:10px; }
 .rq-grp.g-appr span{ background:#eef9d6; color:#4d7a00; }
+.rq-grp.g-canc{ margin-top:10px; } .rq-grp.g-canc span{ background:#f0f1f5; color:#5b6478; }
 .rq:hover{ background:#fafbfe; }
 .av{ width:36px; height:36px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; color:#fff; }
 .rq-name{ width:150px; flex-shrink:0; font-size:12.5px; font-weight:600; color:var(--text); }
@@ -2432,6 +2433,11 @@ async function loadRequests(){
   var today = todayISO();
   var rest = list.filter(function(r){ return r.status === 'Approved' && r.end_date >= today; })
     .sort(function(a, b){ return a.start_date.localeCompare(b.start_date); });
+  // Approved leave cancelled by an approver/admin in the last 30 days (staff withdrawals have no decision date)
+  var cut = new Date(); cut.setDate(cut.getDate() - 30);
+  var canc = list.filter(function(r){ return r.status === 'Cancelled' && r.decided_at && new Date(r.decided_at) >= cut; })
+    .sort(function(a, b){ return a.decided_at < b.decided_at ? 1 : -1; });
+  CANCEL_NOTES = {}; canc.forEach(function(r){ CANCEL_NOTES[r.id] = r.decision_note || ''; });
   var ordered = pending.concat(rest);
   await loadLeaveDocs(ordered.map(function(r){ return r.id; }));
 
@@ -2452,18 +2458,20 @@ async function loadRequests(){
         if(IS_ADMIN && (r.status === 'Pending' || r.status === 'Approved')){
           acts += '<button class="btn ghost sm" onclick="editReason(\'' + r.id + '\')">Edit Reason</button>';
         }
+        if(r.status === 'Cancelled') acts = '<button class="btn ghost sm" onclick="editCancelNote(\'' + r.id + '\')">Edit Reason</button>';
         var nm = names[r.employee_id] || '?';
+        var cancLine = r.status === 'Cancelled' ? '<div class="rq-sub">Cancelled ' + fmtDay(isoOf(new Date(r.decided_at))) + ' \u00b7 ' + (r.decision_note ? 'Reason: ' + esc(r.decision_note) : '<i>No reason given</i>') + '</div>' : '';
         return '<div class="rq">' + avatar(nm, r.employee_id)
           + '<div class="rq-name">' + esc(nm) + '</div>'
           + '<div class="rq-main"><div class="rq-when">' + rangeLabel(r.start_date, r.end_date) + '</div>'
-          + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' · ' + esc(r.reason) : '') + docLine(r) + '</div>' + submittedLine(r) + '</div>'
+          + '<div class="rq-meta">' + reqSummary(r) + (r.reason ? ' · ' + esc(r.reason) : '') + docLine(r) + '</div>' + (cancLine || submittedLine(r)) + '</div>'
           + (docMiss ? '<span class="st docmiss">Document Missing</span>' : '') + '<span class="st ' + cls + '">' + r.status + '</span>'
           + (acts ? '<div class="rq-acts">' + acts + '</div>' : '') + '</div>';
   }
   // Two groups with a small header each: Pending first, then upcoming Approved
   function rqGroup(title, rows, cls){ return rows.length ? '<div class="rq-grp ' + cls + '">' + title + ' <span>' + rows.length + '</span></div>' + rows.map(rqRow).join('') : ''; }
-  document.getElementById('approvalsList').innerHTML = ordered.length
-    ? rqGroup('Awaiting Approval', pending, 'g-pend') + rqGroup('Upcoming Approved', rest, 'g-appr')
+  document.getElementById('approvalsList').innerHTML = (ordered.length || canc.length)
+    ? rqGroup('Awaiting Approval', pending, 'g-pend') + rqGroup('Upcoming Approved', rest, 'g-appr') + rqGroup('Recently Cancelled', canc, 'g-canc')
     : '<div class="empty">No pending or upcoming requests.</div>';
 }
 
@@ -2814,6 +2822,15 @@ async function moveApproved(id){
   alert(data);
   await loadRequests();
   await loadMine();
+}
+// Change the reason on leave that an approver/admin cancelled (last 30 days)
+var CANCEL_NOTES = {};
+async function editCancelNote(id){
+  var val = prompt('Cancellation reason (leave blank to clear):', CANCEL_NOTES[id] || '');
+  if(val === null) return;
+  const { error } = await sb.rpc('edit_leave_cancel_note', { req_id: id, note: val.trim() });
+  if(error){ alert('Could not update the reason: ' + error.message); return; }
+  await loadRequests();
 }
 async function cancelApproved(id){
   if(!confirm('Cancel this approved leave? The days will be removed and the balance restored.')) return;
