@@ -1378,12 +1378,19 @@ function tsSetMode(m){
   document.getElementById('tsAsOf').style.display = team ? 'none' : '';
   if(team){ clearInterval(TS_TICK); tmLoad(); } else { tsRender(); }
 }
+// Staff dropdown: current staff first, leavers grouped under "Exited" (same as the Payroll Dashboard)
+function empOptsGrouped(list, first){
+  var today = tsToday(), o = function(e){ return '<option value="' + esc(e.id) + '">' + esc(e.name) + '</option>'; };
+  var srt = function(a, b){ return a.name.localeCompare(b.name); };
+  var act = list.filter(function(e){ return !e.exit_date || e.exit_date >= today; }).sort(srt), gone = list.filter(function(e){ return e.exit_date && e.exit_date < today; }).sort(srt);
+  return (first || '') + act.map(o).join('') + (gone.length ? '<optgroup label="Exited">' + gone.map(o).join('') + '</optgroup>' : '');
+}
 async function tmLoad(){
   if(!TM_EMPS.length){
     var e = await sb.from('employees_201').select('id,name,exit_date').order('name');
     TM_EMPS = e.data || [];
     trInit();
-    document.getElementById('tmEmp').innerHTML = '<option value="">All Staff</option>' + TM_EMPS.map(function(x){ return '<option value="' + esc(x.id) + '">' + esc(x.name) + (x.exit_date ? ' (Exited)' : '') + '</option>'; }).join('');
+    document.getElementById('tmEmp').innerHTML = empOptsGrouped(TM_EMPS, '<option value="">All Staff</option>');
   }
   var r = await sb.from('time_clock').select('*').gte('work_date', TS_MIN).order('clock_in', { ascending: false });
   if(r.error){ document.getElementById('tmList').innerHTML = '<div class="empty">' + esc(r.error.message) + '</div>'; return; }
@@ -1649,7 +1656,7 @@ function tmOpen(id){
   document.getElementById('fxTitle').textContent = !r ? 'Add Manual Entry' : (st === 'fix' ? 'Fix Clock Record' : 'Edit Clock Record');
   document.getElementById('fxSub').textContent = r ? tmEmp(r.employee_id).name + ' · ' + tsD(r.work_date).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' }) + ' · Philippines time' : 'For a day someone couldn’t clock in · Philippines time';
   document.getElementById('fxEmpWrap').style.display = r ? 'none' : '';
-  document.getElementById('fxEmp').innerHTML = '<option value="">Choose employee…</option>' + TM_EMPS.filter(function(e){ return !e.exit_date || e.exit_date >= TS_MIN; }).map(function(e){ return '<option value="' + esc(e.id) + '">' + esc(e.name) + '</option>'; }).join('');
+  document.getElementById('fxEmp').innerHTML = empOptsGrouped(TM_EMPS.filter(function(e){ return !e.exit_date || e.exit_date >= TS_MIN; }), '<option value="">Choose Employee…</option>');
   document.getElementById('fxDate').value = r ? r.work_date : tsToday();
   document.getElementById('fxDate').max = tsToday(); document.getElementById('fxDate').min = TS_MIN;
   document.getElementById('fxIn').value = r ? tmHm(r.clock_in) : '';
@@ -2045,7 +2052,7 @@ async function tsExportPdf(getCtx){
 // Filled once the staff list is loaded (tmLoad)
 function trInit(){
   var sel = document.getElementById('trEmp'); if(!sel || sel.options.length) return;
-  sel.innerHTML = '<option value="__all">All Staff</option>' + TM_EMPS.map(function(x){ return '<option value="' + esc(x.id) + '">' + esc(x.name) + (x.exit_date ? ' (Exited)' : '') + '</option>'; }).join('');
+  sel.innerHTML = empOptsGrouped(TM_EMPS, '<option value="__all">All Staff</option>');
   trPerSet();
 }
 function trPerSet(){
@@ -2509,9 +2516,7 @@ async function initReport(){
   const { data } = await sb.from('employees_201').select('id,name,exit_date').order('name');
   REP_EMPS = data || [];
   var sel = document.getElementById('repEmp');
-  sel.innerHTML = '<option value="">All Employees</option>' + REP_EMPS.map(function(e){
-    return '<option value="' + esc(e.id) + '">' + esc(e.name) + (e.exit_date ? ' (Exited)' : '') + '</option>';
-  }).join('');
+  sel.innerHTML = empOptsGrouped(REP_EMPS, '<option value="">All Employees</option>');
   const [eRes, rRes] = await Promise.all([
     sb.from('leave_entries').select('employee_id,leave_date,leave_type,hours'),
     sb.rpc('leave_requests_for_approval')
