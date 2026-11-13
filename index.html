@@ -2781,7 +2781,7 @@ function renderTimesheetGrid(){
   const savedScrollLeft = existingScroll ? existingScroll.scrollLeft : 0;
 
   container.innerHTML = `
-    <div class="card">
+    <div class="card" style="margin-bottom:16px;overflow:hidden">
       <div class="card-body" style="padding:0">
         <div class="tbl-scroll" style="max-height:calc(100vh - 230px)">
           <table class="rec-table ts-grid-table">
