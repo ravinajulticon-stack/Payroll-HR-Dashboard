@@ -298,8 +298,11 @@ img.av{ object-fit:cover; background:#e6e9f2; }
 @media(max-width:860px){ .ts-split{ grid-template-columns:1fr; } }
 .ts-clock{ padding:22px; text-align:center; }
 .ts-date{ font-size:12px; color:var(--text-3); font-weight:600; } .ts-now{ font-size:30px; font-weight:800; letter-spacing:-.6px; margin-top:2px; font-variant-numeric:tabular-nums; }
-.ts-ring{ width:186px; height:186px; border-radius:50%; margin:18px auto 14px; display:flex; align-items:center; justify-content:center; }
-.ts-ring > div{ width:156px; height:156px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.ts-ring{ width:186px; height:186px; border-radius:50%; margin:32px auto 14px; display:flex; align-items:center; justify-content:center; position:relative; }
+.ts-ring > .sw-crown{ position:absolute; left:50%; top:-20px; width:30px; height:11px; margin-left:-15px; border-radius:4px; background:currentColor; }
+.ts-ring > .sw-crown::after{ content:''; position:absolute; left:10px; top:11px; width:10px; height:9px; background:currentColor; }
+.ts-ring > .sw-btn{ position:absolute; right:16px; top:12px; width:20px; height:9px; border-radius:3px; background:currentColor; transform:rotate(45deg); }
+.ts-ring > div{ width:156px; height:156px; border-radius:50%; background:#fff; color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .ts-ring b{ font-size:30px; font-weight:800; font-variant-numeric:tabular-nums; } .ts-ring b small{ font-size:17px; font-weight:700; color:var(--text-3); } .ts-ring span{ font-size:11px; color:var(--text-3); font-weight:600; margin-top:2px; }
 .ts-state{ display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:700; padding:4px 11px; border-radius:999px; margin-bottom:12px; }
 .ts-state.on{ background:#e6f6ec; color:#1e7a35; } .ts-state.lunch{ background:#fff4e5; color:#c25e00; } .ts-state.off{ background:#f1f3f8; color:var(--text-2); }
@@ -510,6 +513,15 @@ body{ background:var(--bg); }
 .ts-out{ background:linear-gradient(135deg,var(--orange2),var(--orange)) !important; color:#fff !important; box-shadow:0 10px 24px rgba(255,116,56,.3) !important; }
 .ts-lunch{ background:var(--peach) !important; color:#a8410c !important; box-shadow:none !important; }
 .ts-state.on{ background:#effbc9; color:var(--lime-ink); } .ts-state.lunch{ background:#ffe9dc; color:#c24d10; }
+.ts-state.lunch.late{ background:#fff1f0; color:#d92d23; }
+.ts-lwrap{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px; } .ts-lwrap .ts-state{ margin:6px 0 0; white-space:nowrap; }
+.ts-lring{ flex:none; width:46px; height:46px; border-radius:50%; display:grid; place-items:center; position:relative; }
+.ts-lring::before{ content:''; position:absolute; inset:4px; border-radius:50%; background:#fff; }
+.ts-lring{ margin-top:6px; color:#ff7438; } .ts-lring.late{ color:#d92d23; }
+.ts-lring .sw-crown{ position:absolute; left:50%; top:-8px; width:10px; height:5px; margin-left:-5px; border-radius:2px; background:currentColor; }
+.ts-lring .sw-crown::after{ content:''; position:absolute; left:3px; top:5px; width:4px; height:3px; background:currentColor; }
+.ts-lring .sw-btn{ position:absolute; right:1px; top:1px; width:7px; height:4px; border-radius:2px; background:currentColor; transform:rotate(45deg); }
+.ts-lring b{ position:relative; font-size:9.5px; font-weight:800; color:#c24d10; font-variant-numeric:tabular-nums; letter-spacing:-.2px; } .ts-lring.late b{ color:#d92d23; }
 .mb{ border-radius:999px; } .mb:hover{ transform:translateY(-1px); }
 .mb.ok{ background:var(--lime); border-color:var(--lime); color:#141418; }
 .mb.no{ color:#c24d10; border-color:var(--peach2); }
@@ -1289,6 +1301,15 @@ function tsDayInfo(iso){
   return { rows: rows, leave: lv, hol: hol, worked: worked, paid: paid, dash: dash, leaveHrs: lv.reduce(function(a, e){ return a + (parseFloat(e.hours) || 0); }, 0) };
 }
 function tsFirstDate(){ return TS_ROWS.length ? TS_ROWS[0].work_date : null; }
+// Lunch pill: when lunch started and the 1-hour return time; turns red once lunch runs over
+function tsLunchPill(r){
+  var back = new Date(new Date(r.lunch_in).getTime() + 3600000), late = Date.now() > back.getTime();
+  var sec = Math.floor(Math.abs(back.getTime() - Date.now()) / 1000), m = Math.floor(sec / 60), ss = sec % 60;
+  var tm = (m >= 60 ? Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0') : m) + ':' + String(ss).padStart(2, '0');
+  var left = late ? 0 : Math.min(1, (back.getTime() - Date.now()) / 3600000);
+  return '<div class="ts-lwrap"><span class="ts-state lunch' + (late ? ' late' : '') + '"><i></i>' + (late ? 'Lunch Over' : 'On Lunch') + ' · Back by ' + tsTime(back) + '</span>'
+    + '<span class="ts-lring' + (late ? ' late' : '') + '" title="' + (late ? 'Over lunch by ' : 'Lunch left: ') + tm + '" style="background:conic-gradient(' + (late ? '#d92d23 0 100%' : '#ff7438 0 ' + (left * 100) + '%, #ffe2d1 0') + ')"><i class="sw-crown"></i><i class="sw-btn"></i><b>' + (late ? '+' : '') + tm + '</b></span></div>';
+}
 function tsRenderClock(tickOnly){
   var box = document.getElementById('tsClock'); if(!box) return;
   var o = tsPhParts(), now = new Date();
@@ -1305,9 +1326,11 @@ function tsRenderClock(tickOnly){
     box.querySelector('.ts-now').textContent = timeLbl;
     box.querySelector('.ts-ring b').innerHTML = ringTxt;
     box.querySelector('.ts-ring').style.background = 'conic-gradient(' + (onLunch ? '#ff7438' : '#b4e61f') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)';
+    box.querySelector('.ts-ring').style.color = onLunch ? '#ff7438' : '#b4e61f';
+    var pill = box.querySelector('.ts-lwrap'); if(onLunch && pill){ var np = tsLunchPill(open); if(pill.outerHTML !== np) pill.outerHTML = np; }
     return;
   }
-  var state = open ? (onLunch ? '<span class="ts-state lunch"><i></i>On Lunch Since ' + tsTime(open.lunch_in) + '</span>' : '<span class="ts-state on"><i></i>Clocked In</span>') : '<span class="ts-state off"><i></i>' + (todays.length ? 'Shift Complete' : 'Not Clocked In') + '</span>';
+  var state = open ? (onLunch ? tsLunchPill(open) : '<span class="ts-state on"><i></i>Clocked In</span>') : '<span class="ts-state off"><i></i>' + (todays.length ? 'Shift Complete' : 'Not Clocked In') + '</span>';
   var acts;
   if(!open) acts = '<div class="ts-acts one"><button class="ts-btn ts-in" onclick="tsAct(\'in\', this)">Clock In</button></div>';
   else if(onLunch) acts = '<div class="ts-acts"><button class="ts-btn ts-lunch" onclick="tsAct(\'lunch_end\', this)">End Lunch</button><button class="ts-btn ts-out" onclick="tsAct(\'out\', this)">Clock Out</button></div>';
@@ -1320,7 +1343,7 @@ function tsRenderClock(tickOnly){
     + '<div class="ts-ev' + (cur && cur.clock_out ? '' : ' dim') + '"><i style="background:#d92d23"></i>Clocked Out<b>' + (cur && cur.clock_out ? tsTime(cur.clock_out) : '—') + '</b></div></div>';
   var note = open ? '<textarea class="ts-note" id="tsNote" maxlength="500" placeholder="✎ Add a note for this shift" onchange="tsSaveNote()">' + esc(open.note || '') + '</textarea>' : '';
   box.innerHTML = '<div class="ts-date">' + dateLbl + '</div><div class="ts-now">' + timeLbl + '</div>'
-    + '<div class="ts-ring" style="background:conic-gradient(' + (onLunch ? '#ff7438' : '#b4e61f') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)"><div><b>' + ringTxt + '</b><span>worked today</span></div></div>'
+    + '<div class="ts-ring" style="color:' + (onLunch ? '#ff7438' : '#b4e61f') + ';background:conic-gradient(' + (onLunch ? '#ff7438' : '#b4e61f') + ' 0 ' + (pct * 100) + '%, #eef1f6 0)"><i class="sw-crown"></i><i class="sw-btn"></i><div><b>' + ringTxt + '</b><span>worked today</span></div></div>'
     + state + acts + log + note + '<div class="ts-msg" id="tsMsg"></div>';
   box.setAttribute('data-ready', '1');
 }
