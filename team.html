@@ -558,7 +558,9 @@ body{ background:var(--bg); }
 @keyframes lvPulse{ 0%{ box-shadow:0 0 0 0 rgba(123,191,0,.6); } 70%{ box-shadow:0 0 0 7px rgba(123,191,0,0); } 100%{ box-shadow:0 0 0 0 rgba(123,191,0,0); } }
 .lv-n{ font-weight:700; font-size:13px; color:var(--text); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .lv-s{ font-size:11px; color:var(--text-3); }
 .lv-mid{ display:flex; align-items:center; gap:12px; margin-top:12px; }
-.lv-ring{ width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; } .lv-ring>div{ width:50px; height:50px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:var(--text); }
+.lv-ring{ width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; margin-top:8px; }
+.lv-ring .sw-crown{ position:absolute; left:50%; top:-9px; width:13px; height:5px; margin-left:-6.5px; border-radius:2px; background:currentColor; } .lv-ring .sw-crown::after{ content:''; position:absolute; left:4.5px; top:5px; width:4px; height:4px; background:currentColor; }
+.lv-ring .sw-btn{ position:absolute; right:3px; top:3px; width:9px; height:4px; border-radius:2px; background:currentColor; transform:rotate(45deg); } .lv-ring>div{ width:50px; height:50px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:var(--text); }
 .lv-clock{ font-size:24px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--text); letter-spacing:-.5px; } .lv-clock small, .lv-tc small{ font-size:12px; color:var(--text-3); font-weight:600; }
 .lv-chip{ display:inline-block; margin-top:3px; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:999px; background:#effbc9; color:#3d5a00; } .lv-card.lunch .lv-chip{ background:#ffe9dc; color:#c24d10; } .lv-card.ot .lv-chip{ background:#ffe3e6; color:#c9271d; }
 .lv-foot{ display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:11px; color:var(--text-3); border-top:1px dashed #eef0f5; padding-top:8px; } .lv-foot .mb{ height:26px; padding:0 10px; font-size:11px; }
@@ -1559,7 +1561,7 @@ function lvRender(){
       var foot = ln ? 'Lunch so far ' + Math.max(0, Math.round(nowM - lvMin(r.lunch_in))) + ' min' : (w >= 8 ? 'Over 8 hrs by ' + tsHrs(w - 8) + ' hrs' : 'Finishes ~' + lvT12(ci + 480 + lunchM));
       var sub = 'In ' + tsTime(r.clock_in) + (r.lunch_in ? ' · Lunch ' + tsTime(r.lunch_in) + (r.lunch_out ? '–' + tsTime(r.lunch_out) : '') : '');
       return '<div class="lv-card ' + cls + '"><div class="lv-top">' + lvAv(r.employee_id) + '<div style="min-width:0"><div class="lv-n">' + esc(tmEmp(r.employee_id).name) + '</div><div class="lv-s">' + sub + '</div></div></div>'
-        + '<div class="lv-mid"><div class="lv-ring" style="background:conic-gradient(' + col + ' ' + pct.toFixed(1) + '%,#eef1f6 0)"><div>' + Math.round(pct) + '%</div></div><div><div class="lv-clock">' + lvClock(w * 60) + '</div><span class="lv-chip">' + (ln ? 'On Lunch' : (w >= 8 ? 'Over 8 Hrs' : 'On Shift')) + '</span></div></div>'
+        + '<div class="lv-mid"><div class="lv-ring" style="color:' + col + ';background:conic-gradient(' + col + ' ' + pct.toFixed(1) + '%,#eef1f6 0)"><i class="sw-crown"></i><i class="sw-btn"></i><div>' + Math.round(pct) + '%</div></div><div><div class="lv-clock">' + lvClock(w * 60) + '</div><span class="lv-chip">' + (ln ? 'On Lunch' : (w >= 8 ? 'Over 8 Hrs' : 'On Shift')) + '</span></div></div>'
         + '<div class="lv-foot"><span>' + foot + '</span><button type="button" class="mb" onclick="tmOpen(\'' + r.id + '\')">Edit</button></div></div>';
     }).join('');
     body = cards ? '<div class="lv-grid">' + cards + '</div>' : '<div class="empty">Nobody is clocked in right now.</div>';
