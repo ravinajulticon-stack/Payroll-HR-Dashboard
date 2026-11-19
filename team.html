@@ -514,6 +514,7 @@ body{ background:var(--bg); }
 .ts-lunch{ background:var(--peach) !important; color:#a8410c !important; box-shadow:none !important; }
 .ts-state.on{ background:#effbc9; color:var(--lime-ink); } .ts-state.lunch{ background:#ffe9dc; color:#c24d10; }
 .ts-state.lunch.late{ background:#fff1f0; color:#d92d23; }
+.tm-ro button[onclick^="tmOpen"], .tm-ro button[onclick^="tmReview"], .tm-ro #tmApproveAll, .tm-ro #tmRejectAll{ display:none !important; }
 .ts-lwrap{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px; } .ts-lwrap .ts-state{ margin:6px 0 0; white-space:nowrap; }
 .ts-lring{ flex:none; width:46px; height:46px; border-radius:50%; display:grid; place-items:center; position:relative; }
 .ts-lring::before{ content:''; position:absolute; inset:4px; border-radius:50%; background:#fff; }
@@ -1265,9 +1266,11 @@ async function tsInit(){
   TS_ENABLED = !!en.data;
   if(!TS_ENABLED || !MY_ID) return;
   document.getElementById('pgTime').style.display = '';
-  if(IS_ADMIN){
+  if(IS_ADMIN || IS_APPROVER){
     document.getElementById('tsModeSeg').style.display = '';
   }
+  // Leave Approvers get My Team as view only (no approving, editing, adding or deleting)
+  if(!IS_ADMIN) document.getElementById('teamWrap').classList.add('tm-ro');
   await tsLoad();
 }
 async function tsLoad(){
@@ -1394,7 +1397,7 @@ function tsRenderTiles(){
 }
 var TS_MODE = 'me', TM_ROWS = [], TM_EMPS = [], TM_EDIT = null;
 function tsSetMode(m){
-  if(m === 'team' && !IS_ADMIN) m = 'me';
+  if(m === 'team' && !IS_ADMIN && !IS_APPROVER) m = 'me';
   TS_MODE = m;
   document.querySelectorAll('#tsModeSeg button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-m') === m); });
   var team = m === 'team';
@@ -1412,7 +1415,7 @@ function empOptsGrouped(list, first){
 }
 async function tmLoad(){
   if(!TM_EMPS.length){
-    var e = await sb.from('employees_201').select('id,name,exit_date').order('name');
+    var e = await sb.rpc('team_staff');
     TM_EMPS = e.data || [];
     trInit();
     document.getElementById('tmEmp').innerHTML = empOptsGrouped(TM_EMPS, '<option value="">All Staff</option>');
@@ -1512,7 +1515,7 @@ function tmRenderTiles(){
   document.getElementById('tsTiles').innerHTML =
       T('t-green', 'On Shift Now', open.length + u('/ ' + active + ' staff'), 'Clocked In Today', (onLv ? onLv + ' On Leave · ' : '') + Math.max(0, active - open.length - onLv) + ' Not Clocked In', '', "tmQuick('shift')")
     + T(lunch.length ? 't-amber' : 't-grey', 'On Lunch Now', lunch.length, lunch.length ? lunch.map(function(r){ return first(r.employee_id); }).join(', ') : 'Nobody on lunch', lunch.length ? 'Since ' + tsTime(lunch.map(function(r){ return r.lunch_in; }).sort()[0]) : '—', '', lunch.length ? "tmQuick('lunch')" : '')
-    + T(pend.length ? 't-purple' : 't-grey', 'OT Pending Approval', tsHrs(pendHrs) + u('hrs'), pend.length + ' shift' + (pend.length !== 1 ? 's' : '') + ' · ' + Object.keys(pendStaff).length + ' staff', 'Waiting for you', pend.length ? 'Review' : '', pend.length ? "document.getElementById('tmOtCard').scrollIntoView({behavior:'smooth'})" : '')
+    + T(pend.length ? 't-purple' : 't-grey', 'OT Pending Approval', tsHrs(pendHrs) + u('hrs'), pend.length + ' shift' + (pend.length !== 1 ? 's' : '') + ' · ' + Object.keys(pendStaff).length + ' staff', IS_ADMIN ? 'Waiting for you' : 'Waiting for admin', pend.length ? 'Review' : '', pend.length ? "document.getElementById('tmOtCard').scrollIntoView({behavior:'smooth'})" : '')
     + T(chk ? 't-red' : 't-grey', 'Needs Checking', chk, chk ? [miss.length ? miss.length + ' No Clock-Out' : '', noL ? noL + ' No Lunch' : '', lngL ? lngL + ' Long Lunch' : ''].filter(Boolean).join(' · ') : 'Nothing to check', chk ? 'Fix before payroll' : 'All shifts look right', chk ? 'Check' : '', chk ? "tmQuick('check')" : '');
 }
 function tmQuick(st){
