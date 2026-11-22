@@ -3246,6 +3246,7 @@ const EYC_TYPE_COLORS = window.__V2 ? {
   'Parental Leave':'#8e8e93'
 };
 let EYC_SELECTED_EMP = null;
+let EYC_WORKED = {};
 let EYC_SELECTED_YEAR = new Date().getFullYear();
 
 async function loadEmployeeYearLeave(employeeId, year){
@@ -3261,9 +3262,21 @@ async function loadEmployeeYearLeave(employeeId, year){
   return [...(r1.data||[]), ...(r2.data||[])];
 }
 
+// Past VIC public holidays for the selected employee and year with no leave entry and no hours worked (they're auto-paid),
+// limited to the employee's start/exit dates
+function eycPublicHolidays(entries, year){
+  const emp = EMP201.find(e => e.id === EYC_SELECTED_EMP) || {};
+  const taken = {}; entries.forEach(e => { taken[e.leave_date] = 1; });
+  const today = isoLocal(new Date());   // only holidays that have already happened (today included)
+  return (typeof VIC_HOLIDAYS !== 'undefined' ? VIC_HOLIDAYS : []).filter(h => h.date.slice(0, 4) === String(year) && h.date <= today && !taken[h.date] && !EYC_WORKED[h.date]
+    && !(emp.start_date && h.date < emp.start_date) && !(emp.exit_date && h.date > emp.exit_date));
+}
+// Holiday Leave is shown as "Public Holiday" on the Leave Calendar
+function eycLabel(ty){ return ty === 'Holiday Leave' ? 'Public Holiday' : ty; }
 function renderEmpYearCalGrid(entries, year){
   const byDate = {};
   entries.forEach(e=>{ if(!byDate[e.leave_date]) byDate[e.leave_date]=[]; byDate[e.leave_date].push(e); });
+  const pubHol = {}; eycPublicHolidays(entries, year).forEach(h => { pubHol[h.date] = h; });
   const DOWL = ['S','M','T','W','T','F','S'];
   const MN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const COLS = 37;
@@ -3285,13 +3298,15 @@ function renderEmpYearCalGrid(entries, year){
       const ds = `${year}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const dayEntries = byDate[ds]||[];
       let style='', cls='';
-      if(dayEntries.length){
-        const ty = dayEntries[0].leave_type;
+      // VIC public holidays (auto-paid) show in the Holiday Leave colour even without a leave entry
+      const hol = !dayEntries.length ? pubHol[ds] : null;
+      if(dayEntries.length || hol){
+        const ty = dayEntries.length ? dayEntries[0].leave_type : 'Holiday Leave';
         const color = EYC_TYPE_COLORS[ty] || '#8e8e93';
         style = `background:${color};color:#0b0b0d;font-weight:700;border-top-color:${color};box-shadow:0 1px 6px rgba(0,0,0,0.09)`;
       } else if(isW){ cls = 'wknd'; }
       if(ds === todayStr) cls += ' today';
-      const title = dayEntries.length ? dayEntries.map(e=>`${e.leave_type} \u00b7 ${e.hours}h`).join(', ') : '';
+      const title = dayEntries.length ? dayEntries.map(e=>`${eycLabel(e.leave_type)} \u00b7 ${e.hours}h`).join(', ') : (hol ? `Public Holiday \u00b7 ${hol.name}` : '');
       cells += `<td class="${cls}" style="${style}" title="${title}">${d}</td>`;
     }
     rows += `<tr><td class="eyc-month-col">${MN[m-1]}</td>${cells}</tr>`;
@@ -3353,13 +3368,19 @@ async function loadAndRenderEmpYearCal(){
   monthsEl.innerHTML = '<p style="padding:10px;color:var(--text-3);font-size:12px">Loading\u2026</p>';
 
   const entries = await loadEmployeeYearLeave(EYC_SELECTED_EMP, EYC_SELECTED_YEAR);
+  // Days with hours recorded: a holiday they worked isn't shown as Public Holiday (it's paid as Double Pay instead)
+  const wk = await sb.from('timesheet_entries').select('work_date,hours_worked').eq('employee_id', EYC_SELECTED_EMP)
+    .gte('work_date', EYC_SELECTED_YEAR + '-01-01').lte('work_date', EYC_SELECTED_YEAR + '-12-31');
+  EYC_WORKED = {}; (wk.data || []).forEach(t => { if((parseFloat(t.hours_worked) || 0) > 0) EYC_WORKED[t.work_date] = 1; });
 
   const counts = {};
   entries.forEach(e=>{ counts[e.leave_type] = (counts[e.leave_type]||0) + 1; });
+  const ph = eycPublicHolidays(entries, EYC_SELECTED_YEAR).length;
+  if(ph) counts['Holiday Leave'] = (counts['Holiday Leave']||0) + ph;
   sumEl.innerHTML = Object.keys(counts).length
     ? Object.entries(counts).map(([ty,c])=>{
         const color = EYC_TYPE_COLORS[ty] || '#8e8e93';
-        return `<div class="eyc-count-box" style="background:${color}22;border-color:${color}"><div class="eyc-count-val" style="color:${color}">${c}</div><div class="eyc-count-lbl">${ty}</div></div>`;
+        return `<div class="eyc-count-box" style="background:${color}22;border-color:${color}"><div class="eyc-count-val" style="color:${color}">${c}</div><div class="eyc-count-lbl">${eycLabel(ty)}</div></div>`;
       }).join('')
     : '<span style="color:var(--text-3);font-size:11px">No leave recorded for this year.</span>';
 
