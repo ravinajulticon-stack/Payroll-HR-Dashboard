@@ -1644,7 +1644,7 @@ function tmRender(){
   document.getElementById('tmList').innerHTML = rows.length
     ? '<div class="tm-row h"><div>Employee</div><div>Date</div><div>Clock In</div><div>Clock Out</div><div class="r">Hours</div><div class="r">OT</div><div>Status</div><div></div></div>'
       + rows.map(function(r){
-          if(r._leave) return '<div class="tm-row lv-row">' + tmAv(r.employee_id) + '<div>' + tmDayLbl(r.work_date) + '</div><div class="tm-sub">—</div><div class="tm-sub">—</div><div class="r">' + tsHrs(r.hours) + '</div><div class="r">—</div><div><span class="sc s-lv">On Leave</span><div class="tm-sub">' + esc(r.leave_type) + '</div></div><div></div></div>';
+          if(r._leave) return '<div class="tm-row lv-row">' + tmAv(r.employee_id) + '<div>' + tmDayLbl(r.work_date) + '</div><div class="tm-sub">—</div><div class="tm-sub">—</div><div class="r">' + tsHrs(r.hours) + '</div><div class="r">—</div><div><span class="sc s-lv" title="' + esc(r.leave_type) + '">' + esc(r.leave_type) + ' · ' + tsHrs(r.hours) + ' hrs</span></div><div></div></div>';
           var st = tmStatus(r), lun = r.lunch_in ? 'Lunch ' + tsTime(r.lunch_in) + ' – ' + (r.lunch_out ? tsTime(r.lunch_out) : 'now') : '';
           var tipT = [r.edited_by ? 'Edited by ' + r.edited_by + (r.edit_reason ? ' · ' + r.edit_reason : '') : '', r.ot_status === 'rejected' ? 'OT Not Approved' + (r.ot_review_note ? ': ' + r.ot_review_note : '') : ''].filter(Boolean).join(' | ');
           var tip = tipT ? ' title="' + esc(tipT) + '"' : '';
